@@ -20,7 +20,7 @@ repositories {
         url = URI("https://maven.pkg.github.com/114514ns/heybox")
         credentials {
             username = "114514ns"
-            password = "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" //it's a read only token
+            password = "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" //it's a read only token
         }
     }
 }
