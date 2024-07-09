@@ -1,7 +1,6 @@
 package cn.pprocket.pages
 
-import androidx.compose.foundation.Image
-import androidx.compose.foundation.background
+import App
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
@@ -15,19 +14,17 @@ import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
 import androidx.compose.runtime.*
+import androidx.compose.ui.window.rememberWindowState
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.input.pointer.PointerEvent
-import androidx.compose.ui.input.pointer.PointerEventType
-import androidx.compose.ui.input.pointer.onPointerEvent
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.window.WindowPlacement
 import androidx.navigation.NavHostController
+import cn.pprocket.GlobalState
 import cn.pprocket.HeyClient
 import cn.pprocket.components.PostCard
 import cn.pprocket.items.Post
 import cn.pprocket.items.Topic
-import com.lt.load_the_image.rememberImagePainter
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import java.util.*
@@ -36,7 +33,7 @@ import java.util.*
 @Composable
 fun HomePage(navController: NavHostController) {
     var posts by remember { mutableStateOf(mutableListOf<Post>()) }
-    LaunchedEffect(navController) {
+    LaunchedEffect(Unit) {
         withContext(Dispatchers.IO) {
             var fetch = HeyClient.getPosts(Topic.LOVE)
             val newList = mutableListOf<Post>()
@@ -50,32 +47,40 @@ fun HomePage(navController: NavHostController) {
         bottomBar = { BottomNavigationBar(navController) }
     ) { innerPadding ->
         val navigationBarsPadding = Modifier.navigationBarsPadding()
-        Column (
-                verticalArrangement = Arrangement.spacedBy(16.dp)
-                //.then(navigationBarsPadding) // 填充导航栏之外剩余的空间
+        Column(
+            verticalArrangement = Arrangement.spacedBy(16.dp)
+            //.then(navigationBarsPadding) // 填充导航栏之外剩余的空间
         ) {
-            LazyVerticalGrid(columns = GridCells.Fixed(1)) {
 
-                items (
+            val windowSize = rememberWindowState()
+
+            val columns = if (windowSize.placement == WindowPlacement.Fullscreen) 2 else 1
+            LazyVerticalGrid(columns = GridCells.Fixed(columns)) {
+
+                items(
+
                     posts.size,
-                    key ={index -> Random().nextInt()}
+                    key = { index -> Random().nextInt() }
                 )
-                    { index ->
-                        val post = posts[index]
-                        PostCard(
-                            title = post.title,
-                            author = post.userName,
-                            content = post.description,
-                            publishTime = post.createAt,
-                            likesCount = post.likes,
-                            commentsCount = post.comments,
-                            sharesCount = 20,
-                            onCardClick = {},
-                            userAvatar = post.userAvatar,
-                            imgs = post.images
-                        )
+                { index ->
+                    val post = posts[index]
+                    PostCard(
+                        title = post.title,
+                        author = post.userName,
+                        content = post.description,
+                        publishTime = post.createAt,
+                        likesCount = post.likes,
+                        commentsCount = post.comments,
+                        sharesCount = 20,
+                        onCardClick = {
+                            GlobalState.map[post.postId] = post
+                            navController.navigate("post/${post.postId}")
+                        },
+                        userAvatar = post.userAvatar,
+                        imgs = post.images
+                    )
 
-                    }
+                }
 
             }
         }
@@ -92,24 +97,16 @@ fun BottomNavigationBar(navController: NavHostController) {
         Icons.Default.Settings
     )
 
+    var selectedItem by remember { mutableStateOf(0) }
     NavigationBar {
         items.forEachIndexed { index, item ->
             NavigationBarItem(
                 icon = { Icon(icons[index], contentDescription = null) },
                 label = { Text(item.capitalize()) },
-                selected = true,
+                selected = index == selectedItem,
                 onClick = {
-                    /*
                     selectedItem = index
-                    navController.navigate(item) {
-                        popUpTo(navController.graph.startDestinationId) {
-                            saveState = true
-                        }
-                        launchSingleTop = true
-                        restoreState = true
-                    }
 
-                     */
                 },
                 modifier = Modifier.padding(4.dp)
             )

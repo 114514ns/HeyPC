@@ -18,6 +18,7 @@ import androidx.compose.ui.window.Window
 import androidx.compose.ui.window.application
 import androidx.compose.ui.window.rememberWindowState
 import cn.pprocket.HeyClient
+import cn.pprocket.items.Post
 import cn.pprocket.pages.HomePage
 import cn.pprocket.pages.RootPage
 import java.awt.Color
