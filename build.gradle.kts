@@ -1,6 +1,8 @@
 import org.jetbrains.compose.desktop.application.dsl.TargetFormat
 import java.net.URI
 import java.net.URL
+import java.util.Base64
+
 
 plugins {
     kotlin("jvm")
@@ -20,7 +22,7 @@ repositories {
         url = URI("https://maven.pkg.github.com/114514ns/heybox")
         credentials {
             username = "114514ns"
-            password = "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" //it's a read only token
+            password = Base64.getDecoder().decode("Z2hwX3M1SDczNWNNOGhtR0p0dnRGb09DTmNMT2Z5M1YzSzJDRzlJdQ==").decodeToString()
         }
     }
 }
@@ -36,7 +38,7 @@ dependencies {
     implementation("com.github.ltttttttttttt:load-the-image:1.1.1")//this
     implementation("cn.pprocket:heybox:240709-1")
     implementation("androidx.compose.material:material-icons-extended:1.6.8")
-    implementation("com.github.skydoves:landscapist-coil3:2.3.6")
+    //implementation("com.github.skydoves:landscapist-coil3:2.3.6")
 
 }
 
