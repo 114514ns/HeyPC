@@ -1,78 +1,6 @@
-const c = {
-    a(e, t, n) {
-        return s(e, t - 1, n)
-    },
-    b(e, t, n) {
-        return s(e, t - 2, n)
-    },
-    c(e, t, n) {
-        return s(e, t - 3, n)
-    },
-    d(e, t, n) {
-        return s(e, t - 4, n)
-    },
-    e(e, t, n) {
-        return s(e, t - 5, n)
-    },
-    f(e, t, n) {
-        return s(e, t, n)
-    },
-    g(e, t, n) {
-        return s(e, t + 1, n)
-    },
-    h(e, t, n) {
-        return s(e, t + 2, n)
-    },
-    i(e, t, n) {
-        return s(e, t + 3, n)
-    },
-    j(e, t, n) {
-        return s(e, t + 4, n)
-    },
-    k(e, t, n) {
-        return s(e, t + 5, n)
-    },
-    l(e, t, n) {
-        return s(`/${e}/`, t - 1, n)
-    },
-    m(e, t, n) {
-        return s(`/${e}/`, t - 2, n)
-    },
-    w() {
-        return new Date
-    },
-    n(e, t, n) {
-        return s(`/${e}/`, t - 3, n)
-    },
-    o(e, t, n) {
-        return s(`/${e}/`, t - 4, n)
-    },
-    p(e, t, n) {
-        return s(`/${e}/`, t - 5, n)
-    },
-    q(e, t, n) {
-        return s(`/${e}/`, t, n)
-    },
-    r(e, t, n) {
-        return s(`/${e}/`, t + 1, n)
-    },
-    s(e, t, n) {
-        return s(`/${e}/`, t + 2, n)
-    },
-    t(e, t, n) {
-        return s(`/${e}/`, t + 3, n)
-    },
-    u(e, t, n) {
-        return s(`/${e}/`, t + 4, n)
-    },
-    v(e, t, n) {
-        return s(`/${e}/`, t + 5, n)
-    }
-}
+
 var md5Func = Java.type('cn.pprocket.utils.SignService');
-var System = Java.type('java.lang.System');
 function md5(content) {
-    System.out.println(Object.keys(md5Func.Companion));
     return md5Func.Companion.md5(content);
 }
 function r(e) {
@@ -122,7 +50,6 @@ function hkey(e, t, n) {
     const l = md5(t + e + c);
 
     let m = l.replace(/[^0-9]/g, "").slice(0, 9)
-    console.log(typeof m)
     m.padEnd(9, '0');
     let _ = Number(m);
     let a = "";

@@ -1,4 +1,5 @@
 import org.jetbrains.compose.desktop.application.dsl.TargetFormat
+import org.jetbrains.kotlin.ir.builders.declarations.buildTypeParameter
 import java.net.URI
 import java.net.URL
 import java.util.Base64
@@ -26,7 +27,9 @@ repositories {
             //password = Base64.getDecoder().decode("Z2hwX3M1SDczNWNNOGhtR0p0dnRGb09DTmNMT2Z5M1YzSzJDRzlJdQ==").decodeToString()
         }
     }
+    maven ( "https://s01.oss.sonatype.org/content/repositories/snapshots/")
 }
+
 
 dependencies {
     // Note, if you develop a library, you should use compose.desktop.common.
@@ -37,16 +40,14 @@ dependencies {
     implementation("org.jetbrains.androidx.navigation:navigation-compose:2.7.0-alpha07")
     implementation(compose.material3)
     implementation("com.github.ltttttttttttt:load-the-image:1.1.1")//this
-    implementation("cn.pprocket:heybox:240709-114514")
+    implementation("cn.pprocket:heybox:240711-7")
     implementation("androidx.compose.material:material-icons-extended:1.6.8")
-    //implementation("com.github.skydoves:landscapist-coil3:2.3.6")
 
 }
 
-
 compose.desktop {
     application {
-        mainClass = "MainKt"
+        mainClass = "AppKt"
 
 
         nativeDistributions {

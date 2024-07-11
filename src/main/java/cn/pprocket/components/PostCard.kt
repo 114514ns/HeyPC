@@ -5,28 +5,20 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Icon
-import androidx.compose.material.IconButton
 import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.Comment
-import androidx.compose.material.icons.filled.Comment
+import androidx.compose.material.icons.automirrored.filled.ArrowForward
 import androidx.compose.material.icons.filled.Favorite
-import androidx.compose.material.icons.filled.Refresh
-import androidx.compose.material.icons.filled.Share
-import androidx.compose.material3.Card
 import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Shape
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.lt.load_the_image.rememberImagePainter
-import java.awt.Color
 
 @Composable
 fun PostCard(
@@ -51,7 +43,7 @@ fun PostCard(
             modifier = Modifier.padding(16.dp)
         ) {
             Text(
-                text = title,
+                text = title.ifEmpty { "这个b没有写标题" },
                 style = MaterialTheme.typography.headlineSmall,
                 fontWeight = FontWeight.Bold,
                 maxLines = 2,
@@ -118,7 +110,7 @@ fun PostCard(
                 )
                 Spacer(modifier = Modifier.width(8.dp))
                 Icon(
-                    Icons.AutoMirrored.Filled.Comment,
+                    Icons.AutoMirrored.Filled.ArrowForward,
                     contentDescription = "Comments",
                     modifier = Modifier.size(16.dp)
                 )
