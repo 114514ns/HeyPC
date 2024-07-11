@@ -6,7 +6,6 @@ import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.Icon
 import androidx.compose.material.Scaffold
@@ -21,13 +20,10 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
-import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.navigation
-
 import androidx.navigation.compose.rememberNavController
-import cn.pprocket.items.Post
 
 @Composable
 fun RootPage() {
@@ -57,11 +53,10 @@ fun RootPage() {
                 }
                 composable(
                     "post/{postId}",
-                    //arguments = listOf(navArgument("postId") { type = NavType.StringType })
                     enterTransition = {
                         return@composable fadeIn(tween(1000))
                     }, exitTransition = {
-                        return@composable fadeOut(tween(700))
+                        return@composable fadeOut(tween(700)) //这坨动画是网上抄的
                     }, popEnterTransition = {
                         return@composable slideIntoContainer(
                             AnimatedContentTransitionScope.SlideDirection.End, tween(700)

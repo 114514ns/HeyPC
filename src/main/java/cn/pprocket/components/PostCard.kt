@@ -1,6 +1,5 @@
 package cn.pprocket.components
 
-import androidx.compose.desktop.ui.tooling.preview.Preview
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -125,22 +124,3 @@ fun PostCard(
     }
 }
 
-@Preview
-@Composable
-fun PostCardPreview() {
-    MaterialTheme {
-        PostCard(
-            title = "Compose Desktop入门",
-            author = "John Doe",
-            content = "Compose Desktop是一个强大的UI框架,可以让你使用Kotlin创建漂亮的跨平台桌面应用...",
-            publishTime = "2023-01-01",
-            likesCount = 100,
-            commentsCount = 50,
-            sharesCount = 20,
-            onCardClick = {},
-            userAvatar = "user_avatar.jpg",
-            imgs = listOf("img1.jpg", "img2.jpg", "img3.jpg")
-
-        )
-    }
-}

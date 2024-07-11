@@ -9,9 +9,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Window
 import androidx.compose.ui.window.application
 import androidx.compose.ui.window.rememberWindowState
-import cn.pprocket.HeyClient
 import cn.pprocket.pages.RootPage
-import java.io.File
 
 @Composable
 @Preview
@@ -26,7 +24,6 @@ fun App() {
 }
 
 fun main() = application {
-    HeyClient.scriptContent = File("extra.js").readText()
     val multipy = 1.3f
     Thread {
         while(true) {
