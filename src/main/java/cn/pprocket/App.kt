@@ -24,6 +24,7 @@ fun App() {
 }
 
 fun main() = application {
+    System.setProperty("skiko.directx.gpu.priority","discrete")
     val multipy = 1.3f
     Thread {
         while(true) {
