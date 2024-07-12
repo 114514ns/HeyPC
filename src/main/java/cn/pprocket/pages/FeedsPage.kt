@@ -1,9 +1,8 @@
 package cn.pprocket.pages
 
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.gestures.ScrollableDefaults
+import androidx.compose.foundation.gestures.snapping.rememberSnapFlingBehavior
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
@@ -22,34 +21,37 @@ import cn.pprocket.items.Post
 import cn.pprocket.items.Topic
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.swing.Swing
 import kotlinx.coroutines.withContext
 import java.nio.charset.Charset
 import java.util.*
 
 @Composable
-fun FeedsPage(navController : NavHostController) {
-    var posts by rememberSaveable { mutableStateOf(mutableListOf<Post>()) }
-    var topic by remember { mutableStateOf(Topic.LOVE) }
-    var selected by remember { mutableStateOf(0) }
-    var lastSelected by remember { mutableStateOf(0) }
+fun FeedsPage(navController: NavHostController) {
+    val posts = rememberSaveable { mutableStateListOf<Post>() }
+    var topic by rememberSaveable { mutableStateOf(Topic.LOVE) }
+    var selected by rememberSaveable { mutableStateOf(0) }
+    var lastSelected by rememberSaveable { mutableStateOf(0) }
     val topics = listOf(Topic.LOVE, Topic.WORK, Topic.SCHOOL, Topic.HARDWARE, Topic.DAILY)
     val listState = rememberLazyGridState()
 
-    Column {
-        LaunchedEffect(topic) {
-            if (posts.isEmpty() || selected != lastSelected) {
-                withContext(Dispatchers.IO) {
-                    val fetch = HeyClient.getPosts(topics[selected])
-                    val newList = mutableListOf<Post>()
-                    fetch.forEach { newList.add(it) }
-                    //posts.forEach { newList.add(it) }
-                    posts = newList
+
+    LaunchedEffect(topic) {
+        if (posts.isEmpty() || selected != lastSelected) {
+            withContext(Dispatchers.IO) {
+                val fetch = HeyClient.getPosts(topics[selected])
+                val newList = mutableListOf<Post>()
+                fetch.forEach { newList.add(it) }
+                //posts.forEach { newList.add(it) }
+                posts.clear()
+                posts.addAll(newList)
 
 
-                }
-                listState.scrollToItem(0, 0)
             }
+            listState.scrollToItem(0, 0)
         }
+    }
+    Column {
         LazyRow(
             modifier = Modifier.fillMaxWidth(),
             contentPadding = PaddingValues(horizontal = 8.dp),
@@ -72,25 +74,30 @@ fun FeedsPage(navController : NavHostController) {
             }
         }
         LaunchedEffect(listState) {
-            snapshotFlow { listState.layoutInfo.visibleItemsInfo.lastOrNull()?.index }
-                .collectLatest { lastIndex ->
-                    if (lastIndex != null && lastIndex >= posts.size - 3) {
-                        // 在后台线程执行网络请求
-                        withContext(Dispatchers.IO) {
-                            val new = HeyClient.getPosts(topic)
-                            posts.addAll(new)
-                        }
+            println("refresh data: $listState")
+            snapshotFlow { listState.layoutInfo.visibleItemsInfo.lastOrNull()?.index }.collectLatest { lastIndex ->
+                if (lastIndex != null && lastIndex >= posts.size - 3) {
+                    // 在后台线程执行网络请求
+                    withContext(Dispatchers.IO) {
+                        val new = HeyClient.getPosts(topic)
+                        posts.addAll(new)
+                        println(posts.size)
                     }
+
                 }
+            }
         }
-        LazyVerticalGrid(columns = GridCells.Fixed(1), state = listState) {
+
+        LazyVerticalGrid(
+            columns = GridCells.Fixed(1),
+            state = listState,
+            flingBehavior = ScrollableDefaults.flingBehavior(),
+            modifier = Modifier.fillMaxSize()
+        ) {
 
             items(
 
-                posts.size,
-                key = { index -> Random().nextInt() }
-            )
-            { index ->
+                posts.size, key = { index -> posts[index].postId }) { index ->
                 val post = posts[index]
                 PostCard(
                     title = post.title,
@@ -109,10 +116,12 @@ fun FeedsPage(navController : NavHostController) {
                 )
 
             }
-
         }
+
+
     }
 }
+
 fun fixEncoding(str: String): String {
     val bytes = str.toByteArray(Charset.forName("GBK"))
     return String(bytes, Charsets.UTF_8)

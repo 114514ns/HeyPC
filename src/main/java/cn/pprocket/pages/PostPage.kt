@@ -2,6 +2,7 @@ package cn.pprocket.pages
 
 import androidx.compose.desktop.ui.tooling.preview.Preview
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.gestures.ScrollableDefaults
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
@@ -77,7 +78,7 @@ fun PostPage(navController: NavHostController, postId: String) {
             // 帖子内容
             Text(
                 text = content,
-                style = MaterialTheme.typography.body1
+                style = MaterialTheme.typography.body1,
             )
             Spacer(modifier = Modifier.height(16.dp))
 
@@ -101,9 +102,14 @@ fun PostPage(navController: NavHostController, postId: String) {
             )
             val gridState = rememberLazyGridState()
             LaunchedEffect(Unit) {
-                comments = HeyClient.getComments(postId,1)
+                comments = HeyClient.getComments(postId, 1)
             }
-            LazyVerticalGrid(columns = GridCells.Fixed(1), state = gridState, modifier = Modifier.height(1800.dp)) {
+            LazyVerticalGrid(
+                columns = GridCells.Fixed(1),
+                state = gridState,
+                modifier = Modifier.height(1800.dp),
+                flingBehavior = ScrollableDefaults.flingBehavior()
+            ) {
                 items(comments.size) { index ->
                     val comment = comments[index]
                     Comment(comment)
