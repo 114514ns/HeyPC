@@ -16,6 +16,8 @@ import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
@@ -28,12 +30,16 @@ import androidx.navigation.compose.rememberNavController
 @Composable
 fun RootPage() {
     val navController = rememberNavController()
+    val snackbarHostState = remember { SnackbarHostState() }
     Box(modifier = Modifier.fillMaxSize()) {
         var showBottomBar by remember { mutableStateOf(true) }
         Scaffold(
             bottomBar = { if (showBottomBar) {
                 BottomNavigationBar(navController)
-            }}
+            }},
+            snackbarHost  =  {
+                SnackbarHost(hostState = snackbarHostState)
+            }
         ) {
 
             LaunchedEffect(navController) {
@@ -48,7 +54,7 @@ fun RootPage() {
                     route = "home"
                 ) {
                     composable("feeds") {
-                        FeedsPage(navController)
+                        FeedsPage(navController,snackbarHostState)
                     }
                 }
                 composable(
@@ -63,7 +69,7 @@ fun RootPage() {
                         )
                     }
                 ) { stack ->
-                    PostPage(navController, stack.arguments?.getString("postId") ?: "")
+                    PostPage(navController, stack.arguments?.getString("postId") ?: "",snackbarHostState)
                 }
             }
         }

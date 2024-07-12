@@ -23,7 +23,6 @@ repositories {
         url = URI("https://maven.pkg.github.com/114514ns/heybox")
         credentials {
             username = "114514ns"
-
             //password = Base64.getDecoder().decode("Z2hwX3M1SDczNWNNOGhtR0p0dnRGb09DTmNMT2Z5M1YzSzJDRzlJdQ==").decodeToString()
         }
     }
@@ -41,7 +40,6 @@ dependencies {
     implementation(compose.material3)
     implementation("com.github.ltttttttttttt:load-the-image:1.1.1")//this
     implementation("cn.pprocket:heybox:240711-7")
-    implementation("androidx.compose.material:material-icons-extended:1.6.8")
 
 }
 

@@ -11,18 +11,21 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.FloatingActionButton
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Text
+import androidx.compose.material.*
+import androidx.compose.material.SnackbarDuration.*
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Share
-
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.filled.Create
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
+import androidx.compose.material3.ModalBottomSheet
+import androidx.compose.material3.SnackbarDuration
 import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.input.key.*
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
@@ -33,17 +36,25 @@ import cn.pprocket.items.Comment
 import com.lt.load_the_image.rememberImagePainter
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 @Preview
-fun PostPage(navController: NavHostController, postId: String) {
+fun PostPage(
+    navController: NavHostController,
+    postId: String,
+    snackbarHostState: androidx.compose.material3.SnackbarHostState
+) {
     val post = GlobalState.map[postId] ?: return
     var content by rememberSaveable { mutableStateOf(post.description) }
     val state = rememberScrollState()
     var comments by remember { mutableStateOf(emptyList<Comment>()) }
     var gridHeight by remember { mutableStateOf(0.dp) }
     var page = 1
+    val scope = rememberCoroutineScope()
+    var showSheet by remember { mutableStateOf(false) }
     LaunchedEffect(0) {
         var str = ""
         withContext(Dispatchers.IO) {
@@ -131,13 +142,51 @@ fun PostPage(navController: NavHostController, postId: String) {
 
         }
         FloatingActionButton(
-            onClick = { navController.popBackStack() },
-            content = { Icon(Icons.Default.Share, contentDescription = "发表评论") },
-            modifier = Modifier.align(Alignment.BottomEnd).padding(16.dp)
+            onClick = { showSheet = true },
+            content = { Icon(Icons.Default.Create, contentDescription = "发表评论") },
+            modifier = Modifier.align(Alignment.BottomEnd).padding(32.dp, 96.dp)
         )
+        FloatingActionButton(
+            onClick = { navController.popBackStack() },
+            content = { Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "发表评论") },
+            modifier = Modifier.align(Alignment.BottomEnd).padding(32.dp)
+        )
+        if (showSheet) {
+            ModalBottomSheet(onDismissRequest = { showSheet = false }) {
+                val scoll = rememberScrollState()
+                var text by remember { mutableStateOf("") }
+
+                Column(modifier = Modifier.fillMaxWidth().padding(32.dp, 8.dp).verticalScroll(scoll)) {
+                    OutlinedTextField(
+                        value = text,
+                        onValueChange = {
+                            text = it
+                        },
+                        label = { Text("按下Ctrl + Enter发送") },
+                        modifier = Modifier.fillMaxWidth().onPreviewKeyEvent { keyEvent ->
+                            if (keyEvent.type == KeyEventType.KeyDown && keyEvent.isCtrlPressed && keyEvent.key == Key.Enter) {
+                                println("发送: $text")
+                                showSheet = false
+                                scope.launch {
+                                    snackbarHostState.showSnackbar(message = "评论成功", actionLabel = "Action", duration = SnackbarDuration.Short)
+                                }
+                                true
+                            } else {
+                                false
+                            }
+                        },
+                    )
+                }
+            }
+        }
 
 
     }
 
 }
 
+@Composable
+fun CommentText() {
+
+
+}

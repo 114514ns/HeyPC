@@ -1,7 +1,6 @@
 package cn.pprocket.pages
 
 import androidx.compose.foundation.gestures.ScrollableDefaults
-import androidx.compose.foundation.gestures.snapping.rememberSnapFlingBehavior
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.grid.GridCells
@@ -9,6 +8,7 @@ import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.rememberLazyGridState
 import androidx.compose.material.Text
 import androidx.compose.material3.FilterChip
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Modifier
@@ -21,13 +21,11 @@ import cn.pprocket.items.Post
 import cn.pprocket.items.Topic
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.collectLatest
-import kotlinx.coroutines.swing.Swing
 import kotlinx.coroutines.withContext
 import java.nio.charset.Charset
-import java.util.*
 
 @Composable
-fun FeedsPage(navController: NavHostController) {
+fun FeedsPage(navController: NavHostController, snackbarHostState: SnackbarHostState) {
     val posts = rememberSaveable { mutableStateListOf<Post>() }
     var topic by rememberSaveable { mutableStateOf(Topic.LOVE) }
     var selected by rememberSaveable { mutableStateOf(0) }
