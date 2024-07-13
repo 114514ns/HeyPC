@@ -10,6 +10,8 @@ import androidx.compose.ui.window.Window
 import androidx.compose.ui.window.application
 import androidx.compose.ui.window.rememberWindowState
 import cn.pprocket.pages.RootPage
+import com.lt.load_the_image.LoadTheImageManager
+import com.lt.load_the_image.cache.ImageCache
 
 @Composable
 @Preview
@@ -41,5 +43,15 @@ fun main() = application {
     ) {
         //setupFixedAspectRatio(window, aspectRatio)
         App()
+    }
+}
+class NonCache : ImageCache {
+    override fun getCache(url: String): ByteArray? {
+        TODO("Not yet implemented")
+    }
+
+    override fun saveCache(url: String, t: ByteArray) {
+        TODO("Not yet implemented")
+        LoadTheImageManager
     }
 }

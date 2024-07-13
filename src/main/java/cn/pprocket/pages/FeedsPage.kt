@@ -30,7 +30,7 @@ fun FeedsPage(navController: NavHostController, snackbarHostState: SnackbarHostS
     var topic by rememberSaveable { mutableStateOf(Topic.LOVE) }
     var selected by rememberSaveable { mutableStateOf(0) }
     var lastSelected by rememberSaveable { mutableStateOf(0) }
-    val topics = listOf(Topic.LOVE, Topic.WORK, Topic.SCHOOL, Topic.HARDWARE, Topic.DAILY)
+    val topics = listOf(Topic.LOVE, Topic.WORK, Topic.SCHOOL, Topic.HARDWARE, Topic.DAILY, Topic.HOTS)
     val listState = rememberLazyGridState()
 
 
@@ -64,7 +64,8 @@ fun FeedsPage(navController: NavHostController, snackbarHostState: SnackbarHostS
                         topic = theTopic
                     },
                     label = {
-                        Text(fixEncoding(theTopic.name))
+                        //Text(fixEncoding(theTopic.name))
+                        Text(theTopic.name)
                     },
                     selected = index == selected,
 
@@ -115,6 +116,7 @@ fun FeedsPage(navController: NavHostController, snackbarHostState: SnackbarHostS
 
             }
         }
+
 
 
     }

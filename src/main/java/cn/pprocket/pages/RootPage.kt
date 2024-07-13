@@ -44,7 +44,7 @@ fun RootPage() {
 
             LaunchedEffect(navController) {
                 navController.currentBackStackEntryFlow.collect { backStackEntry ->
-                    showBottomBar = backStackEntry.destination.route == "feeds"
+                    showBottomBar = backStackEntry.destination.route == "feeds" || backStackEntry.destination.route == "settings"
                     println(backStackEntry.destination.route)
                 }
             }
@@ -55,6 +55,9 @@ fun RootPage() {
                 ) {
                     composable("feeds") {
                         FeedsPage(navController,snackbarHostState)
+                    }
+                    composable("settings") {
+                        SettingsPage(navController)
                     }
                 }
                 composable(
@@ -94,6 +97,7 @@ fun BottomNavigationBar(navController: NavHostController) {
                 selected = index == selectedItem,
                 onClick = {
                     selectedItem = index
+                    navController.navigate(item)
 
                 },
                 modifier = Modifier.padding(4.dp)

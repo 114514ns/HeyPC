@@ -1,8 +1,6 @@
 package cn.pprocket.components
 
-import androidx.compose.foundation.Image
-import androidx.compose.foundation.background
-import androidx.compose.foundation.border
+import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.Text
 import androidx.compose.material3.MaterialTheme
@@ -15,8 +13,11 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import cn.pprocket.items.Comment
+import cn.pprocket.pages.getImagePath
+import cn.pprocket.pages.urlToFileName
 import com.lt.load_the_image.rememberImagePainter
 
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun Comment(comment: Comment) {
     Column(
@@ -68,6 +69,9 @@ fun Comment(comment: Comment) {
                     .clip(shape = MaterialTheme.shapes.medium)
                     .padding(4.dp)
                     .border(1.dp, MaterialTheme.colorScheme.surfaceVariant, shape = MaterialTheme.shapes.medium)
+                    .onClick {
+                        Runtime.getRuntime().exec("cmd /c " + getImagePath(urlToFileName(it)))
+                    }
             )
         }
         Spacer(modifier = Modifier.height(8.dp))

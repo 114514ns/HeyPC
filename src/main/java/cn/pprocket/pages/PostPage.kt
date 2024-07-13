@@ -1,21 +1,21 @@
 package cn.pprocket.pages
 
 import androidx.compose.desktop.ui.tooling.preview.Preview
-import androidx.compose.foundation.Image
+import androidx.compose.foundation.*
 import androidx.compose.foundation.gestures.ScrollableDefaults
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.rememberLazyGridState
-import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.*
 import androidx.compose.material.SnackbarDuration.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Create
+import androidx.compose.material.icons.outlined.Create
+import androidx.compose.material.icons.sharp.Create
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.ModalBottomSheet
@@ -34,12 +34,14 @@ import cn.pprocket.HeyClient
 import cn.pprocket.components.Comment
 import cn.pprocket.items.Comment
 import com.lt.load_the_image.rememberImagePainter
+import com.lt.load_the_image.util.MD5
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import java.io.File
 
-@OptIn(ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalFoundationApi::class)
 @Composable
 @Preview
 fun PostPage(
@@ -98,10 +100,14 @@ fun PostPage(
                 Image(
                     painter = rememberImagePainter(it),
                     contentDescription = "帖子图片",
-                    modifier = Modifier.fillMaxSize().padding(8.dp).clip(RoundedCornerShape(8.dp)),
-                    contentScale = ContentScale.Fit
+                    modifier = Modifier.fillMaxSize().padding(8.dp).clip(RoundedCornerShape(8.dp)).onClick {
+                        Runtime.getRuntime().exec("cmd /c " + getImagePath(urlToFileName(it)))
 
-                )
+                    },
+                    contentScale = ContentScale.Fit,
+
+
+                    )
             }
 
             Spacer(modifier = Modifier.height(16.dp))
@@ -143,7 +149,7 @@ fun PostPage(
         }
         FloatingActionButton(
             onClick = { showSheet = true },
-            content = { Icon(Icons.Default.Create, contentDescription = "发表评论") },
+            content = { Icon(Icons.Filled.Create, contentDescription = "发表评论") },
             modifier = Modifier.align(Alignment.BottomEnd).padding(32.dp, 96.dp)
         )
         FloatingActionButton(
@@ -168,7 +174,11 @@ fun PostPage(
                                 println("发送: $text")
                                 showSheet = false
                                 scope.launch {
-                                    snackbarHostState.showSnackbar(message = "评论成功", actionLabel = "Action", duration = SnackbarDuration.Short)
+                                    snackbarHostState.showSnackbar(
+                                        message = "评论成功",
+                                        actionLabel = "Action",
+                                        duration = SnackbarDuration.Short
+                                    )
                                 }
                                 true
                             } else {
@@ -185,8 +195,15 @@ fun PostPage(
 
 }
 
-@Composable
-fun CommentText() {
-
-
+fun urlToFileName(url: String): String {
+    return MD5.GetMD5Code(url) + url.length + url.hashCode() + ".jpg"
 }
+
+fun getImagePath(string: String) = File(
+    System.getProperty("user.home")
+            + File.separator
+            + "Pictures"
+            + File.separator
+            + "LoadTheImageCache"
+            + File.separator, string
+).absolutePath

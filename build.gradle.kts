@@ -6,7 +6,7 @@ import java.util.Base64
 
 
 plugins {
-    kotlin("jvm")
+    kotlin("jvm") version "1.9.20"
     id("org.jetbrains.compose")
     id("org.jetbrains.kotlin.plugin.compose")
 }
@@ -23,9 +23,11 @@ repositories {
         url = URI("https://maven.pkg.github.com/114514ns/heybox")
         credentials {
             username = "114514ns"
+
             //password = Base64.getDecoder().decode("Z2hwX3M1SDczNWNNOGhtR0p0dnRGb09DTmNMT2Z5M1YzSzJDRzlJdQ==").decodeToString()
         }
     }
+    maven("https://jogamp.org/deployment/maven")
     maven ( "https://s01.oss.sonatype.org/content/repositories/snapshots/")
 }
 
@@ -39,7 +41,10 @@ dependencies {
     implementation("org.jetbrains.androidx.navigation:navigation-compose:2.7.0-alpha07")
     implementation(compose.material3)
     implementation("com.github.ltttttttttttt:load-the-image:1.1.1")//this
-    implementation("cn.pprocket:heybox:240711-7")
+    implementation("cn.pprocket:heybox:240712-2")
+    implementation(compose.html.core)
+    implementation(compose.runtime)
+    //api("io.github.kevinnzou:compose-webview-multiplatform:1.8.4")
 
 }
 
