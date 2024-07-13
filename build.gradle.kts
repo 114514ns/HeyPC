@@ -10,7 +10,6 @@ plugins {
     id("org.jetbrains.compose")
     id("org.jetbrains.kotlin.plugin.compose")
 }
-
 group = "cn.pprocket"
 version = "1.0-SNAPSHOT"
 
@@ -20,18 +19,9 @@ repositories {
     google()
     maven("https://jitpack.io")
     mavenLocal()
-    maven {
-        url = URI("https://maven.pkg.github.com/114514ns/heybox")
-        credentials {
-            username = "114514ns"
-            password = "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"
-            //password = Base64.getDecoder().decode("Z2hwX3M1SDczNWNNOGhtR0p0dnRGb09DTmNMT2Z5M1YzSzJDRzlJdQ==").decodeToString()
-        }
-    }
     maven("https://jogamp.org/deployment/maven")
     maven ( "https://s01.oss.sonatype.org/content/repositories/snapshots/")
 }
-
 
 dependencies {
     // Note, if you develop a library, you should use compose.desktop.common.
