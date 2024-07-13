@@ -68,7 +68,10 @@ fun PostPage(
             Spacer(modifier = Modifier.height(8.dp))
 
             // 作者信息
-            Row(verticalAlignment = Alignment.CenterVertically) {
+            Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.clickable(onClick = {
+                GlobalState.users[post.userId] = HeyClient.getUser(post.userId)
+                navController.navigate("user/${post.userId}")
+            })) {
                 Image(
                     painter = rememberImagePainter(
                         post.userAvatar

@@ -40,7 +40,7 @@ fun Comment(comment: Comment,navController: NavHostController) {
         subComments.distinctBy { it.commentId }
 
     }
-    Box(modifier = Modifier.animateContentSize(animationSpec = tween(500))) {
+    Box(/*modifier = Modifier.animateContentSize(animationSpec = tween(500))*/) {
         Column(
             modifier = Modifier.fillMaxWidth().background(MaterialTheme.colorScheme.background).padding(12.dp)
 
@@ -90,61 +90,67 @@ fun Comment(comment: Comment,navController: NavHostController) {
                     Spacer(modifier = Modifier.height(8.dp))
                 }
             }
-            Column(modifier = Modifier.animateContentSize(animationSpec = tween(500))) {
-                subComments.forEach {
-                    val str = buildAnnotatedString {
-                        withStyle(style = SpanStyle(Color(0xff004b96))) {
-                            pushStringAnnotation("send", it.userId)
-                            append(it.userName)
-                            pop()
-                        }
-                        append(" 回复 ")
-                        val post = GlobalState.map[it.postId]
-                        if (post!!.userId == comment.userId) {
-                            withStyle(style = SpanStyle(Color.Green)) {
+            key(comment.commentId) {
+                Column(/*modifier = Modifier.animateContentSize(animationSpec = tween(500))*/) {
+                    subComments.forEach {
+                        val str = buildAnnotatedString {
+                            withStyle(style = SpanStyle(Color(0xff004b96))) {
+                                pushStringAnnotation("send", it.userId)
+                                append(it.userName)
+                                pop()
+                            }
+                            append(" 回复 ")
+                            val post = GlobalState.map[it.postId]
+                            if (post!!.userId == comment.userId) {
+                                withStyle(style = SpanStyle(Color.Green)) {
+                                    pushStringAnnotation("to", it.userId)
+                                    append(it.replyName)
+                                    pop()
+                                }
+                            } else {
                                 pushStringAnnotation("to", it.userId)
                                 append(it.replyName)
                                 pop()
                             }
-                        } else {
-                            pushStringAnnotation("to", it.userId)
-                            append(it.replyName)
-                            pop()
+                            append("：")
+                            append(it.content)
                         }
-                        append("：")
-                        append(it.content)
-                    }
-                    ClickableText(str, modifier = Modifier.padding(12.dp), onClick = { offset ->
-                        str.getStringAnnotations(start = offset, end = offset)
-                            .firstOrNull()?.let { annotation ->
-                                when (annotation.tag) {
-                                    "send" -> {
-                                        var user = HeyClient.getUser(annotation.item)
-                                        GlobalState.users[annotation.item] = user
-                                        navController.navigate("user/${annotation.item}")
+                        ClickableText(str, modifier = Modifier.padding(12.dp), onClick = { offset ->
+                            str.getStringAnnotations(start = offset, end = offset)
+                                .firstOrNull()?.let { annotation ->
+                                    when (annotation.tag) {
+                                        "send" -> {
+                                            var user = HeyClient.getUser(annotation.item)
+                                            GlobalState.users[annotation.item] = user
+                                            navController.navigate("user/${annotation.item}")
+                                        }
+
+                                        "to" -> {
+                                            var user = HeyClient.getUser(annotation.item)
+                                            GlobalState.users[annotation.item] = user
+                                            navController.navigate("user/${annotation.item}")
+                                        }
+                                        else -> println("Clicked on: ${annotation.item}")
                                     }
-
-                                    "to" -> println("Clicked on receiver: ${annotation.item}")
-                                    else -> println("Clicked on: ${annotation.item}")
+                                    // 在这里处理点击事件，例如打开 URL 或导航到其他屏幕
                                 }
-                                // 在这里处理点击事件，例如打开 URL 或导航到其他屏幕
-                            }
-                    })
-                }
-                if (comment.isHasMore) {
+                        })
+                    }
+                    if (comment.isHasMore) {
 
-                    Text(
-                        "加载更多",
-                        modifier = Modifier.padding(top = 8.dp, bottom = 8.dp).align(Alignment.CenterHorizontally)
-                            .clickable {
-                                CoroutineScope(Dispatchers.IO).launch() {
-                                    subComments.clear()
-                                    subComments.addAll(comment.fillSubComments())
-                                }
-                            },
-                        color = MaterialTheme.colorScheme.primary,
+                        Text(
+                            "加载更多",
+                            modifier = Modifier.padding(top = 8.dp, bottom = 8.dp).align(Alignment.CenterHorizontally)
+                                .clickable {
+                                    CoroutineScope(Dispatchers.IO).launch() {
+                                        subComments.clear()
+                                        subComments.addAll(comment.fillSubComments())
+                                    }
+                                },
+                            color = MaterialTheme.colorScheme.primary,
 
-                        )
+                            )
+                    }
                 }
             }
 

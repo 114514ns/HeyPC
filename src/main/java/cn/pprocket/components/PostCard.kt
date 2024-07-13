@@ -32,7 +32,6 @@ fun PostCard(
     publishTime: String,
     likesCount: Int,
     commentsCount: Int,
-    sharesCount: Int,
     onCardClick: () -> Unit,
     userAvatar: String,
     imgs: List<String>

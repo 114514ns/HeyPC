@@ -130,7 +130,6 @@ fun FeedsPage(navController: NavHostController, snackbarHostState: SnackbarHostS
                         publishTime = post.createAt,
                         likesCount = post.likes,
                         commentsCount = post.comments,
-                        sharesCount = 20,
                         onCardClick = {
                             GlobalState.map[post.postId] = post
                             navController.navigate("post/${post.postId}")
