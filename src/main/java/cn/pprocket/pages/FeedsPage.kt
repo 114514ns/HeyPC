@@ -1,11 +1,19 @@
 package cn.pprocket.pages
 
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.animateContentSize
+import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.gestures.ScrollableDefaults
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.rememberLazyGridState
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material.Text
 import androidx.compose.material3.FilterChip
 import androidx.compose.material3.SnackbarHostState
@@ -32,9 +40,9 @@ fun FeedsPage(navController: NavHostController, snackbarHostState: SnackbarHostS
     var lastSelected by rememberSaveable { mutableStateOf(0) }
     val topics = listOf(Topic.LOVE, Topic.WORK, Topic.SCHOOL, Topic.HARDWARE, Topic.DAILY, Topic.HOTS)
     val listState = rememberLazyGridState()
-
-
-    LaunchedEffect(topic) {
+    val scrollState = rememberLazyListState()
+    var firstVisibleItemIndex by remember { mutableStateOf(0) }
+        LaunchedEffect(topic) {
         if (posts.isEmpty() || selected != lastSelected) {
             withContext(Dispatchers.IO) {
                 val fetch = HeyClient.getPosts(topics[selected])
@@ -72,51 +80,69 @@ fun FeedsPage(navController: NavHostController, snackbarHostState: SnackbarHostS
                     )
             }
         }
-        LaunchedEffect(listState) {
-            println("refresh data: $listState")
-            snapshotFlow { listState.layoutInfo.visibleItemsInfo.lastOrNull()?.index }.collectLatest { lastIndex ->
+
+        LaunchedEffect(scrollState) {
+            snapshotFlow { scrollState.firstVisibleItemIndex }
+                .collect { index ->
+                    firstVisibleItemIndex = index
+                }
+        }
+        var firstVisibleItemIndex by remember { mutableStateOf(0) }
+        val scale by animateFloatAsState(if (firstVisibleItemIndex > 0) 0.5f else 1.0f)
+        LaunchedEffect(scrollState) {
+
+            snapshotFlow { scrollState.layoutInfo.visibleItemsInfo.lastOrNull()?.index }.collectLatest { lastIndex ->
                 if (lastIndex != null && lastIndex >= posts.size - 3) {
                     // 在后台线程执行网络请求
                     withContext(Dispatchers.IO) {
+                        println("refresh data: $listState")
                         val new = HeyClient.getPosts(topic)
                         posts.addAll(new)
-                        println(posts.size)
+                        posts.forEach {
+                            GlobalState.map[it.postId] = it
+                        }
                     }
 
                 }
             }
         }
 
-        LazyVerticalGrid(
-            columns = GridCells.Fixed(1),
-            state = listState,
+        LazyColumn (
+            state = scrollState,
             flingBehavior = ScrollableDefaults.flingBehavior(),
-            modifier = Modifier.fillMaxSize()
+            modifier = Modifier.fillMaxSize().animateContentSize(animationSpec = tween(500))
         ) {
 
             items(
 
                 posts.size, key = { index -> posts[index].postId }) { index ->
                 val post = posts[index]
-                PostCard(
-                    title = post.title,
-                    author = post.userName,
-                    content = post.description,
-                    publishTime = post.createAt,
-                    likesCount = post.likes,
-                    commentsCount = post.comments,
-                    sharesCount = 20,
-                    onCardClick = {
-                        GlobalState.map[post.postId] = post
-                        navController.navigate("post/${post.postId}")
-                    },
-                    userAvatar = post.userAvatar,
-                    imgs = post.images
-                )
+                var visible by remember { mutableStateOf(true) }
+                AnimatedVisibility(
+                    visible = visible,
+                    enter = fadeIn(),
+                    exit = fadeOut()
+                ) {
+                    PostCard(
+                        title = post.title,
+                        author = post.userName,
+                        content = post.description,
+                        publishTime = post.createAt,
+                        likesCount = post.likes,
+                        commentsCount = post.comments,
+                        sharesCount = 20,
+                        onCardClick = {
+                            GlobalState.map[post.postId] = post
+                            navController.navigate("post/${post.postId}")
+                        },
+                        userAvatar = post.userAvatar,
+                        imgs = post.images
+                    )
+                }
+
 
             }
         }
-
 
 
     }

@@ -59,6 +59,11 @@ fun RootPage() {
                     composable("settings") {
                         SettingsPage(navController)
                     }
+                    composable(
+                        "user/{userId}",
+                    ) { stack ->
+                        UserPage(navController, stack.arguments?.getString("userId") ?: "")
+                    }
                 }
                 composable(
                     "post/{postId}",

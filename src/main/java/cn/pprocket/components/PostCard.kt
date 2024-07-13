@@ -3,10 +3,13 @@ package cn.pprocket.components
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.BasicTextField
+import androidx.compose.foundation.text.selection.SelectionContainer
 import androidx.compose.material.Icon
 import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowForward
+import androidx.compose.material.icons.automirrored.filled.List
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.MaterialTheme
@@ -14,9 +17,11 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import com.lt.load_the_image.rememberImagePainter
 
 @Composable
@@ -30,7 +35,7 @@ fun PostCard(
     sharesCount: Int,
     onCardClick: () -> Unit,
     userAvatar: String,
-    imgs : List<String>
+    imgs: List<String>
 ) {
     ElevatedCard(
         onClick = onCardClick,
@@ -55,7 +60,7 @@ fun PostCard(
                 Image(
                     rememberImagePainter(userAvatar),
                     "",
-                    modifier = Modifier.size(40.dp).padding(6.dp).clip(RoundedCornerShape(6.dp))
+                    modifier = Modifier.size(48.dp).padding(6.dp).clip(RoundedCornerShape(3.dp))
                 )
                 Text(
                     text = author,
@@ -75,12 +80,16 @@ fun PostCard(
                 )
             }
             Spacer(modifier = Modifier.height(16.dp))
+            /*
             Text(
                 text = content,
                 style = MaterialTheme.typography.bodyLarge,
                 maxLines = 3,
                 overflow = TextOverflow.Ellipsis
             )
+
+             */
+            SelectableText(content)
             Spacer(modifier = Modifier.height(16.dp))
             Row {
                 imgs.forEach { img ->
@@ -109,7 +118,7 @@ fun PostCard(
                 )
                 Spacer(modifier = Modifier.width(8.dp))
                 Icon(
-                    Icons.AutoMirrored.Filled.ArrowForward,
+                    Icons.AutoMirrored.Filled.List,
                     contentDescription = "Comments",
                     modifier = Modifier.size(16.dp)
                 )
@@ -124,3 +133,16 @@ fun PostCard(
     }
 }
 
+@Composable
+fun SelectableText(text: String, modifier: Modifier = Modifier) {
+    // SelectionContainer allows text to be selectable
+    SelectionContainer {
+        BasicTextField(
+            value = text,
+            onValueChange = {},
+            textStyle = TextStyle(fontSize = 18.sp),
+            readOnly = true, // Make sure the text is read-only
+            modifier = Modifier.fillMaxSize().padding(8.dp)
+        )
+    }
+}

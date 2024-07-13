@@ -4,9 +4,8 @@ import androidx.compose.desktop.ui.tooling.preview.Preview
 import androidx.compose.foundation.*
 import androidx.compose.foundation.gestures.ScrollableDefaults
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.lazy.grid.GridCells
-import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
-import androidx.compose.foundation.lazy.grid.rememberLazyGridState
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
@@ -14,8 +13,6 @@ import androidx.compose.material.SnackbarDuration.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Create
-import androidx.compose.material.icons.outlined.Create
-import androidx.compose.material.icons.sharp.Create
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.ModalBottomSheet
@@ -32,6 +29,7 @@ import androidx.navigation.NavHostController
 import cn.pprocket.GlobalState
 import cn.pprocket.HeyClient
 import cn.pprocket.components.Comment
+import cn.pprocket.components.SelectableText
 import cn.pprocket.items.Comment
 import com.lt.load_the_image.rememberImagePainter
 import com.lt.load_the_image.util.MD5
@@ -89,10 +87,12 @@ fun PostPage(
             Spacer(modifier = Modifier.height(16.dp))
 
             // 帖子内容
-            Text(
-                text = content,
-                style = MaterialTheme.typography.body1,
-            )
+            androidx.compose.material3.Card {
+                SelectableText(
+                    text = content,
+                    modifier = Modifier.padding(16.dp).fillMaxWidth()
+                )
+            }
             Spacer(modifier = Modifier.height(16.dp))
 
             // 帖子图片
@@ -100,7 +100,7 @@ fun PostPage(
                 Image(
                     painter = rememberImagePainter(it),
                     contentDescription = "帖子图片",
-                    modifier = Modifier.fillMaxSize().padding(8.dp).clip(RoundedCornerShape(8.dp)).onClick {
+                    modifier = Modifier.fillMaxSize().padding(8.dp).clip(RoundedCornerShape(12.dp)).onClick {
                         Runtime.getRuntime().exec("cmd /c " + getImagePath(urlToFileName(it)))
 
                     },
@@ -117,23 +117,22 @@ fun PostPage(
                 text = "评论",
                 style = MaterialTheme.typography.h6
             )
-            val gridState = rememberLazyGridState()
+            val listState = rememberLazyListState()
             LaunchedEffect(Unit) {
                 comments = HeyClient.getComments(postId, 1)
             }
-            LazyVerticalGrid(
-                columns = GridCells.Fixed(1),
-                state = gridState,
+            LazyColumn(
+                state = listState,
                 modifier = Modifier.height(1800.dp),
                 flingBehavior = ScrollableDefaults.flingBehavior()
             ) {
                 items(comments.size) { index ->
                     val comment = comments[index]
-                    Comment(comment)
+                    Comment(comment,navController)
                 }
             }
-            LaunchedEffect(gridState) {
-                snapshotFlow { gridState.layoutInfo.visibleItemsInfo.lastOrNull()?.index }
+            LaunchedEffect(listState) {
+                snapshotFlow { listState.layoutInfo.visibleItemsInfo.lastOrNull()?.index }
                     .collectLatest { lastIndex ->
                         // 如果最后一个可见的项目是列表中的最后一个项目，那么加载更多数据
                         if (lastIndex != null && lastIndex >= comments.size - 3) {
@@ -179,6 +178,7 @@ fun PostPage(
                                         actionLabel = "Action",
                                         duration = SnackbarDuration.Short
                                     )
+                                    HeyClient.reply(post.postId,text)
                                 }
                                 true
                             } else {

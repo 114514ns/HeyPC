@@ -19,11 +19,12 @@ repositories {
     maven("https://maven.pkg.jetbrains.space/public/p/compose/dev")
     google()
     maven("https://jitpack.io")
+    mavenLocal()
     maven {
         url = URI("https://maven.pkg.github.com/114514ns/heybox")
         credentials {
             username = "114514ns"
-
+            password = "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"
             //password = Base64.getDecoder().decode("Z2hwX3M1SDczNWNNOGhtR0p0dnRGb09DTmNMT2Z5M1YzSzJDRzlJdQ==").decodeToString()
         }
     }
@@ -41,10 +42,9 @@ dependencies {
     implementation("org.jetbrains.androidx.navigation:navigation-compose:2.7.0-alpha07")
     implementation(compose.material3)
     implementation("com.github.ltttttttttttt:load-the-image:1.1.1")//this
-    implementation("cn.pprocket:heybox:240712-2")
+    implementation("cn.pprocket:heybox:240713-4")
     implementation(compose.html.core)
     implementation(compose.runtime)
-    //api("io.github.kevinnzou:compose-webview-multiplatform:1.8.4")
 
 }
 
