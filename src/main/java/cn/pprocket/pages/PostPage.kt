@@ -55,12 +55,15 @@ fun PostPage(
     var page = 1
     val scope = rememberCoroutineScope()
     var showSheet by remember { mutableStateOf(false) }
-    LaunchedEffect(0) {
+    LaunchedEffect(Unit) {
         var str = ""
         withContext(Dispatchers.IO) {
             str = post.fillContent()
         }
         content = str
+    }
+    LaunchedEffect(Unit) {
+        comments = HeyClient.getComments(postId, 1)
     }
     Box(modifier = Modifier.fillMaxSize()) {
         Column(modifier = Modifier.padding(16.dp).verticalScroll(state)) {
@@ -121,15 +124,13 @@ fun PostPage(
                 style = MaterialTheme.typography.h6
             )
             val listState = rememberLazyListState()
-            LaunchedEffect(Unit) {
-                comments = HeyClient.getComments(postId, 1)
-            }
+
             LazyColumn(
                 state = listState,
                 modifier = Modifier.height(1800.dp),
                 flingBehavior = ScrollableDefaults.flingBehavior()
             ) {
-                items(comments.size) { index ->
+                items(comments.size,key = {index -> comments[index].commentId}) { index ->
                     val comment = comments[index]
                     Comment(comment,navController)
                 }
@@ -210,3 +211,11 @@ fun getImagePath(string: String) = File(
             + "LoadTheImageCache"
             + File.separator, string
 ).absolutePath
+fun getImageDir() = File(
+    System.getProperty("user.home")
+            + File.separator
+            + "Pictures"
+            + File.separator
+            + "LoadTheImageCache"
+            + File.separator
+)

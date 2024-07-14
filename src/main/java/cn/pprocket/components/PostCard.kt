@@ -2,6 +2,7 @@ package cn.pprocket.components
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.text.selection.SelectionContainer
@@ -59,7 +60,7 @@ fun PostCard(
                 Image(
                     rememberImagePainter(userAvatar),
                     "",
-                    modifier = Modifier.size(48.dp).padding(6.dp).clip(RoundedCornerShape(3.dp))
+                    modifier = Modifier.size(48.dp).padding(6.dp).clip(CircleShape)
                 )
                 Text(
                     text = author,

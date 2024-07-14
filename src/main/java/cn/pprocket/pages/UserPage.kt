@@ -110,7 +110,7 @@ fun UserPage(navController: NavHostController, userId: String) {
                         fetch.forEach { postList.add(it) }
                     }
                     LazyColumn(state = rememberLazyListState()) {
-                        items(postList.size) { index ->
+                        items(postList.size,key = {index -> postList[index].postId}) { index ->
                             val post = postList[index]
                             PostCard(
                                 title = post.title,

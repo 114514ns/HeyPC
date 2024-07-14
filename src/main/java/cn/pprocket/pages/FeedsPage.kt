@@ -147,7 +147,3 @@ fun FeedsPage(navController: NavHostController, snackbarHostState: SnackbarHostS
     }
 }
 
-fun fixEncoding(str: String): String {
-    val bytes = str.toByteArray(Charset.forName("GBK"))
-    return String(bytes, Charsets.UTF_8)
-}

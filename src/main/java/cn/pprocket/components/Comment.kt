@@ -4,6 +4,7 @@ import androidx.compose.animation.animateContentSize
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.ClickableText
 import androidx.compose.material.Text
@@ -33,8 +34,8 @@ import kotlinx.coroutines.*
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
-fun Comment(comment: Comment,navController: NavHostController) {
-    val subComments = rememberSaveable { mutableStateListOf<Comment>() }
+fun Comment(comment: Comment, navController: NavHostController) {
+    val subComments = remember { mutableStateListOf<Comment>() }
     LaunchedEffect(Unit) {
         comment.subComments.forEach { subComments.add(it) }
         subComments.distinctBy { it.commentId }
@@ -52,9 +53,13 @@ fun Comment(comment: Comment,navController: NavHostController) {
                 Image(
                     painter = rememberImagePainter(comment.userAvatar),
                     contentDescription = "User Avatar",
-                    modifier = Modifier.size(40.dp).clip(shape = MaterialTheme.shapes.medium),
-                    contentScale = ContentScale.Crop
-                )
+                    modifier = Modifier.size(40.dp).clip(shape = MaterialTheme.shapes.medium).clickable {
+                        GlobalState.users[comment.userId] = HeyClient.getUser(comment.userId)
+                        navController.navigate("user/${comment.userId}")
+                    },
+                    contentScale = ContentScale.Crop,
+
+                    )
                 Spacer(modifier = Modifier.width(8.dp))
                 Column {
                     Text(
@@ -90,70 +95,72 @@ fun Comment(comment: Comment,navController: NavHostController) {
                     Spacer(modifier = Modifier.height(8.dp))
                 }
             }
-            key(comment.commentId) {
-                Column(/*modifier = Modifier.animateContentSize(animationSpec = tween(500))*/) {
-                    subComments.forEach {
-                        val str = buildAnnotatedString {
-                            withStyle(style = SpanStyle(Color(0xff004b96))) {
-                                pushStringAnnotation("send", it.userId)
-                                append(it.userName)
-                                pop()
-                            }
-                            append(" 回复 ")
-                            val post = GlobalState.map[it.postId]
-                            if (post!!.userId == comment.userId) {
-                                withStyle(style = SpanStyle(Color.Green)) {
-                                    pushStringAnnotation("to", it.userId)
-                                    append(it.replyName)
-                                    pop()
-                                }
-                            } else {
+
+            Column(modifier = Modifier.animateContentSize(animationSpec = tween(500))) {
+                subComments.forEach {
+                    val str = buildAnnotatedString {
+                        withStyle(style = SpanStyle(Color(0xff004b96))) {
+                            pushStringAnnotation("send", it.userId)
+                            append(it.userName)
+                            pop()
+                        }
+                        append(" 回复 ")
+                        val post = GlobalState.map[it.postId]
+                        if (post!!.userId == comment.userId) {
+                            withStyle(style = SpanStyle(Color.Green)) {
                                 pushStringAnnotation("to", it.userId)
                                 append(it.replyName)
                                 pop()
                             }
-                            append("：")
-                            append(it.content)
+                        } else {
+                            pushStringAnnotation("to", it.userId)
+                            append(it.replyName)
+                            pop()
                         }
-                        ClickableText(str, modifier = Modifier.padding(12.dp), onClick = { offset ->
-                            str.getStringAnnotations(start = offset, end = offset)
-                                .firstOrNull()?.let { annotation ->
-                                    when (annotation.tag) {
-                                        "send" -> {
-                                            var user = HeyClient.getUser(annotation.item)
-                                            GlobalState.users[annotation.item] = user
-                                            navController.navigate("user/${annotation.item}")
-                                        }
-
-                                        "to" -> {
-                                            var user = HeyClient.getUser(annotation.item)
-                                            GlobalState.users[annotation.item] = user
-                                            navController.navigate("user/${annotation.item}")
-                                        }
-                                        else -> println("Clicked on: ${annotation.item}")
+                        append("：")
+                        append(it.content)
+                    }
+                    ClickableText(str, modifier = Modifier.padding(12.dp), onClick = { offset ->
+                        str.getStringAnnotations(start = offset, end = offset)
+                            .firstOrNull()?.let { annotation ->
+                                when (annotation.tag) {
+                                    "send" -> {
+                                        var user = HeyClient.getUser(annotation.item)
+                                        GlobalState.users[annotation.item] = user
+                                        navController.navigate("user/${annotation.item}")
                                     }
-                                    // 在这里处理点击事件，例如打开 URL 或导航到其他屏幕
+
+                                    "to" -> {
+                                        var user = HeyClient.getUser(annotation.item)
+                                        GlobalState.users[annotation.item] = user
+                                        navController.navigate("user/${annotation.item}")
+                                    }
+
+                                    else -> println("Clicked on: ${annotation.item}")
                                 }
-                        })
-                    }
-                    if (comment.isHasMore) {
+                                // 在这里处理点击事件，例如打开 URL 或导航到其他屏幕
+                            }
+                    })
+                }
+                if (comment.isHasMore) {
 
-                        Text(
-                            "加载更多",
-                            modifier = Modifier.padding(top = 8.dp, bottom = 8.dp).align(Alignment.CenterHorizontally)
-                                .clickable {
-                                    CoroutineScope(Dispatchers.IO).launch() {
-                                        subComments.clear()
-                                        subComments.addAll(comment.fillSubComments())
-                                    }
-                                },
-                            color = MaterialTheme.colorScheme.primary,
+                    Text(
+                        "加载更多",
+                        modifier = Modifier.padding(top = 8.dp, bottom = 8.dp).align(Alignment.CenterHorizontally)
+                            .clickable {
+                                CoroutineScope(Dispatchers.IO).launch() {
+                                    subComments.clear()
+                                    subComments.addAll(comment.fillSubComments())
+                                    subComments.distinctBy { it.commentId }
+                                }
+                            },
+                        color = MaterialTheme.colorScheme.primary,
 
-                            )
-                    }
+                        )
                 }
             }
 
         }
+
     }
 }

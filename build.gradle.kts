@@ -32,7 +32,7 @@ dependencies {
     implementation("org.jetbrains.androidx.navigation:navigation-compose:2.7.0-alpha07")
     implementation(compose.material3)
     implementation("com.github.ltttttttttttt:load-the-image:1.1.1")//this
-    implementation("cn.pprocket:heybox:240713-5")
+    implementation("cn.pprocket:heybox:240714-3")
     implementation(compose.html.core)
     implementation(compose.runtime)
     implementation(compose.materialIconsExtended)

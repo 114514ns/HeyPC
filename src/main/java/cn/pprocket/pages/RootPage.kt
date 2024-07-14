@@ -57,7 +57,7 @@ fun RootPage() {
                         FeedsPage(navController,snackbarHostState)
                     }
                     composable("settings") {
-                        SettingsPage(navController)
+                        SettingsPage(navController,snackbarHostState)
                     }
                     composable(
                         "user/{userId}",
