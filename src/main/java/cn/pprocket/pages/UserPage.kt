@@ -27,10 +27,14 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import cn.pprocket.GlobalState
+import cn.pprocket.HeyClient
+import cn.pprocket.HeyClient.fetchComments
 import cn.pprocket.HeyClient.fetchPosts
 import cn.pprocket.HeyClient.getPosts
 import cn.pprocket.components.PostCard
 import cn.pprocket.components.SelectableText
+import cn.pprocket.components.UserComment
+import cn.pprocket.items.Comment
 import cn.pprocket.items.Post
 import cn.pprocket.items.User
 import com.lt.load_the_image.rememberImagePainter
@@ -54,28 +58,24 @@ fun UserPage(navController: NavHostController, userId: String) {
             Card {
                 Row(modifier = Modifier.fillMaxWidth().padding(8.dp)) {
                     Column(
-                        modifier = Modifier.weight(1f),
-                        horizontalAlignment = Alignment.CenterHorizontally
+                        modifier = Modifier.weight(1f), horizontalAlignment = Alignment.CenterHorizontally
                     ) {
                         Text(user.followings.toString(), textAlign = TextAlign.Center)
                         Spacer(modifier = Modifier.height(16.dp))
                         Text("关注", textAlign = TextAlign.Center, color = Color.Gray)
                     }
                     Column(
-                        modifier = Modifier.weight(1f),
-                        horizontalAlignment = Alignment.CenterHorizontally
+                        modifier = Modifier.weight(1f), horizontalAlignment = Alignment.CenterHorizontally
                     ) {
                         Text(user.followers.toString(), textAlign = TextAlign.Center)
                         Spacer(modifier = Modifier.height(16.dp))
                         Text(text = "粉丝", textAlign = TextAlign.Center, color = Color.Gray)
                     }
                     Column(
-                        modifier = Modifier.weight(1f),
-                        horizontalAlignment = Alignment.CenterHorizontally
+                        modifier = Modifier.weight(1f), horizontalAlignment = Alignment.CenterHorizontally
                     ) {
                         Text(
-                            user.location.toString().replace("IP:", ""),
-                            textAlign = TextAlign.Center
+                            user.location.toString().replace("IP:", ""), textAlign = TextAlign.Center
                         )
                         Spacer(modifier = Modifier.height(16.dp))
                         Text("归属地", textAlign = TextAlign.Center, color = Color.Gray)
@@ -83,35 +83,42 @@ fun UserPage(navController: NavHostController, userId: String) {
                 }
             }
             Spacer(modifier = Modifier.height(32.dp))
-            var tabIndex by rememberSaveable { mutableStateOf(0) }
+            var tabIndex by remember { mutableStateOf(0) }
             val tabs = listOf("动态", "评论")
             TabRow(selectedTabIndex = tabIndex) {
                 tabs.forEachIndexed { index, title ->
-                    Tab(text = { Text(title) },
-                        selected = tabIndex == index,
-                        onClick = { tabIndex = index },
-                        icon = {
-                            when (index) {
-                                0 -> Icon(imageVector = Icons.Default.Home, contentDescription = null)
-                                1 -> Icon(imageVector = Icons.Default.Info, contentDescription = null)
-                                2 -> Icon(imageVector = Icons.Default.Settings, contentDescription = null)
-                            }
+                    Tab(text = { Text(title) }, selected = tabIndex == index, onClick = {
+                        tabIndex = index
+                        println("Index = $index")
+                    }, icon = {
+                        when (index) {
+                            0 -> Icon(imageVector = Icons.Default.Home, contentDescription = null)
+                            1 -> Icon(imageVector = Icons.Default.Info, contentDescription = null)
                         }
-                    )
+                    })
                 }
             }
             var page = 0
             val postList = remember { mutableListOf<Post>() }
+            var commentPage = 1
+            val comments = remember { mutableListOf<Comment>() }
+            LaunchedEffect(userId) {
+                postList.clear()
+                val fetch = user.fetchPosts(page++)
+                fetch.forEach {
+                    it.userAvatar = user.avatar
+                    it.userName = user.userName
+                    postList.add(it)
+                }
+            }
+            LaunchedEffect(userId) {
+                val fetch = user.fetchComments(commentPage++)
+                comments.clear()
+                comments.addAll(fetch)
+            }
             when (tabIndex) {
                 0 -> {
-                    LaunchedEffect(userId) {
-                        postList.clear()
-                        val fetch = user.fetchPosts(page++)
-                        fetch.forEach {
-                            it.userAvatar = user.avatar
-                            it.userName = user.userName
-                            postList.add(it) }
-                    }
+
                     LazyColumn(state = rememberLazyListState()) {
                         items(postList.size, key = { index -> postList[index].postId }) { index ->
                             val post = postList[index]
@@ -130,6 +137,18 @@ fun UserPage(navController: NavHostController, userId: String) {
                                 },
                                 modifier = Modifier
                             )
+                        }
+                    }
+                }
+
+                1 -> {
+
+
+                    LazyColumn {
+                        println(comments.size)
+                        items(comments.size, key = { index -> comments[index].commentId }) { index ->
+                            val comment = comments[index]
+                            UserComment(comment,modifier = Modifier.padding(16.dp))
                         }
                     }
                 }
