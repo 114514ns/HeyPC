@@ -2,6 +2,7 @@
 import androidx.compose.desktop.ui.tooling.preview.Preview
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.material.Colors
 import androidx.compose.material.MaterialTheme
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
@@ -18,7 +19,7 @@ import com.lt.load_the_image.cache.ImageCache
 fun App() {
     var text by remember { mutableStateOf("Hello, World!") }
 
-    MaterialTheme {
+    MaterialTheme() {
         Box(modifier = Modifier.fillMaxSize()) {
             RootPage()
         }

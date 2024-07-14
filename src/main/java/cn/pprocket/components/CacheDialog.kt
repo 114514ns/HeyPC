@@ -11,35 +11,32 @@ import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import cn.pprocket.pages.TextItem
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
 
 @Composable
 fun CacheDialog(
-    onDismissRequest: () -> Unit,
-    snackbarHostState: SnackbarHostState
+    onDismissRequest: () -> Unit, snackbarHostState: SnackbarHostState
 ) {
     val scope = rememberCoroutineScope()
     Dialog(onDismissRequest = { onDismissRequest() }) {
 
         Card(
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(375.dp)
-                .padding(16.dp),
+            modifier = Modifier.fillMaxWidth().height(375.dp).padding(16.dp),
             shape = RoundedCornerShape(16.dp),
         ) {
             Column(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(16.dp)
+                modifier = Modifier.fillMaxSize().padding(16.dp)
             ) {
                 Row {
-                    TextItem("清除图片缓存","已缓存521MB",onClick = {
+                    TextItem("清除图片缓存", "已缓存521MB", onClick = {
                         scope.launch {
-                            snackbarHostState.showSnackbar("已在后台开始清除缓存")
+                            snackbarHostState.showSnackbar("on")
                             onDismissRequest()
+
                         }
+
                     })
                 }
             }

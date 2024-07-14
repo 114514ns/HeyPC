@@ -1,15 +1,14 @@
 package cn.pprocket.components
 
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.text.selection.SelectionContainer
 import androidx.compose.material.Icon
 import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.ArrowForward
 import androidx.compose.material.icons.automirrored.filled.List
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material3.ElevatedCard
@@ -25,6 +24,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.lt.load_the_image.rememberImagePainter
 
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun PostCard(
     title: String,
@@ -35,13 +35,16 @@ fun PostCard(
     commentsCount: Int,
     onCardClick: () -> Unit,
     userAvatar: String,
-    imgs: List<String>
+    imgs: List<String>,
+    modifier: Modifier
 ) {
     ElevatedCard(
         onClick = onCardClick,
-        modifier = Modifier
+        modifier = modifier
             .fillMaxWidth()
             .padding(16.dp)
+
+
     ) {
         Column(
             modifier = Modifier.padding(16.dp)

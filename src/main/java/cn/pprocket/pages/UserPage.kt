@@ -1,9 +1,11 @@
 package cn.pprocket.pages
 
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.FloatingActionButton
 import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
@@ -19,6 +21,7 @@ import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -27,6 +30,7 @@ import cn.pprocket.GlobalState
 import cn.pprocket.HeyClient.fetchPosts
 import cn.pprocket.HeyClient.getPosts
 import cn.pprocket.components.PostCard
+import cn.pprocket.components.SelectableText
 import cn.pprocket.items.Post
 import cn.pprocket.items.User
 import com.lt.load_the_image.rememberImagePainter
@@ -36,14 +40,15 @@ fun UserPage(navController: NavHostController, userId: String) {
     val user: User = GlobalState.users[userId]!!
     Box {
         Column(modifier = Modifier.fillMaxSize().padding(16.dp)) {
-            Column(modifier = Modifier.fillMaxHeight(0.08f)) {
-                Image(rememberImagePainter(user.avatar), "")
-                Row {
-                    Card {
-                        Text(user.userName, modifier = Modifier.padding(16.dp))
-                        Text(user.signature, modifier = Modifier.padding(16.dp))
+            Card(modifier = Modifier.fillMaxHeight(0.08f).fillMaxWidth()) {
+                Row(modifier = Modifier.padding(16.dp)) {
+                    Image(rememberImagePainter(user.avatar), "", modifier = Modifier.clip(CircleShape))
+                    Row(modifier = Modifier.fillMaxWidth().padding(16.dp)) {
+                        SelectableText(user.userName)
+                        SelectableText(user.signature, modifier = Modifier.padding(16.dp))
                     }
                 }
+
             }
             Spacer(modifier = Modifier.height(32.dp))
             Card {
@@ -97,20 +102,18 @@ fun UserPage(navController: NavHostController, userId: String) {
             }
             var page = 0
             val postList = remember { mutableListOf<Post>() }
-            LaunchedEffect(Unit) {
-                postList.clear()
-                val fetch = user.fetchPosts(page++)
-                fetch.forEach { postList.add(it) }
-            }
             when (tabIndex) {
                 0 -> {
                     LaunchedEffect(userId) {
                         postList.clear()
                         val fetch = user.fetchPosts(page++)
-                        fetch.forEach { postList.add(it) }
+                        fetch.forEach {
+                            it.userAvatar = user.avatar
+                            it.userName = user.userName
+                            postList.add(it) }
                     }
                     LazyColumn(state = rememberLazyListState()) {
-                        items(postList.size,key = {index -> postList[index].postId}) { index ->
+                        items(postList.size, key = { index -> postList[index].postId }) { index ->
                             val post = postList[index]
                             PostCard(
                                 title = post.title,
@@ -124,7 +127,8 @@ fun UserPage(navController: NavHostController, userId: String) {
                                 onCardClick = {
                                     GlobalState.map[post.postId] = post
                                     navController.navigate("post/${post.postId}")
-                                }
+                                },
+                                modifier = Modifier
                             )
                         }
                     }

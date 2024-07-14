@@ -96,7 +96,7 @@ fun Comment(comment: Comment, navController: NavHostController) {
                 }
             }
 
-            Column(modifier = Modifier.animateContentSize(animationSpec = tween(500))) {
+            Column() {
                 subComments.forEach {
                     val str = buildAnnotatedString {
                         withStyle(style = SpanStyle(Color(0xff004b96))) {
@@ -108,12 +108,12 @@ fun Comment(comment: Comment, navController: NavHostController) {
                         val post = GlobalState.map[it.postId]
                         if (post!!.userId == comment.userId) {
                             withStyle(style = SpanStyle(Color.Green)) {
-                                pushStringAnnotation("to", it.userId)
+                                pushStringAnnotation("to", it.replyId)
                                 append(it.replyName)
                                 pop()
                             }
                         } else {
-                            pushStringAnnotation("to", it.userId)
+                            pushStringAnnotation("to", it.replyId)
                             append(it.replyName)
                             pop()
                         }

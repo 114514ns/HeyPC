@@ -1,17 +1,15 @@
 package cn.pprocket.pages
 
 import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.animateContentSize
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.gestures.ScrollableDefaults
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
-import androidx.compose.foundation.lazy.grid.GridCells
-import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.rememberLazyGridState
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material.Text
@@ -30,8 +28,8 @@ import cn.pprocket.items.Topic
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.withContext
-import java.nio.charset.Charset
 
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun FeedsPage(navController: NavHostController, snackbarHostState: SnackbarHostState) {
     val posts = rememberSaveable { mutableStateListOf<Post>() }
@@ -110,7 +108,7 @@ fun FeedsPage(navController: NavHostController, snackbarHostState: SnackbarHostS
         LazyColumn (
             state = scrollState,
             flingBehavior = ScrollableDefaults.flingBehavior(),
-            modifier = Modifier.fillMaxSize().animateContentSize(animationSpec = tween(500))
+            modifier = Modifier.fillMaxSize()
         ) {
 
             items(
@@ -135,7 +133,8 @@ fun FeedsPage(navController: NavHostController, snackbarHostState: SnackbarHostS
                             navController.navigate("post/${post.postId}")
                         },
                         userAvatar = post.userAvatar,
-                        imgs = post.images
+                        imgs = post.images,
+                        modifier = Modifier.animateItemPlacement(animationSpec = tween(500))
                     )
                 }
 

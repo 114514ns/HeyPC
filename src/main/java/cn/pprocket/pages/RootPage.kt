@@ -45,7 +45,6 @@ fun RootPage() {
             LaunchedEffect(navController) {
                 navController.currentBackStackEntryFlow.collect { backStackEntry ->
                     showBottomBar = backStackEntry.destination.route == "feeds" || backStackEntry.destination.route == "settings"
-                    println(backStackEntry.destination.route)
                 }
             }
             NavHost(navController = navController, startDestination = "home") {
