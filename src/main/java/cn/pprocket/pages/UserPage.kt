@@ -1,5 +1,6 @@
 package cn.pprocket.pages
 
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
@@ -38,7 +39,10 @@ import cn.pprocket.items.Comment
 import cn.pprocket.items.Post
 import cn.pprocket.items.User
 import com.lt.load_the_image.rememberImagePainter
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun UserPage(navController: NavHostController, userId: String) {
     val user: User = GlobalState.users[userId]!!
@@ -103,18 +107,22 @@ fun UserPage(navController: NavHostController, userId: String) {
             var commentPage = 1
             val comments = remember { mutableListOf<Comment>() }
             LaunchedEffect(userId) {
-                postList.clear()
-                val fetch = user.fetchPosts(page++)
-                fetch.forEach {
-                    it.userAvatar = user.avatar
-                    it.userName = user.userName
-                    postList.add(it)
+                withContext(Dispatchers.IO) {
+                    postList.clear()
+                    val fetch = user.fetchPosts(page++)
+                    fetch.forEach {
+                        it.userAvatar = user.avatar
+                        it.userName = user.userName
+                        postList.add(it)
+                    }
                 }
             }
             LaunchedEffect(userId) {
-                val fetch = user.fetchComments(commentPage++)
-                comments.clear()
-                comments.addAll(fetch)
+                withContext(Dispatchers.IO) {
+                    val fetch = user.fetchComments(commentPage++)
+                    comments.clear()
+                    comments.addAll(fetch)
+                }
             }
             when (tabIndex) {
                 0 -> {
@@ -135,7 +143,7 @@ fun UserPage(navController: NavHostController, userId: String) {
                                     GlobalState.map[post.postId] = post
                                     navController.navigate("post/${post.postId}")
                                 },
-                                modifier = Modifier
+                                modifier = Modifier.animateItemPlacement()
                             )
                         }
                     }
@@ -148,7 +156,8 @@ fun UserPage(navController: NavHostController, userId: String) {
                         println(comments.size)
                         items(comments.size, key = { index -> comments[index].commentId }) { index ->
                             val comment = comments[index]
-                            UserComment(comment,modifier = Modifier.padding(16.dp))
+                            UserComment(comment,modifier = Modifier.padding(16.dp).animateItemPlacement(
+                            ))
                         }
                     }
                 }

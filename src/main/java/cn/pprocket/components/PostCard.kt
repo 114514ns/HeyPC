@@ -83,15 +83,6 @@ fun PostCard(
                 )
             }
             Spacer(modifier = Modifier.height(16.dp))
-            /*
-            Text(
-                text = content,
-                style = MaterialTheme.typography.bodyLarge,
-                maxLines = 3,
-                overflow = TextOverflow.Ellipsis
-            )
-
-             */
             SelectableText(content)
             Spacer(modifier = Modifier.height(16.dp))
             Row {
@@ -140,6 +131,8 @@ fun PostCard(
 fun SelectableText(text: String, modifier: Modifier = Modifier) {
     // SelectionContainer allows text to be selectable
     SelectionContainer {
+
+        /*
         BasicTextField(
             value = text,
             onValueChange = {},
@@ -147,5 +140,8 @@ fun SelectableText(text: String, modifier: Modifier = Modifier) {
             readOnly = true, // Make sure the text is read-only
             modifier = Modifier.fillMaxSize().padding(8.dp)
         )
+
+         */
+        Text(text,modifier = Modifier.fillMaxSize().padding(8.dp))
     }
 }

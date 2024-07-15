@@ -60,12 +60,15 @@ fun PostPage(
     LaunchedEffect(Unit) {
         var str = ""
         withContext(Dispatchers.IO) {
-            str = post.fillContent()
+            //str = post.fillContent()
+            str = post.description
         }
         content = str
     }
     LaunchedEffect(Unit) {
-        comments = HeyClient.getComments(postId, 1)
+        withContext(Dispatchers.IO) {
+            comments = HeyClient.getComments(postId, 1)
+        }
     }
     Box(modifier = Modifier.fillMaxSize()) {
         Column(modifier = Modifier.padding(16.dp).verticalScroll(state)) {
