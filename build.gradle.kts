@@ -28,12 +28,14 @@ dependencies {
     // compose.desktop.currentOs should be used in launcher-sourceSet
     // (in a separate module for demo project and in testMain).
     // With compose.desktop.common you will also lose @Preview functionality
-    implementation(compose.desktop.currentOs)
+    implementation(compose.desktop.currentOs) {
+        exclude("org.jetbrains.compose.material")
+    }
     implementation("org.jetbrains.androidx.navigation:navigation-compose:2.7.0-alpha07")
     implementation(compose.material3)
     implementation("com.github.ltttttttttttt:load-the-image:1.1.1")//this
-    implementation("cn.pprocket:heybox:240714-5")
-    implementation(compose.html.core)
+    implementation("cn.pprocket:heybox:240715-4")
+    implementation("org.jetbrains.kotlinx:kotlinx-serialization-core:1.7.0")
     implementation(compose.runtime)
     implementation(compose.materialIconsExtended)
 
@@ -43,7 +45,10 @@ compose.desktop {
     application {
         mainClass = "AppKt"
 
-
+        buildTypes.release.proguard {
+            version.set("7.5.0")
+            configurationFiles.from("proguard.pro")
+        }
         nativeDistributions {
             targetFormats(TargetFormat.Dmg, TargetFormat.Msi, TargetFormat.Deb)
             packageName = "HeyPC"

@@ -11,14 +11,11 @@ import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
-import androidx.compose.material.SnackbarDuration.*
+import androidx.compose.material3.SnackbarDuration.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Create
-import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.Icon
-import androidx.compose.material3.ModalBottomSheet
-import androidx.compose.material3.SnackbarDuration
+import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
@@ -90,8 +87,8 @@ fun PostPage(
                 )
                 Spacer(modifier = Modifier.width(8.dp))
                 Column {
-                    Text(text = post.userName, style = MaterialTheme.typography.subtitle1)
-                    Text(text = post.createAt, style = MaterialTheme.typography.caption)
+                    Text(text = post.userName)
+                    Text(text = post.createAt)
                 }
             }
 
@@ -126,7 +123,7 @@ fun PostPage(
             // 评论区域
             Text(
                 text = "评论",
-                style = MaterialTheme.typography.h6
+                style = MaterialTheme.typography.bodySmall
             )
             val listState = rememberLazyListState()
 
