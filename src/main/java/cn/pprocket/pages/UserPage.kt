@@ -2,22 +2,15 @@ package cn.pprocket.pages
 
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.material3.FloatingActionButton
-import androidx.compose.material3.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.Info
-import androidx.compose.material.icons.filled.Settings
-import androidx.compose.material3.Card
-import androidx.compose.material3.Icon
-import androidx.compose.material3.Tab
-import androidx.compose.material3.TabRow
+import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
@@ -31,7 +24,6 @@ import cn.pprocket.GlobalState
 import cn.pprocket.HeyClient
 import cn.pprocket.HeyClient.fetchComments
 import cn.pprocket.HeyClient.fetchPosts
-import cn.pprocket.HeyClient.getPosts
 import cn.pprocket.components.PostCard
 import cn.pprocket.components.SelectableText
 import cn.pprocket.components.UserComment
@@ -40,6 +32,7 @@ import cn.pprocket.items.Post
 import cn.pprocket.items.User
 import com.lt.load_the_image.rememberImagePainter
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.withContext
 
 @OptIn(ExperimentalFoundationApi::class)
@@ -93,7 +86,6 @@ fun UserPage(navController: NavHostController, userId: String) {
                 tabs.forEachIndexed { index, title ->
                     Tab(text = { Text(title) }, selected = tabIndex == index, onClick = {
                         tabIndex = index
-                        println("Index = $index")
                     }, icon = {
                         when (index) {
                             0 -> Icon(imageVector = Icons.Default.Home, contentDescription = null)
@@ -103,9 +95,9 @@ fun UserPage(navController: NavHostController, userId: String) {
                 }
             }
             var page = 0
-            val postList = remember { mutableListOf<Post>() }
+            val postList = remember { mutableStateListOf<Post>() }
             var commentPage = 1
-            val comments = remember { mutableListOf<Comment>() }
+            val comments = rememberSaveable { mutableStateListOf<Comment>() }
             LaunchedEffect(userId) {
                 withContext(Dispatchers.IO) {
                     postList.clear()
@@ -124,6 +116,22 @@ fun UserPage(navController: NavHostController, userId: String) {
                     comments.addAll(fetch)
                 }
             }
+            val scollState = rememberLazyListState()
+            LaunchedEffect(scollState) {
+
+                snapshotFlow { scollState.layoutInfo.visibleItemsInfo.lastOrNull()?.index }.collectLatest { lastIndex ->
+                    if (lastIndex != null && lastIndex >= comments.size - 3) {
+                        // 在后台线程执行网络请求
+                        withContext(Dispatchers.IO) {
+                            val new = user.fetchComments(commentPage++)
+                            comments += new
+                            println(comments.size)
+                        }
+
+                    }
+                }
+            }
+
             when (tabIndex) {
                 0 -> {
 
@@ -149,15 +157,16 @@ fun UserPage(navController: NavHostController, userId: String) {
                     }
                 }
 
+
                 1 -> {
 
 
-                    LazyColumn {
-                        println(comments.size)
+                    LazyColumn(state = scollState) {
+
                         items(comments.size, key = { index -> comments[index].commentId }) { index ->
                             val comment = comments[index]
                             UserComment(comment,modifier = Modifier.padding(16.dp).animateItemPlacement(
-                            ))
+                            ),navController = navController)
                         }
                     }
                 }

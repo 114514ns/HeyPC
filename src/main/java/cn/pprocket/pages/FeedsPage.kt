@@ -40,8 +40,10 @@ fun FeedsPage(navController: NavHostController, snackbarHostState: SnackbarHostS
     val listState = rememberLazyGridState()
     val scrollState = rememberLazyListState()
     var firstVisibleItemIndex by remember { mutableStateOf(0) }
-        LaunchedEffect(topic) {
+    LaunchedEffect(topic) {
+        println("${topic}  ${selected}   ${lastSelected}")
         if (posts.isEmpty() || selected != lastSelected) {
+            //println("刷新")
             withContext(Dispatchers.IO) {
                 val fetch = HeyClient.getPosts(topics[selected])
                 val newList = mutableListOf<Post>()
@@ -67,6 +69,7 @@ fun FeedsPage(navController: NavHostController, snackbarHostState: SnackbarHostS
                     onClick = {
                         lastSelected = selected
                         selected = index
+                        println("current ${selected} last ${lastSelected}")
                         topic = theTopic
                     },
                     label = {
@@ -105,7 +108,7 @@ fun FeedsPage(navController: NavHostController, snackbarHostState: SnackbarHostS
             }
         }
 
-        LazyColumn (
+        LazyColumn(
             state = scrollState,
             flingBehavior = ScrollableDefaults.flingBehavior(),
             modifier = Modifier.fillMaxSize()
@@ -131,6 +134,7 @@ fun FeedsPage(navController: NavHostController, snackbarHostState: SnackbarHostS
                         onCardClick = {
                             GlobalState.map[post.postId] = post
                             navController.navigate("post/${post.postId}")
+                            lastSelected = selected
                         },
                         userAvatar = post.userAvatar,
                         imgs = post.images,

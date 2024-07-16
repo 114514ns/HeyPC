@@ -1,5 +1,11 @@
 package cn.pprocket;
 
-public class Config {
+import lombok.Data;
 
+import java.util.List;
+
+@Data
+public class Config {
+    List<String> blackWords;
+    String cookies;
 }

@@ -9,4 +9,5 @@ import java.util.Map;
 public class GlobalState {
     public static Map<String, Post> map = new HashMap<>();
     public static Map<String, User> users = new HashMap<>();
+    public static Config config;
 }

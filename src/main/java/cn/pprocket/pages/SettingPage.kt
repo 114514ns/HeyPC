@@ -1,15 +1,12 @@
 package cn.pprocket.pages
 
-import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.fadeIn
-import androidx.compose.animation.fadeOut
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.onClick
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.Icon
-import androidx.compose.material3.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Palette
 import androidx.compose.material3.*
@@ -18,26 +15,23 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.TextStyle
-import androidx.compose.ui.text.font.FontStyle
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.window.Dialog
 import androidx.navigation.NavHostController
 import cn.pprocket.components.AboutDialog
+import cn.pprocket.components.AccountDialog
 import cn.pprocket.components.CacheDialog
 import com.lt.load_the_image.rememberImagePainter
 
-@OptIn(ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
 
 fun SettingsPage(navController: NavHostController,snackbarHostState: SnackbarHostState) {
 
     var showAbout by remember { mutableStateOf(false) }
     var showCache by remember { mutableStateOf(false) }
+    var showAccount by remember { mutableStateOf(false) }
     MaterialTheme {
         Card(
             modifier = Modifier.fillMaxSize(),
@@ -50,7 +44,7 @@ fun SettingsPage(navController: NavHostController,snackbarHostState: SnackbarHos
                     ),
                     "",
                     modifier = Modifier.size(96.dp).align(Alignment.TopEnd).padding(top = 16.dp, end = 16.dp)
-                        .clip(CircleShape)
+                        .clip(CircleShape).onClick { showAccount = true }
                 )
                 Column(
                     modifier = Modifier.fillMaxSize().padding(top = 96.dp)
@@ -90,6 +84,11 @@ fun SettingsPage(navController: NavHostController,snackbarHostState: SnackbarHos
                 AboutDialog(
                     onDismissRequest = { showAbout = false },
                     snackbarHostState = snackbarHostState
+                )
+            }
+            if(showAccount) {
+                AccountDialog(
+                    onDismissRequest = { showAccount = false },
                 )
             }
         }

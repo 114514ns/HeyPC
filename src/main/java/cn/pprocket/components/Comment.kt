@@ -4,14 +4,21 @@ import androidx.compose.animation.animateContentSize
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.ClickableText
-import androidx.compose.material3.Text
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ThumbUp
+import androidx.compose.material.icons.outlined.Favorite
+import androidx.compose.material.icons.outlined.ThumbUp
+import androidx.compose.material.icons.sharp.ThumbUp
 import androidx.compose.material3.Card
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.runtime.*
-import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.mutableStateListOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -30,7 +37,9 @@ import cn.pprocket.items.Comment
 import cn.pprocket.pages.getImagePath
 import cn.pprocket.pages.urlToFileName
 import com.lt.load_the_image.rememberImagePainter
-import kotlinx.coroutines.*
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
@@ -77,6 +86,10 @@ fun Comment(comment: Comment, navController: NavHostController) {
 
                     }
                 }
+                Spacer(modifier = Modifier.weight(1f))
+                Icon(Icons.Outlined.ThumbUp, "")
+                Text(comment.likes.toString(), modifier = Modifier.padding(start = 6.dp))
+
             }
             Card(modifier = Modifier.padding(top = 12.dp)) {
                 Column(modifier = Modifier.fillMaxWidth().padding(12.dp)) {
@@ -96,7 +109,7 @@ fun Comment(comment: Comment, navController: NavHostController) {
                 }
             }
 
-            Column() {
+            Column(modifier = Modifier.animateContentSize(animationSpec = tween(500))) {
                 subComments.forEach {
                     val str = buildAnnotatedString {
                         withStyle(style = SpanStyle(Color(0xff004b96))) {
@@ -120,27 +133,30 @@ fun Comment(comment: Comment, navController: NavHostController) {
                         append("：")
                         append(it.content)
                     }
-                    ClickableText(str, modifier = Modifier.padding(12.dp), onClick = { offset ->
-                        str.getStringAnnotations(start = offset, end = offset)
-                            .firstOrNull()?.let { annotation ->
-                                when (annotation.tag) {
-                                    "send" -> {
-                                        var user = HeyClient.getUser(annotation.item)
-                                        GlobalState.users[annotation.item] = user
-                                        navController.navigate("user/${annotation.item}")
-                                    }
+                    ClickableText(
+                        str,
+                        modifier = Modifier.padding(12.dp).animateContentSize(animationSpec = tween(500)),
+                        onClick = { offset ->
+                            str.getStringAnnotations(start = offset, end = offset)
+                                .firstOrNull()?.let { annotation ->
+                                    when (annotation.tag) {
+                                        "send" -> {
+                                            var user = HeyClient.getUser(annotation.item)
+                                            GlobalState.users[annotation.item] = user
+                                            navController.navigate("user/${annotation.item}")
+                                        }
 
-                                    "to" -> {
-                                        var user = HeyClient.getUser(annotation.item)
-                                        GlobalState.users[annotation.item] = user
-                                        navController.navigate("user/${annotation.item}")
-                                    }
+                                        "to" -> {
+                                            var user = HeyClient.getUser(annotation.item)
+                                            GlobalState.users[annotation.item] = user
+                                            navController.navigate("user/${annotation.item}")
+                                        }
 
-                                    else -> println("Clicked on: ${annotation.item}")
+                                        else -> println("Clicked on: ${annotation.item}")
+                                    }
+                                    // 在这里处理点击事件，例如打开 URL 或导航到其他屏幕
                                 }
-                                // 在这里处理点击事件，例如打开 URL 或导航到其他屏幕
-                            }
-                    })
+                        })
                 }
                 if (comment.isHasMore) {
 

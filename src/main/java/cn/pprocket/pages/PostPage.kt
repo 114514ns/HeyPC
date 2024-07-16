@@ -57,10 +57,10 @@ fun PostPage(
     LaunchedEffect(Unit) {
         var str = ""
         withContext(Dispatchers.IO) {
-            //str = post.fillContent()
-            str = post.description
+            str = post.fillContent()
         }
         content = str
+
     }
     LaunchedEffect(Unit) {
         withContext(Dispatchers.IO) {
@@ -95,7 +95,7 @@ fun PostPage(
             Spacer(modifier = Modifier.height(16.dp))
 
             // 帖子内容
-            androidx.compose.material3.Card {
+            Card {
                 SelectableText(
                     text = content,
                     modifier = Modifier.padding(16.dp).fillMaxWidth()

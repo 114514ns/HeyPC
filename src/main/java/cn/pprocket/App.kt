@@ -9,9 +9,14 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Window
 import androidx.compose.ui.window.application
 import androidx.compose.ui.window.rememberWindowState
+import cn.pprocket.Config
+import cn.pprocket.GlobalState
 import cn.pprocket.pages.RootPage
+import com.google.gson.Gson
+import com.google.gson.JsonParser
 import com.lt.load_the_image.LoadTheImageManager
-import com.lt.load_the_image.cache.ImageCache
+import com.lt.load_the_image.cache.ImageLruMemoryCache
+import java.io.File
 
 @Composable
 @Preview
@@ -26,14 +31,13 @@ fun App() {
 }
 
 fun main() = application {
+    //GlobalState.config = loadConfig()
+    LoadTheImageManager.memoryCache = ImageLruMemoryCache(1024*1024*10)
     System.setProperty("skiko.directx.gpu.priority","discrete")
+    //saveTask()
+    gcTask()
     val multipy = 1.3f
-    Thread {
-        while(true) {
-            System.gc()
-            Thread.sleep(5000)
-        }
-    }.start()
+
     Window(
         title = "迎面走来的你让我蠢蠢欲动",
         onCloseRequest = ::exitApplication,
@@ -41,17 +45,33 @@ fun main() = application {
 
         )
     ) {
-        //setupFixedAspectRatio(window, aspectRatio)
         App()
     }
 }
-class NonCache : ImageCache {
-    override fun getCache(url: String): ByteArray? {
-        TODO("Not yet implemented")
+fun loadConfig() : Config {
+    val file = File("config.json")
+    if (!file.exists()) {
+        file.createNewFile()
+        return Config()
     }
+    val content = file.readText()
+    return Gson().fromJson(content,Config::class.java)
 
-    override fun saveCache(url: String, t: ByteArray) {
-        TODO("Not yet implemented")
-        LoadTheImageManager
-    }
+}
+fun saveTask() {
+    Thread {
+        while (true) {
+            val json = Gson().toJson(GlobalState.config)
+            File("task.json").writeText(json)
+            Thread.sleep(1000)
+        }
+    }.start()
+}
+fun gcTask() {
+    Thread {
+        while(true) {
+            System.gc()
+            Thread.sleep(2000)
+        }
+    }.start()
 }

@@ -7,8 +7,7 @@ import java.util.Base64
 
 plugins {
     kotlin("jvm") version "1.9.20"
-    id("org.jetbrains.compose")
-    id("org.jetbrains.kotlin.plugin.compose")
+    id("org.jetbrains.compose") version "1.7.0-alpha01"
 }
 group = "cn.pprocket"
 version = "1.0-SNAPSHOT"
@@ -20,9 +19,8 @@ repositories {
     maven("https://jitpack.io")
     mavenLocal()
     maven("https://jogamp.org/deployment/maven")
-    maven ( "https://s01.oss.sonatype.org/content/repositories/snapshots/")
+    maven("https://s01.oss.sonatype.org/content/repositories/snapshots/")
 }
-
 dependencies {
     // Note, if you develop a library, you should use compose.desktop.common.
     // compose.desktop.currentOs should be used in launcher-sourceSet
@@ -31,13 +29,18 @@ dependencies {
     implementation(compose.desktop.currentOs) {
         exclude("org.jetbrains.compose.material")
     }
-    implementation("org.jetbrains.androidx.navigation:navigation-compose:2.7.0-alpha07")
     implementation(compose.material3)
-    implementation("com.github.ltttttttttttt:load-the-image:1.1.1")//this
-    implementation("cn.pprocket:heybox:240715-4")
-    implementation("org.jetbrains.kotlinx:kotlinx-serialization-core:1.7.0")
     implementation(compose.runtime)
     implementation(compose.materialIconsExtended)
+    implementation("com.github.ltttttttttttt:load-the-image:1.1.1")
+    implementation("cn.pprocket:heybox:240716-6")
+    implementation("org.jetbrains.kotlinx:kotlinx-serialization-core:1.7.0")
+    implementation("org.jetbrains.androidx.navigation:navigation-compose:2.7.0-alpha07")
+    implementation("com.google.zxing:core:3.5.3")
+    implementation("com.google.zxing:javase:3.5.3")
+    annotationProcessor("org.projectlombok:lombok:1.18.32")
+    compileOnly("org.projectlombok:lombok:1.18.32")
+    compileOnly("com.google.code.gson:gson:2.11.0")
 
 }
 
