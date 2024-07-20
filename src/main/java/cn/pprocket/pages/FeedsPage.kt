@@ -36,7 +36,7 @@ fun FeedsPage(navController: NavHostController, snackbarHostState: SnackbarHostS
     var topic by rememberSaveable { mutableStateOf(Topic.LOVE) }
     var selected by rememberSaveable { mutableStateOf(0) }
     var lastSelected by rememberSaveable { mutableStateOf(0) }
-    val topics = listOf(Topic.LOVE, Topic.WORK, Topic.SCHOOL, Topic.HARDWARE, Topic.DAILY, Topic.HOTS)
+    val topics = listOf(Topic.HOTS,Topic.RECOMMEND,Topic.LOVE, Topic.WORK, Topic.SCHOOL, Topic.HARDWARE, Topic.DAILY)
     val listState = rememberLazyGridState()
     val scrollState = rememberLazyListState()
     var firstVisibleItemIndex by remember { mutableStateOf(0) }
@@ -51,8 +51,6 @@ fun FeedsPage(navController: NavHostController, snackbarHostState: SnackbarHostS
                 //posts.forEach { newList.add(it) }
                 posts.clear()
                 posts.addAll(newList)
-
-
             }
             listState.scrollToItem(0, 0)
         }

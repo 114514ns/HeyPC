@@ -1,3 +1,5 @@
+# https://github.com/JetBrains/compose-multiplatform/issues/4883
+
 -keep class androidx.compose.runtime.** { *; }
 -keep class androidx.collection.** { *; }
 -keep class androidx.lifecycle.** { *; }
@@ -23,6 +25,16 @@
 -keep interface okio.** { *; }
 -keep enum okio.** { *; }
 
-# https://github.com/JetBrains/compose-multiplatform/issues/4883
+-dontwarn com.alibaba.**
+-dontwarn org.apache.**
+-dontwarn net.dongliu.**
+-dontwarn org.slf4j.**
+
+-keep class org.apache.** { *; }
+-keep interface org.apache.** { *; }
+-keep enum org.apache.** { *; }
+
+
+
 
 

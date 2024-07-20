@@ -42,9 +42,7 @@ import java.io.File
 @Composable
 @Preview
 fun PostPage(
-    navController: NavHostController,
-    postId: String,
-    snackbarHostState: androidx.compose.material3.SnackbarHostState
+    navController: NavHostController, postId: String, snackbarHostState: androidx.compose.material3.SnackbarHostState
 ) {
     val post = GlobalState.map[postId] ?: return
     var content by rememberSaveable { mutableStateOf(post.description) }
@@ -97,8 +95,7 @@ fun PostPage(
             // 帖子内容
             Card {
                 SelectableText(
-                    text = content,
-                    modifier = Modifier.padding(16.dp).fillMaxWidth()
+                    text = content, modifier = Modifier.padding(16.dp).fillMaxWidth()
                 )
             }
             Spacer(modifier = Modifier.height(16.dp))
@@ -110,21 +107,22 @@ fun PostPage(
                     contentDescription = "帖子图片",
                     modifier = Modifier.fillMaxSize().padding(8.dp).clip(RoundedCornerShape(12.dp)).onClick {
                         Runtime.getRuntime().exec("cmd /c " + getImagePath(urlToFileName(it)))
-
                     },
                     contentScale = ContentScale.Fit,
-
-
                     )
             }
-
             Spacer(modifier = Modifier.height(16.dp))
 
-            // 评论区域
-            Text(
-                text = "评论",
-                style = MaterialTheme.typography.bodySmall
-            )
+            Row {
+                post.tags.forEach {
+                    AssistChip(
+                        onClick = { },
+                        label = { Text(it) },
+                        modifier = Modifier.padding(10.dp)
+                    )
+                }
+            }
+            HorizontalDivider(thickness = 2.dp,modifier = Modifier.padding(top = 16.dp, bottom = 16.dp))
             val listState = rememberLazyListState()
 
             LazyColumn(
@@ -132,14 +130,13 @@ fun PostPage(
                 modifier = Modifier.height(1800.dp),
                 flingBehavior = ScrollableDefaults.flingBehavior()
             ) {
-                items(comments.size,key = {index -> comments[index].commentId}) { index ->
+                items(comments.size, key = { index -> comments[index].commentId }) { index ->
                     val comment = comments[index]
-                    Comment(comment,navController)
+                    Comment(comment, navController)
                 }
             }
             LaunchedEffect(listState) {
-                snapshotFlow { listState.layoutInfo.visibleItemsInfo.lastOrNull()?.index }
-                    .collectLatest { lastIndex ->
+                snapshotFlow { listState.layoutInfo.visibleItemsInfo.lastOrNull()?.index }.collectLatest { lastIndex ->
                         // 如果最后一个可见的项目是列表中的最后一个项目，那么加载更多数据
                         if (lastIndex != null && lastIndex >= comments.size - 3) {
                             // 在后台线程执行网络请求
@@ -180,11 +177,9 @@ fun PostPage(
                                 showSheet = false
                                 scope.launch {
                                     snackbarHostState.showSnackbar(
-                                        message = "评论成功",
-                                        actionLabel = "Action",
-                                        duration = SnackbarDuration.Short
+                                        message = "评论成功", actionLabel = "Action", duration = SnackbarDuration.Short
                                     )
-                                    HeyClient.reply(post.postId,text)
+                                    HeyClient.reply(post.postId, text)
                                 }
                                 true
                             } else {
@@ -206,18 +201,10 @@ fun urlToFileName(url: String): String {
 }
 
 fun getImagePath(string: String) = File(
-    System.getProperty("user.home")
-            + File.separator
-            + "Pictures"
-            + File.separator
-            + "LoadTheImageCache"
-            + File.separator, string
+    System.getProperty("user.home") + File.separator + "Pictures" + File.separator + "LoadTheImageCache" + File.separator,
+    string
 ).absolutePath
+
 fun getImageDir() = File(
-    System.getProperty("user.home")
-            + File.separator
-            + "Pictures"
-            + File.separator
-            + "LoadTheImageCache"
-            + File.separator
+    System.getProperty("user.home") + File.separator + "Pictures" + File.separator + "LoadTheImageCache" + File.separator
 )

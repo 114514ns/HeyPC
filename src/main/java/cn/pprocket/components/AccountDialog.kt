@@ -14,10 +14,14 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
+import cn.pprocket.GlobalState
+import cn.pprocket.HeyClient
 import com.google.zxing.BarcodeFormat
 import com.google.zxing.client.j2se.MatrixToImageWriter
 import com.google.zxing.qrcode.QRCodeWriter
 import com.lt.load_the_image.rememberImagePainter
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import org.jetbrains.skiko.toBitmap
 import java.awt.Color
 import java.awt.image.BufferedImage
@@ -27,7 +31,25 @@ import javax.imageio.ImageIO
 @Composable
 fun AccountDialog(onDismissRequest: () -> Unit) {
     var qrCodeImage by remember { mutableStateOf<BufferedImage?>(null) }
-
+    var url by remember { mutableStateOf("") }
+    LaunchedEffect(Unit) {
+        url = HeyClient.genQRCode()
+        qrCodeImage = generateQRCodeImage(url, 300, 300)
+    }
+    LaunchedEffect(Unit) {
+        withContext(Dispatchers.IO) {
+            while (true) {
+                if (HeyClient.checkLogin(url)) {
+                    GlobalState.config.cookies = HeyClient.cookie
+                    break
+                }
+                Thread.sleep(500)
+            }
+            withContext(Dispatchers.Default) {
+                onDismissRequest()
+            }
+        }
+    }
 
     Dialog(onDismissRequest = { onDismissRequest() }) {
 
@@ -39,10 +61,11 @@ fun AccountDialog(onDismissRequest: () -> Unit) {
                 modifier = Modifier.fillMaxSize(),
                 horizontalAlignment = Alignment.CenterHorizontally,
                 //verticalArrangement = Arrangement.Center
-            )  {
+            ) {
                 Text("请使用小黑盒app扫描二维码", modifier = Modifier.padding(top = 15.dp))
-                qrCodeImage = generateQRCodeImage("https://example.com", 300, 300)
-                Image(painter = rememberImagePainter(qrCodeImage!!.toBitmap()),"")
+                if (qrCodeImage != null) {
+                    Image(painter = rememberImagePainter(qrCodeImage!!.toBitmap()), "")
+                }
                 CircularProgressIndicator(
                     modifier = Modifier.width(64.dp),
                     color = MaterialTheme.colorScheme.secondary,

@@ -1,13 +1,12 @@
 import org.jetbrains.compose.desktop.application.dsl.TargetFormat
-import org.jetbrains.kotlin.ir.builders.declarations.buildTypeParameter
-import java.net.URI
-import java.net.URL
-import java.util.Base64
 
 
 plugins {
     kotlin("jvm") version "1.9.20"
+    id("org.jetbrains.kotlin.plugin.compose")
     id("org.jetbrains.compose") version "1.7.0-alpha01"
+    kotlin("plugin.lombok") version "2.0.0"
+    id("io.freefair.lombok") version "8.6"
 }
 group = "cn.pprocket"
 version = "1.0-SNAPSHOT"
@@ -33,7 +32,7 @@ dependencies {
     implementation(compose.runtime)
     implementation(compose.materialIconsExtended)
     implementation("com.github.ltttttttttttt:load-the-image:1.1.1")
-    implementation("cn.pprocket:heybox:240716-6")
+    implementation("cn.pprocket:heybox:240720-6")
     implementation("org.jetbrains.kotlinx:kotlinx-serialization-core:1.7.0")
     implementation("org.jetbrains.androidx.navigation:navigation-compose:2.7.0-alpha07")
     implementation("com.google.zxing:core:3.5.3")
@@ -41,6 +40,7 @@ dependencies {
     annotationProcessor("org.projectlombok:lombok:1.18.32")
     compileOnly("org.projectlombok:lombok:1.18.32")
     compileOnly("com.google.code.gson:gson:2.11.0")
+    implementation("commons-logging:commons-logging:1.3.3")
 
 }
 
@@ -56,7 +56,13 @@ compose.desktop {
             targetFormats(TargetFormat.Dmg, TargetFormat.Msi, TargetFormat.Deb)
             packageName = "HeyPC"
             packageVersion = "1.0.0"
+            jvmArgs += "-splash:app/resources/splash-screen.gif"
         }
     }
 }
 
+tasks.withType<org.gradle.jvm.tasks.Jar> {
+    manifest {
+        attributes["SplashScreen-Image"] = "image.gif"
+    }
+}

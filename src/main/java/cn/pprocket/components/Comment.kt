@@ -124,6 +124,7 @@ fun Comment(comment: Comment, navController: NavHostController) {
                                 pushStringAnnotation("to", it.replyId)
                                 append(it.replyName)
                                 pop()
+
                             }
                         } else {
                             pushStringAnnotation("to", it.replyId)

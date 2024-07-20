@@ -24,6 +24,9 @@ fun UserComment(comment: Comment,modifier: Modifier,navController: NavHostContro
     val post = comment.extraPost
     Card(modifier =modifier.fillMaxWidth().clickable {
         GlobalState.map[post.postId] = comment.extraPost
+        post.userName = "狗熊岭军师熊二"
+        post.userAvatar = "https://avatars.akamai.steamstatic.com/6a477d65670b03bae1c5f48988211ff0366c6a8c_full.jpg"
+        post.createAt = "昨天"
         navController.navigate("post/${comment.extraPost.postId}")
     }) {
         Row {

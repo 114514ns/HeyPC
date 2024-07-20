@@ -11,11 +11,13 @@ import androidx.compose.ui.window.application
 import androidx.compose.ui.window.rememberWindowState
 import cn.pprocket.Config
 import cn.pprocket.GlobalState
+import cn.pprocket.HeyClient
 import cn.pprocket.pages.RootPage
 import com.google.gson.Gson
 import com.google.gson.JsonParser
 import com.lt.load_the_image.LoadTheImageManager
 import com.lt.load_the_image.cache.ImageLruMemoryCache
+import org.example.cn.pprocket.utils.app.AppSignGenerator
 import java.io.File
 
 @Composable
@@ -31,8 +33,8 @@ fun App() {
 }
 
 fun main() = application {
-    //GlobalState.config = loadConfig()
-    LoadTheImageManager.memoryCache = ImageLruMemoryCache(1024*1024*10)
+    GlobalState.config = loadConfig()
+    saveTask()
     System.setProperty("skiko.directx.gpu.priority","discrete")
     //saveTask()
     gcTask()
@@ -62,7 +64,7 @@ fun saveTask() {
     Thread {
         while (true) {
             val json = Gson().toJson(GlobalState.config)
-            File("task.json").writeText(json)
+            File("config.json").writeText(json)
             Thread.sleep(1000)
         }
     }.start()
