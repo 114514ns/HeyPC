@@ -1,7 +1,5 @@
 package cn.pprocket.pages
 
-import androidx.compose.animation.animateContentSize
-import androidx.compose.animation.core.tween
 import androidx.compose.desktop.ui.tooling.preview.Preview
 import androidx.compose.foundation.*
 import androidx.compose.foundation.gestures.ScrollableDefaults
@@ -10,8 +8,6 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.*
-import androidx.compose.material3.SnackbarDuration.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Create
@@ -30,6 +26,7 @@ import cn.pprocket.HeyClient
 import cn.pprocket.components.Comment
 import cn.pprocket.components.SelectableText
 import cn.pprocket.items.Comment
+import cn.pprocket.items.Post
 import com.lt.load_the_image.rememberImagePainter
 import com.lt.load_the_image.util.MD5
 import kotlinx.coroutines.Dispatchers
@@ -38,7 +35,8 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.io.File
 
-@OptIn(ExperimentalMaterial3Api::class, ExperimentalFoundationApi::class)
+
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalFoundationApi::class, ExperimentalLayoutApi::class)
 @Composable
 @Preview
 fun PostPage(
@@ -52,12 +50,16 @@ fun PostPage(
     var page = 1
     val scope = rememberCoroutineScope()
     var showSheet by remember { mutableStateOf(false) }
+
+
     LaunchedEffect(Unit) {
         var str = ""
         withContext(Dispatchers.IO) {
             str = post.fillContent()
         }
         content = str
+
+        println("${post.title}   ${post.postId}")
 
     }
     LaunchedEffect(Unit) {
@@ -113,7 +115,19 @@ fun PostPage(
             }
             Spacer(modifier = Modifier.height(16.dp))
 
+            /*
             Row {
+                post.tags.forEach {
+                    AssistChip(
+                        onClick = { },
+                        label = { Text(it) },
+                        modifier = Modifier.padding(10.dp)
+                    )
+                }
+            }
+
+             */
+            FlowRow {
                 post.tags.forEach {
                     AssistChip(
                         onClick = { },

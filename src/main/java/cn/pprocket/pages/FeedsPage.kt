@@ -36,7 +36,7 @@ fun FeedsPage(navController: NavHostController, snackbarHostState: SnackbarHostS
     var topic by rememberSaveable { mutableStateOf(Topic.LOVE) }
     var selected by rememberSaveable { mutableStateOf(0) }
     var lastSelected by rememberSaveable { mutableStateOf(0) }
-    val topics = listOf(Topic.HOTS,Topic.RECOMMEND,Topic.LOVE, Topic.WORK, Topic.SCHOOL, Topic.HARDWARE, Topic.DAILY)
+    val topics = listOf(Topic.LOVE,Topic.RECOMMEND,Topic.HOTS, Topic.WORK, Topic.SCHOOL, Topic.HARDWARE, Topic.DAILY)
     val listState = rememberLazyGridState()
     val scrollState = rememberLazyListState()
     var firstVisibleItemIndex by remember { mutableStateOf(0) }
@@ -94,7 +94,6 @@ fun FeedsPage(navController: NavHostController, snackbarHostState: SnackbarHostS
                 if (lastIndex != null && lastIndex >= posts.size - 3) {
                     // 在后台线程执行网络请求
                     withContext(Dispatchers.IO) {
-                        println("refresh data: $listState")
                         val new = HeyClient.getPosts(topic)
                         posts.addAll(new)
                         posts.forEach {
