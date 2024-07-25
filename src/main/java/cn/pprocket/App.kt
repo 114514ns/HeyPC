@@ -1,4 +1,3 @@
-
 import androidx.compose.desktop.ui.tooling.preview.Preview
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
@@ -11,13 +10,12 @@ import androidx.compose.ui.window.application
 import androidx.compose.ui.window.rememberWindowState
 import cn.pprocket.Config
 import cn.pprocket.GlobalState
-import cn.pprocket.HeyClient
+import cn.pprocket.Logger
 import cn.pprocket.pages.RootPage
 import com.google.gson.Gson
-import com.google.gson.JsonParser
-import com.lt.load_the_image.LoadTheImageManager
-import com.lt.load_the_image.cache.ImageLruMemoryCache
-import org.example.cn.pprocket.utils.app.AppSignGenerator
+
+import java.awt.Dimension
+import java.awt.Toolkit
 import java.io.File
 
 @Composable
@@ -32,34 +30,45 @@ fun App() {
     }
 }
 
+val logger = Logger(Object())
 fun main() = application {
     GlobalState.config = loadConfig()
     saveTask()
-    System.setProperty("skiko.directx.gpu.priority","discrete")
+    System.setProperty("skiko.directx.gpu.priority", "discrete")
+    val screenSize: Dimension = Toolkit.getDefaultToolkit().getScreenSize()
     //saveTask()
     gcTask()
-    val multipy = 1.3f
+    val width = screenSize.width
+    val multipy = 1.3f * (width / 2560f)
+    logger.info("Screen size :  ${screenSize.width} * ${screenSize.height}")
+    logger.info("Real size ${multipy * 450}dp  * ${1050 * multipy}dp")
+
 
     Window(
         title = "迎面走来的你让我蠢蠢欲动",
         onCloseRequest = ::exitApplication,
-        state = rememberWindowState(width = (multipy*450).dp, height = (multipy*1050).dp,
+        state = rememberWindowState(
+            width = (multipy * 450).dp, height = (multipy * 1050).dp,
 
-        )
+            )
     ) {
         App()
+
+
     }
 }
-fun loadConfig() : Config {
+
+fun loadConfig(): Config {
     val file = File("config.json")
     if (!file.exists()) {
         file.createNewFile()
         return Config()
     }
     val content = file.readText()
-    return Gson().fromJson(content,Config::class.java)
+    return Gson().fromJson(content, Config::class.java)
 
 }
+
 fun saveTask() {
     Thread {
         while (true) {
@@ -69,9 +78,10 @@ fun saveTask() {
         }
     }.start()
 }
+
 fun gcTask() {
     Thread {
-        while(true) {
+        while (true) {
             System.gc()
             Thread.sleep(2000)
         }

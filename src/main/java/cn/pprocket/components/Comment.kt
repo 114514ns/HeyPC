@@ -43,7 +43,7 @@ import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
-fun Comment(comment: Comment, navController: NavHostController) {
+fun Comment(comment: Comment, navController: NavHostController, postId: String) {
     val subComments = remember { mutableStateListOf<Comment>() }
     LaunchedEffect(Unit) {
         comment.subComments.forEach { subComments.add(it) }
@@ -110,16 +110,24 @@ fun Comment(comment: Comment, navController: NavHostController) {
             }
 
             Column(modifier = Modifier.animateContentSize(animationSpec = tween(500))) {
+                val post = GlobalState.map[postId]
                 subComments.forEach {
                     val str = buildAnnotatedString {
-                        withStyle(style = SpanStyle(Color(0xff004b96))) {
+                        withStyle(
+                            style = SpanStyle(
+                                if (it.userName == comment.userName || it.userName == post!!.userName)
+                                    Color(0xffC232E6)
+                                else Color(0xff004b96)
+
+                            )
+                        ) {
                             pushStringAnnotation("send", it.userId)
                             append(it.userName)
                             pop()
                         }
                         append(" 回复 ")
-                        val post = GlobalState.map[it.postId]
-                        if (post!!.userId == comment.userId) {
+
+                        if (post!!.userName == comment.userName) {
                             withStyle(style = SpanStyle(Color.Green)) {
                                 pushStringAnnotation("to", it.replyId)
                                 append(it.replyName)

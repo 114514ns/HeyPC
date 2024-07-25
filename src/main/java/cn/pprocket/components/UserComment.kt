@@ -8,6 +8,7 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.Card
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
@@ -18,15 +19,22 @@ import cn.pprocket.GlobalState
 import cn.pprocket.HeyClient
 import cn.pprocket.items.Comment
 import com.lt.load_the_image.rememberImagePainter
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 @Composable
 fun UserComment(comment: Comment,modifier: Modifier,navController: NavHostController) {
     val post = comment.extraPost
+    val scope = rememberCoroutineScope()
     Card(modifier =modifier.fillMaxWidth().clickable {
-        GlobalState.map[post.postId] = comment.extraPost
-        post.userName = "狗熊岭军师熊二"
-        post.userAvatar = "https://avatars.akamai.steamstatic.com/6a477d65670b03bae1c5f48988211ff0366c6a8c_full.jpg"
-        post.createAt = "昨天"
+
+        scope.launch {
+            withContext(Dispatchers.IO) {
+
+                GlobalState.map[post.postId] = HeyClient.getPost(post.postId)
+            }
+        }
 
         navController.navigate("post/${comment.extraPost.postId}")
     }) {

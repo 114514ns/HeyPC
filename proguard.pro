@@ -34,6 +34,13 @@
 -keep interface org.apache.** { *; }
 -keep enum org.apache.** { *; }
 
+# 保留本地库加载相关的代码
+-keep class org.scijava.nativelib.** { *; }
+-keep class unicorn.** { *; }
+-keep class com.github.unidbg.** { *; }
+
+# 保留 JNA 库中的所有类和方法
+-keep class com.sun.jna.** { *; }
 
 
 

@@ -21,6 +21,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.lt.load_the_image.rememberImagePainter
@@ -40,10 +41,7 @@ fun PostCard(
     modifier: Modifier
 ) {
     ElevatedCard(
-        onClick = onCardClick,
-        modifier = modifier
-            .fillMaxWidth()
-            .padding(16.dp)
+        onClick = onCardClick, modifier = modifier.fillMaxWidth().padding(16.dp)
 
 
     ) {
@@ -73,8 +71,7 @@ fun PostCard(
                 )
                 Spacer(modifier = Modifier.width(8.dp))
                 Text(
-                    text = "•",
-                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                    text = "•", color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
                 Spacer(modifier = Modifier.width(8.dp))
                 Text(
@@ -108,19 +105,15 @@ fun PostCard(
                 )
                 Spacer(modifier = Modifier.width(4.dp))
                 Text(
-                    text = likesCount.toString(),
-                    style = MaterialTheme.typography.bodySmall
+                    text = likesCount.toString(), style = MaterialTheme.typography.bodySmall
                 )
                 Spacer(modifier = Modifier.width(8.dp))
                 Icon(
-                    Icons.AutoMirrored.Filled.List,
-                    contentDescription = "Comments",
-                    modifier = Modifier.size(16.dp)
+                    Icons.AutoMirrored.Filled.List, contentDescription = "Comments", modifier = Modifier.size(16.dp)
                 )
                 Spacer(modifier = Modifier.width(4.dp))
                 Text(
-                    text = commentsCount.toString(),
-                    style = MaterialTheme.typography.bodySmall
+                    text = commentsCount.toString(), style = MaterialTheme.typography.bodySmall
                 )
                 Spacer(modifier = Modifier.width(8.dp))
             }
@@ -143,7 +136,12 @@ fun SelectableText(text: String, modifier: Modifier = Modifier) {
         )
 
          */
-        Text(text,modifier = Modifier.fillMaxSize().padding(8.dp), style = TextStyle(fontSize = 18.sp), color =
-        Color.Black)
+        Text(
+            text,
+            modifier = Modifier.fillMaxSize().padding(8.dp),
+            style = TextStyle(fontSize = 18.sp),
+            color = Color.Black,
+            lineHeight = 25.sp
+        )
     }
 }

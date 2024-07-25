@@ -19,10 +19,13 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.input.key.*
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import cn.pprocket.GlobalState
 import cn.pprocket.HeyClient
+import cn.pprocket.Logger
 import cn.pprocket.components.Comment
 import cn.pprocket.components.SelectableText
 import cn.pprocket.items.Comment
@@ -30,6 +33,7 @@ import cn.pprocket.items.Post
 import com.lt.load_the_image.rememberImagePainter
 import com.lt.load_the_image.util.MD5
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -42,31 +46,38 @@ import java.io.File
 fun PostPage(
     navController: NavHostController, postId: String, snackbarHostState: androidx.compose.material3.SnackbarHostState
 ) {
-    val post = GlobalState.map[postId] ?: return
+    var post = GlobalState.map[postId] ?: return
     var content by rememberSaveable { mutableStateOf(post.description) }
     val state = rememberScrollState()
     var comments by remember { mutableStateOf(emptyList<Comment>()) }
     var gridHeight by remember { mutableStateOf(0.dp) }
     var page = 1
     val scope = rememberCoroutineScope()
+    val logger = Logger("cn.pprocket.pages.PostPage")
     var showSheet by remember { mutableStateOf(false) }
-
+    var ready by remember { mutableStateOf(false) }
 
     LaunchedEffect(Unit) {
-        var str = ""
+        logger.info(" ${post.postId}  ${post.title}")
         withContext(Dispatchers.IO) {
-            str = post.fillContent()
+            var str = ""
+            try {
+                str = post.fillContent()
+            } catch (e:NullPointerException) {
+                logger.error("post.fillContent() error: $e")
+                logger.error("postId $postId  title ${post.title}")
+                throw e
+            }
+            content = str
         }
-        content = str
-
-        println("${post.title}   ${post.postId}")
-
     }
     LaunchedEffect(Unit) {
         withContext(Dispatchers.IO) {
             comments = HeyClient.getComments(postId, 1)
         }
     }
+
+
     Box(modifier = Modifier.fillMaxSize()) {
         Column(modifier = Modifier.padding(16.dp).verticalScroll(state)) {
 
@@ -111,7 +122,7 @@ fun PostPage(
                         Runtime.getRuntime().exec("cmd /c " + getImagePath(urlToFileName(it)))
                     },
                     contentScale = ContentScale.Fit,
-                    )
+                )
             }
             Spacer(modifier = Modifier.height(16.dp))
 
@@ -129,14 +140,11 @@ fun PostPage(
              */
             FlowRow {
                 post.tags.forEach {
-                    AssistChip(
-                        onClick = { },
-                        label = { Text(it) },
-                        modifier = Modifier.padding(10.dp)
+                    AssistChip(onClick = { }, label = { Text(it) }, modifier = Modifier.padding(10.dp)
                     )
                 }
             }
-            HorizontalDivider(thickness = 2.dp,modifier = Modifier.padding(top = 16.dp, bottom = 16.dp))
+            HorizontalDivider(thickness = 2.dp, modifier = Modifier.padding(top = 16.dp, bottom = 16.dp))
             val listState = rememberLazyListState()
 
             LazyColumn(
@@ -146,20 +154,20 @@ fun PostPage(
             ) {
                 items(comments.size, key = { index -> comments[index].commentId }) { index ->
                     val comment = comments[index]
-                    Comment(comment, navController)
+                    Comment(comment, navController,postId)
                 }
             }
             LaunchedEffect(listState) {
                 snapshotFlow { listState.layoutInfo.visibleItemsInfo.lastOrNull()?.index }.collectLatest { lastIndex ->
-                        // 如果最后一个可见的项目是列表中的最后一个项目，那么加载更多数据
-                        if (lastIndex != null && lastIndex >= comments.size - 3) {
-                            // 在后台线程执行网络请求
-                            withContext(Dispatchers.IO) {
-                                val new = HeyClient.getComments(post.postId, ++page)
-                                comments += new
-                            }
+                    // 如果最后一个可见的项目是列表中的最后一个项目，那么加载更多数据
+                    if (lastIndex != null && lastIndex >= comments.size - 3) {
+                        // 在后台线程执行网络请求
+                        withContext(Dispatchers.IO) {
+                            val new = HeyClient.getComments(post.postId, ++page)
+                            comments += new
                         }
                     }
+                }
             }
 
         }
@@ -202,11 +210,13 @@ fun PostPage(
                         },
                     )
                 }
+
+
             }
+
         }
-
-
     }
+
 
 }
 
