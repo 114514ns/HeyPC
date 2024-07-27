@@ -4,15 +4,14 @@ import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.text.selection.SelectionContainer
-import androidx.compose.material3.Icon
-import androidx.compose.material3.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.List
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material3.ElevatedCard
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -21,9 +20,9 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
-import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import cn.pprocket.GlobalState
 import com.lt.load_the_image.rememberImagePainter
 
 @OptIn(ExperimentalFoundationApi::class)
@@ -85,11 +84,13 @@ fun PostCard(
             Spacer(modifier = Modifier.height(16.dp))
             Row {
                 imgs.forEach { img ->
+
                     Image(
                         painter = rememberImagePainter(img),
                         contentDescription = "",
                         modifier = Modifier.size(120.dp).padding(4.dp)
                     )
+
                 }
             }
             Row(
@@ -121,27 +122,3 @@ fun PostCard(
     }
 }
 
-@Composable
-fun SelectableText(text: String, modifier: Modifier = Modifier) {
-    // SelectionContainer allows text to be selectable
-    SelectionContainer {
-
-        /*
-        BasicTextField(
-            value = text,
-            onValueChange = {},
-            textStyle = TextStyle(fontSize = 18.sp),
-            readOnly = true, // Make sure the text is read-only
-            modifier = Modifier.fillMaxSize().padding(8.dp)
-        )
-
-         */
-        Text(
-            text,
-            modifier = Modifier.fillMaxSize().padding(8.dp),
-            style = TextStyle(fontSize = 18.sp),
-            color = Color.Black,
-            lineHeight = 25.sp
-        )
-    }
-}

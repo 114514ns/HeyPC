@@ -19,19 +19,19 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
-import cn.pprocket.components.AboutDialog
-import cn.pprocket.components.AccountDialog
-import cn.pprocket.components.CacheDialog
+import cn.pprocket.GlobalState
+import cn.pprocket.components.*
 import com.lt.load_the_image.rememberImagePainter
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 
-fun SettingsPage(navController: NavHostController,snackbarHostState: SnackbarHostState) {
+fun SettingsPage(navController: NavHostController, snackbarHostState: SnackbarHostState) {
 
     var showAbout by remember { mutableStateOf(false) }
-    var showCache by remember { mutableStateOf(false) }
     var showAccount by remember { mutableStateOf(false) }
+    var showDebug by remember { mutableStateOf(false) }
+    var showSettings by remember { mutableStateOf(false) }
     MaterialTheme {
         Card(
             modifier = Modifier.fillMaxSize(),
@@ -40,7 +40,8 @@ fun SettingsPage(navController: NavHostController,snackbarHostState: SnackbarHos
             Box {
                 Image(
                     rememberImagePainter(
-                        "https://cdn.max-c.com/app/heybox/icon_83.5@3x.png?imageMogr2/thumbnail/!100p/format/jpg"
+                        GlobalState.config.user.avatar
+                            ?: "https://cdn.max-c.com/app/heybox/icon_83.5@3x.png?imageMogr2/thumbnail/!100p/format/jpg"
                     ),
                     "",
                     modifier = Modifier.size(96.dp).align(Alignment.TopEnd).padding(top = 16.dp, end = 16.dp)
@@ -50,13 +51,6 @@ fun SettingsPage(navController: NavHostController,snackbarHostState: SnackbarHos
                     modifier = Modifier.fillMaxSize().padding(top = 96.dp)
                 ) {
 
-                    SettingItem(icon = Icons.Filled.Palette,
-                        title = "缓存",
-                        subtitle = "调整和清除缓存",
-                        onClick = {
-                            showCache = true
-                        }
-                    )
                     SettingItem(icon = Icons.Filled.Palette,
                         title = "屏蔽",
                         subtitle = "管理黑名单和屏蔽词",
@@ -71,24 +65,42 @@ fun SettingsPage(navController: NavHostController,snackbarHostState: SnackbarHos
                             showAbout = true
                         }
                     )
+                    SettingItem(icon = Icons.Filled.Palette,
+                        title = "调试",
+                        subtitle = "开发者选项",
+                        onClick = {
+                            showDebug = true
+                        }
+                    )
+                    SettingItem(icon = Icons.Filled.Palette,
+                        title = "设置",
+                        subtitle = "一般设置",
+                        onClick = {
+                            showSettings = true
+                        }
+                    )
 
                 }
             }
-            if (showCache) {
-                CacheDialog(
-                    onDismissRequest = {showCache = false},
-                    snackbarHostState = snackbarHostState
-                )
-            }
-            if(showAbout) {
+            if (showAbout) {
                 AboutDialog(
                     onDismissRequest = { showAbout = false },
                     snackbarHostState = snackbarHostState
                 )
             }
-            if(showAccount) {
+            if (showAccount) {
                 AccountDialog(
                     onDismissRequest = { showAccount = false },
+                )
+            }
+            if (showDebug) {
+                DebugDialog(
+                    onDismissRequest = { showDebug = false }, snackbarHostState,navController
+                )
+            }
+            if (showSettings) {
+                SettingDialog(
+                    onDismissRequest = { showSettings = false },
                 )
             }
         }
@@ -117,6 +129,7 @@ fun SettingItem(
                 Text(title)
                 Spacer(modifier = Modifier.height(8.dp)) // 更改为高度间距，以分隔标题和副标题
                 Text(subtitle)
+                MaterialTheme.colorScheme
             }
         }
     }
@@ -125,11 +138,11 @@ fun SettingItem(
 
 @Composable
 
-fun TextItem(title: String,subtitle: String,modifier: Modifier=Modifier,onClick: () -> Unit) {
-    Column(modifier.fillMaxWidth().clip(RoundedCornerShape(16.dp)).clickable {onClick()}) {
-        Text(title,modifier=Modifier.padding(8.dp))
+fun TextItem(title: String, subtitle: String, modifier: Modifier = Modifier, onClick: () -> Unit) {
+    Column(modifier.fillMaxWidth().clip(RoundedCornerShape(16.dp)).clickable { onClick() }) {
+        Text(title, modifier = Modifier.padding(8.dp))
         Spacer(modifier = Modifier.width(16.dp))
-        Text(subtitle,modifier=Modifier.padding(8.dp), style = TextStyle(color = Color(0xff8c9196)))
+        Text(subtitle, modifier = Modifier.padding(8.dp), style = TextStyle(color = Color(0xff8c9196)))
     }
 }
 

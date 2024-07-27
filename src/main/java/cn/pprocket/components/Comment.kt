@@ -10,6 +10,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ThumbUp
 import androidx.compose.material.icons.outlined.Favorite
 import androidx.compose.material.icons.outlined.ThumbUp
+import androidx.compose.material.icons.sharp.Favorite
 import androidx.compose.material.icons.sharp.ThumbUp
 import androidx.compose.material3.Card
 import androidx.compose.material3.Icon
@@ -33,6 +34,7 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import cn.pprocket.GlobalState
 import cn.pprocket.HeyClient
+import cn.pprocket.Logger
 import cn.pprocket.items.Comment
 import cn.pprocket.pages.getImagePath
 import cn.pprocket.pages.urlToFileName
@@ -43,14 +45,17 @@ import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
-fun Comment(comment: Comment, navController: NavHostController, postId: String) {
+fun Comment(comment: Comment, navController: NavHostController, postId: String, onClick: () -> Unit = {}) {
     val subComments = remember { mutableStateListOf<Comment>() }
+    val logger = Logger("cn.pprocket.components.Comment")
     LaunchedEffect(Unit) {
         comment.subComments.forEach { subComments.add(it) }
         subComments.distinctBy { it.commentId }
 
     }
-    Box(/*modifier = Modifier.animateContentSize(animationSpec = tween(500))*/) {
+    Box(modifier = Modifier.onClick {
+
+    }) {
         Column(
             modifier = Modifier.fillMaxWidth().background(MaterialTheme.colorScheme.background).padding(12.dp)
 
@@ -87,11 +92,15 @@ fun Comment(comment: Comment, navController: NavHostController, postId: String) 
                     }
                 }
                 Spacer(modifier = Modifier.weight(1f))
-                Icon(Icons.Outlined.ThumbUp, "")
+                Icon(Icons.Outlined.Favorite, "")
                 Text(comment.likes.toString(), modifier = Modifier.padding(start = 6.dp))
 
             }
-            Card(modifier = Modifier.padding(top = 12.dp)) {
+            Card(modifier = Modifier.padding(top = 12.dp).onClick {
+                GlobalState.subCommentId = comment.commentId
+                logger.info("Set subCommentId: ${GlobalState.subCommentId}")
+                onClick()
+            }) {
                 Column(modifier = Modifier.fillMaxWidth().padding(12.dp)) {
                     Spacer(modifier = Modifier.height(8.dp))
                     SelectableText(text = comment.content)
@@ -165,6 +174,9 @@ fun Comment(comment: Comment, navController: NavHostController, postId: String) 
                                     }
                                     // 在这里处理点击事件，例如打开 URL 或导航到其他屏幕
                                 }
+                            GlobalState.subCommentId = it.commentId
+                            logger.info("Set subCommentId: ${GlobalState.subCommentId}")
+                            onClick()
                         })
                 }
                 if (comment.isHasMore) {

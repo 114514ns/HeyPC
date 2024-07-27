@@ -11,6 +11,7 @@ import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import cn.pprocket.pages.TextItem
+import cn.pprocket.pages.getImageDir
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
@@ -20,6 +21,7 @@ fun CacheDialog(
     onDismissRequest: () -> Unit, snackbarHostState: SnackbarHostState
 ) {
     val scope = rememberCoroutineScope()
+    val dir = getImageDir()
     Dialog(onDismissRequest = { onDismissRequest() }) {
 
         Card(
@@ -30,7 +32,7 @@ fun CacheDialog(
                 modifier = Modifier.fillMaxSize().padding(16.dp)
             ) {
                 Row {
-                    TextItem("清除图片缓存", "已缓存521MB", onClick = {
+                    TextItem("清除图片缓存", formatBytes(dir.totalSpace), onClick = {
                         scope.launch {
                             snackbarHostState.showSnackbar("on")
                             onDismissRequest()
@@ -42,4 +44,18 @@ fun CacheDialog(
             }
         }
     }
+}
+fun formatBytes(bytes: Long): String {
+    if (bytes < 1024) return "$bytes B"
+
+    val units = arrayOf("B", "KB", "MB", "GB", "TB", "PB", "EB", "ZB", "YB")
+    var value = bytes.toDouble()
+    var index = 0
+
+    while (value >= 1024 && index < units.size - 1) {
+        value /= 1024
+        index++
+    }
+
+    return String.format("%.2f %s", value, units[index])
 }

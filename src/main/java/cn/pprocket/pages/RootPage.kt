@@ -28,7 +28,7 @@ import androidx.navigation.compose.navigation
 import androidx.navigation.compose.rememberNavController
 
 @Composable
-fun RootPage() {
+fun RootPage(onChangeTitle : (String) -> Unit) {
     val navController = rememberNavController()
     val snackbarHostState = remember { SnackbarHostState() }
     Box(modifier = Modifier.fillMaxSize()) {
@@ -76,7 +76,7 @@ fun RootPage() {
                         )
                     }
                 ) { stack ->
-                    PostPage(navController, stack.arguments?.getString("postId") ?: "",snackbarHostState)
+                    PostPage(navController, stack.arguments?.getString("postId") ?: "",snackbarHostState,onChangeTitle)
                 }
             }
         }

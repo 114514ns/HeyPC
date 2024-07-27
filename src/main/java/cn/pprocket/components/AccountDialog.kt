@@ -41,6 +41,8 @@ fun AccountDialog(onDismissRequest: () -> Unit) {
             while (true) {
                 if (HeyClient.checkLogin(url)) {
                     GlobalState.config.cookies = HeyClient.cookie
+                    GlobalState.config.isLogin = true
+                    GlobalState.config.user = HeyClient.user
                     break
                 }
                 Thread.sleep(500)
