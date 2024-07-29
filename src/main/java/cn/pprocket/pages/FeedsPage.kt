@@ -1,24 +1,29 @@
 package cn.pprocket.pages
 
-import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
-import androidx.compose.animation.fadeIn
-import androidx.compose.animation.fadeOut
-import androidx.compose.foundation.*
+import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.foundation.HorizontalScrollbar
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.gestures.*
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.foundation.lazy.grid.GridCells
+import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.rememberLazyGridState
 import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.foundation.lazy.staggeredgrid.LazyVerticalStaggeredGrid
+import androidx.compose.foundation.lazy.staggeredgrid.StaggeredGridCells
+import androidx.compose.foundation.lazy.staggeredgrid.rememberLazyStaggeredGridState
+import androidx.compose.foundation.rememberScrollbarAdapter
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.input.pointer.pointerInput
-import androidx.compose.ui.text.style.LineHeightStyle
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.window.WindowPlacement
+import androidx.compose.ui.window.WindowState
 import androidx.navigation.NavHostController
 import cn.pprocket.GlobalState
 import cn.pprocket.HeyClient
@@ -32,7 +37,6 @@ import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.lang.management.ManagementFactory
-import kotlin.math.log
 
 
 @OptIn(ExperimentalFoundationApi::class, ExperimentalMaterial3Api::class, ExperimentalLayoutApi::class)
@@ -43,11 +47,11 @@ fun FeedsPage(navController: NavHostController, snackbarHostState: SnackbarHostS
     var selected by rememberSaveable { mutableStateOf(0) }
     val coroutineScope = rememberCoroutineScope()
 
-    var topics = rememberSaveable {
+    val topics = rememberSaveable {
         mutableStateListOf<Topic>(
-            Topic.LOVE,
-            Topic.RECOMMEND,
             Topic.HOTS,
+            Topic.RECOMMEND,
+            Topic.LOVE,
             Topic.SCHOOL,
             Topic.HARDWARE,
             Topic.DAILY,
@@ -56,7 +60,8 @@ fun FeedsPage(navController: NavHostController, snackbarHostState: SnackbarHostS
     }
 
     val listState = rememberLazyGridState()
-    val scrollState = rememberLazyListState()
+    //val scrollState = rememberLazyListState()
+    val scrollState = rememberLazyStaggeredGridState()
     val logger = Logger("cn.pprocket.pages.FeedsPage")
     var firstVisibleItemIndex by remember { mutableStateOf(0) }
     val topicScroll = rememberLazyListState()
@@ -70,6 +75,9 @@ fun FeedsPage(navController: NavHostController, snackbarHostState: SnackbarHostS
         } else if (topics[selected].id != 114514 && refresh) {
             refresh = false
             withContext(Dispatchers.IO) {
+                coroutineScope.launch {
+                    scrollState.animateScrollToItem(0, 0)
+                }
                 logger.info("selected ${topics[selected]}")
                 val fetch = HeyClient.getPosts(topics[selected])
                 val newList = mutableListOf<Post>()
@@ -131,8 +139,7 @@ fun FeedsPage(navController: NavHostController, snackbarHostState: SnackbarHostS
                     firstVisibleItemIndex = index
                 }
         }
-        var firstVisibleItemIndex by remember { mutableStateOf(0) }
-        val scale by animateFloatAsState(if (firstVisibleItemIndex > 0) 0.5f else 1.0f)
+        var itemsPerRow by remember { mutableStateOf(1) }
         LaunchedEffect(scrollState) {
 
             snapshotFlow { scrollState.layoutInfo.visibleItemsInfo.lastOrNull()?.index }.collectLatest { lastIndex ->
@@ -149,6 +156,33 @@ fun FeedsPage(navController: NavHostController, snackbarHostState: SnackbarHostS
                 }
             }
         }
+        LazyVerticalStaggeredGrid(StaggeredGridCells.Fixed(itemsPerRow), state = scrollState) {
+            items(
+
+                posts.size, key = { index -> posts[index].postId }) { index ->
+                val post = posts[index]
+                PostCard(
+                    title = post.title,
+                    author = post.userName,
+                    content = post.description,
+                    publishTime = post.createAt,
+                    likesCount = post.likes,
+                    commentsCount = post.comments,
+                    onCardClick = {
+                        GlobalState.map[post.postId] = post
+                        navController.navigate("post/${post.postId}")
+                    },
+                    userAvatar = post.userAvatar,
+                    imgs = post.images,
+                    modifier = Modifier.animateItemPlacement(
+                        tween(durationMillis = 250)
+                    )
+                )
+
+
+            }
+        }
+        /*
 
         LazyColumn(
             state = scrollState,
@@ -161,41 +195,27 @@ fun FeedsPage(navController: NavHostController, snackbarHostState: SnackbarHostS
                 posts.size, key = { index -> posts[index].postId }) { index ->
                 val post = posts[index]
                 var visible by remember { mutableStateOf(true) }
-                AnimatedVisibility(
-                    visible = visible,
-                    enter = fadeIn(),
-                    exit = fadeOut()
-                ) {
-                    PostCard(
-                        title = post.title,
-                        author = post.userName,
-                        content = post.description,
-                        publishTime = post.createAt,
-                        likesCount = post.likes,
-                        commentsCount = post.comments,
-                        onCardClick = {
-                            GlobalState.map[post.postId] = post
-                            navController.navigate("post/${post.postId}")
-                        },
-                        userAvatar = post.userAvatar,
-                        imgs = post.images,
-                        modifier = Modifier.animateItemPlacement(animationSpec = tween(500))
-                    )
-                }
+
+
 
 
             }
 
         }
 
+         */
+
 
     }
     if (showSheet) {
-        ModalBottomSheet(onDismissRequest = { showSheet = false }) {
+        ModalBottomSheet(onDismissRequest = { showSheet = false;selected = 1 }) {
             FlowRow(modifier = Modifier.padding(12.dp)) {
                 GlobalState.topicList.forEach {
                     AssistChip(
                         onClick = {
+                            coroutineScope.launch {
+                                scrollState.animateScrollToItem(0)
+                            }
                             val currentId = it.id
                             if (topics.any { it.id == currentId }) {
                                 var pos = -1

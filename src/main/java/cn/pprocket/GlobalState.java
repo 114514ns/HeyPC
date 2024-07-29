@@ -1,5 +1,6 @@
 package cn.pprocket;
 
+import androidx.compose.runtime.MutableState;
 import cn.pprocket.items.Post;
 import cn.pprocket.items.Topic;
 import cn.pprocket.items.User;
@@ -16,4 +17,5 @@ public class GlobalState {
     public static String subCommentId = "-1";
     public static boolean started = false;
     public static List<Topic> topicList = new ArrayList<>();
+    public static Object feeds = null;
 }

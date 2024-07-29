@@ -1,66 +1,76 @@
-import androidx.compose.desktop.DesktopMaterialTheme
-import androidx.compose.desktop.DesktopTheme
-import androidx.compose.desktop.ui.tooling.preview.Preview
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.darkColorScheme
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Window
+import androidx.compose.ui.window.WindowPlacement
 import androidx.compose.ui.window.application
 import androidx.compose.ui.window.rememberWindowState
 import cn.pprocket.Config
 import cn.pprocket.GlobalState
 import cn.pprocket.HeyClient
 import cn.pprocket.Logger
+import cn.pprocket.State
 import cn.pprocket.items.Topic
 import cn.pprocket.pages.RootPage
 import cn.pprocket.pages.getImageDir
 import com.google.gson.Gson
-
+import com.lt.load_the_image.rememberImagePainter
+import com.materialkolor.rememberDynamicColorScheme
 import java.awt.Dimension
 import java.awt.Toolkit
 import java.io.File
-import java.lang.management.ManagementFactory
-import java.nio.file.Files
-import java.nio.file.Paths
-
 
 
 val logger = Logger(Object())
 
 fun main() = application {
-    cleanupTask()
-    fetchTopicTask()
+    LaunchedEffect(Unit) {
+        GlobalState.config = loadConfig()
+        HeyClient.cookie = GlobalState.config.cookies
+        cleanupTask()
+        fetchTopicTask()
+        saveTask()
+        fetchFeedsTask()
+        gcTask()
+        fetchMeTask()
+
+    }
+
     var title by remember { mutableStateOf("迎面走来的你让我如此蠢蠢欲动") }
-    GlobalState.config = loadConfig()
-    HeyClient.cookie = GlobalState.config.cookies
-    saveTask()
+
     System.setProperty("skiko.directx.gpu.priority", "discrete")
     val screenSize: Dimension = Toolkit.getDefaultToolkit().getScreenSize()
-    gcTask()
+
     val width = screenSize.width
     val multipy = 1.3f * (width / 2560f)
     logger.info("Screen size :  ${screenSize.width} * ${screenSize.height}")
     logger.info("Real size ${multipy * 450}dp  * ${1050 * multipy}dp")
+    val windowState = rememberWindowState(width = (multipy * 450).dp, height = (multipy * 1050).dp)
+    val colorScheme = rememberDynamicColorScheme(Color(99, 160, 2), false)
+
 
     Window(
         title = title,
         onCloseRequest = ::exitApplication,
-        state = rememberWindowState(
-            width = (multipy * 450).dp, height = (multipy * 1050).dp,
-
-            )
+        state = windowState,
+        icon = rememberImagePainter(File("icons/icon.png"))
     ) {
-        MaterialTheme() {
+        MaterialTheme(colorScheme) {
             Box(modifier = Modifier.fillMaxSize()) {
-                RootPage(onChangeTitle = { newTitle ->
-                    title = newTitle
+                RootPage(onChangeState = { state ->
+                    if (state.type == "title") {
+                        title = state.value
+                    }
                 })
             }
+
         }
+
 
     }
 }
@@ -77,10 +87,18 @@ fun loadConfig(): Config {
 }
 
 fun saveTask() {
+    var last = ""
     Thread {
         while (true) {
+
             val json = Gson().toJson(GlobalState.config)
-            File("config.json").writeText(json)
+            if (last == "") {
+                last = json
+            } else if (last != json) {
+                last = json
+                File("config.json").writeText(json)
+                logger.info("写入配置文件")
+            }
             Thread.sleep(1000)
         }
     }.start()
@@ -101,7 +119,7 @@ fun cleanupTask() {
 
         if (dir.exists()) {
             val start = System.currentTimeMillis()
-            val files  = dir.listFiles()
+            val files = dir.listFiles()
             files.forEach {
                 it.delete()
             }
@@ -117,5 +135,20 @@ fun cleanupTask() {
 fun fetchTopicTask() {
     Thread {
         GlobalState.topicList = Topic.getTopics()
+    }.start()
+}
+
+fun fetchMeTask() {
+    Thread {
+        if (GlobalState.config.isLogin) {
+            val userId = GlobalState.config.user.userId
+            GlobalState.users[userId] = HeyClient.getUser(userId)
+        }
+    }.start()
+}
+
+fun fetchFeedsTask() {
+    Thread {
+        GlobalState.feeds = HeyClient.getPosts(Topic.RECOMMEND)
     }.start()
 }

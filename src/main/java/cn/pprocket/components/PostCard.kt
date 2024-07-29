@@ -2,9 +2,9 @@ package cn.pprocket.components
 
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.foundation.text.selection.SelectionContainer
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.List
 import androidx.compose.material.icons.filled.Favorite
@@ -16,14 +16,11 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
-import cn.pprocket.GlobalState
 import com.lt.load_the_image.rememberImagePainter
+import com.skydoves.landscapist.coil3.CoilImage
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
@@ -39,10 +36,9 @@ fun PostCard(
     imgs: List<String>,
     modifier: Modifier
 ) {
-    ElevatedCard(
-        onClick = onCardClick, modifier = modifier.fillMaxWidth().padding(16.dp)
 
-
+    Box(
+         modifier = modifier.fillMaxWidth().padding(16.dp).clickable { onCardClick() }
     ) {
         Column(
             modifier = Modifier.padding(16.dp)
@@ -58,9 +54,8 @@ fun PostCard(
             Row(
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                Image(
-                    rememberImagePainter(userAvatar),
-                    "",
+                CoilImage(
+                    imageModel = {userAvatar},
                     modifier = Modifier.size(48.dp).padding(6.dp).clip(CircleShape)
                 )
                 Text(
@@ -85,11 +80,12 @@ fun PostCard(
             Row {
                 imgs.forEach { img ->
 
-                    Image(
-                        painter = rememberImagePainter(img),
-                        contentDescription = "",
+                    CoilImage(
+                        imageModel = {img},
                         modifier = Modifier.size(120.dp).padding(4.dp)
+
                     )
+
 
                 }
             }

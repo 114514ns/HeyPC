@@ -32,7 +32,7 @@ dependencies {
     implementation(compose.runtime)
     implementation(compose.materialIconsExtended)
     implementation("com.github.ltttttttttttt:load-the-image:1.1.1")
-    implementation("cn.pprocket:heybox:240727-8")
+    implementation("cn.pprocket:heybox:240728-4")
     implementation("org.jetbrains.kotlinx:kotlinx-serialization-core:1.7.0")
     implementation("org.jetbrains.androidx.navigation:navigation-compose:2.7.0-alpha07")
     implementation("com.google.zxing:core:3.5.3")
@@ -43,8 +43,11 @@ dependencies {
     implementation("commons-logging:commons-logging:1.3.3")
     implementation("com.github.alorma.compose-settings:ui-tiles:2.4.0")
     implementation("com.github.alorma.compose-settings:ui-tiles-extended:2.4.0")
-    implementation("com.mikepenz:multiplatform-markdown-renderer-coil3:0.25.0")// https://github.com/alorma/Compose-Settings
-    implementation("com.mikepenz:multiplatform-markdown-renderer-m3:0.25.0") // https://github.com/mikepenz/multiplatform-markdown-renderer
+    implementation("com.github.skydoves:landscapist-coil3:2.3.6")
+    //implementation("com.github.skydoves:orbital:0.4.0")
+    implementation("com.materialkolor:material-kolor:1.7.0")
+    implementation ("io.github.fornewid:material-motion-compose-core:2.0.1")
+
 }
 
 compose.desktop {
@@ -55,7 +58,16 @@ compose.desktop {
             version.set("7.5.0")
             configurationFiles.from("proguard.pro")
         }
+        nativeDistributions {
+            targetFormats(TargetFormat.Dmg, TargetFormat.Msi, TargetFormat.Deb)
+            packageName = "Compose Fluent Design Gallery"
+            packageVersion = "1.0.0"
+            windows {
+                iconFile.set(project.file("icons/icon.ico"))
+            }
+        }
     }
+
 }
 
 tasks.withType<org.gradle.jvm.tasks.Jar> {

@@ -21,7 +21,6 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import cn.pprocket.GlobalState
-import cn.pprocket.HeyClient
 import cn.pprocket.HeyClient.fetchComments
 import cn.pprocket.HeyClient.fetchPosts
 import cn.pprocket.components.PostCard

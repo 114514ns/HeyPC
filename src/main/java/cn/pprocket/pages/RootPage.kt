@@ -19,6 +19,7 @@ import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.*
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
@@ -26,9 +27,10 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.navigation
 import androidx.navigation.compose.rememberNavController
+import cn.pprocket.State
 
 @Composable
-fun RootPage(onChangeTitle : (String) -> Unit) {
+fun RootPage(onChangeState : (State) -> Unit) {
     val navController = rememberNavController()
     val snackbarHostState = remember { SnackbarHostState() }
     Box(modifier = Modifier.fillMaxSize()) {
@@ -76,7 +78,7 @@ fun RootPage(onChangeTitle : (String) -> Unit) {
                         )
                     }
                 ) { stack ->
-                    PostPage(navController, stack.arguments?.getString("postId") ?: "",snackbarHostState,onChangeTitle)
+                    PostPage(navController, stack.arguments?.getString("postId") ?: "",snackbarHostState,onChangeState)
                 }
             }
         }
@@ -92,7 +94,7 @@ fun BottomNavigationBar(navController: NavHostController) {
         Icons.Default.Settings
     )
 
-    var selectedItem by remember { mutableStateOf(0) }
+    var selectedItem by rememberSaveable { mutableStateOf(0) }
     NavigationBar {
         items.forEachIndexed { index, item ->
             NavigationBarItem(

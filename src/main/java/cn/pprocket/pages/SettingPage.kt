@@ -32,7 +32,7 @@ fun SettingsPage(navController: NavHostController, snackbarHostState: SnackbarHo
     var showAccount by remember { mutableStateOf(false) }
     var showDebug by remember { mutableStateOf(false) }
     var showSettings by remember { mutableStateOf(false) }
-    MaterialTheme {
+    Box {
         Card(
             modifier = Modifier.fillMaxSize(),
 
@@ -45,7 +45,15 @@ fun SettingsPage(navController: NavHostController, snackbarHostState: SnackbarHo
                     ),
                     "",
                     modifier = Modifier.size(96.dp).align(Alignment.TopEnd).padding(top = 16.dp, end = 16.dp)
-                        .clip(CircleShape).onClick { showAccount = true }
+                        .clip(CircleShape).onClick {
+                            if (GlobalState.config.isLogin) {
+                                val userId = GlobalState.config.user.userId
+                                navController.navigate("user/${userId}")
+                            } else {
+                                showAccount = true
+                            }
+
+                        }
                 )
                 Column(
                     modifier = Modifier.fillMaxSize().padding(top = 96.dp)
