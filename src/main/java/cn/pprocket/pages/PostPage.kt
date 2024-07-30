@@ -3,7 +3,6 @@ package cn.pprocket.pages
 import androidx.compose.desktop.ui.tooling.preview.Preview
 import androidx.compose.foundation.*
 import androidx.compose.foundation.gestures.ScrollableDefaults
-import androidx.compose.foundation.gestures.scrollable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.rememberLazyListState
@@ -22,29 +21,31 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.input.key.*
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.TextRange
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
-import cn.pprocket.GlobalState
-import cn.pprocket.HeyClient
-import cn.pprocket.Logger
+import cn.pprocket.*
 import cn.pprocket.State
 import cn.pprocket.components.Comment
+import cn.pprocket.components.ContextImage
+import cn.pprocket.components.MarkdownQuote
 import cn.pprocket.components.SelectableText
 import cn.pprocket.items.Comment
 import cn.pprocket.items.Tag
-import cn.pprocket.toBufferedImage
 import com.lt.load_the_image.rememberImagePainter
 import com.lt.load_the_image.util.MD5
+import com.skydoves.landscapist.ImageOptions
 import com.skydoves.landscapist.coil3.CoilImage
-import com.skydoves.landscapist.components.rememberImageComponent
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import okhttp3.Request
+import java.awt.Desktop
 import java.awt.Image
 import java.awt.Toolkit
 import java.awt.datatransfer.Clipboard
@@ -52,7 +53,6 @@ import java.awt.datatransfer.DataFlavor
 import java.io.ByteArrayOutputStream
 import java.io.File
 import javax.imageio.ImageIO
-import kotlin.math.log
 import kotlin.random.Random
 
 
@@ -99,33 +99,29 @@ fun PostPage(
         withContext(Dispatchers.IO) {
             comments.addAll(HeyClient.getComments(postId, 1))
         }
-        val state0 = State()
-        state0.type = "title"
-        state0.value = post.title
+        val state0 = State("title", post.title)
         onChangeState(state0)
     }
 
     var tabIndex by remember { mutableStateOf(0) }
     Spacer(modifier = Modifier.height(32.dp))
     Column(modifier = Modifier.padding(16.dp)) {
-        /*
-        val tabs = listOf("动态", "评论")
-        TabRow(selectedTabIndex = tabIndex) {
-            tabs.forEachIndexed { index, title ->
-                Tab(text = { Text(title) }, selected = tabIndex == index, onClick = {
-                    tabIndex = index
-                }, icon = {
-                    when (index) {
-                        0 -> Icon(imageVector = Icons.Default.Home, contentDescription = null)
-                        1 -> Icon(imageVector = Icons.Default.Info, contentDescription = null)
-                    }
-                })
+        if (GlobalState.config.isShowTab) {
+            val tabs = listOf("动态", "评论")
+            TabRow(selectedTabIndex = tabIndex) {
+                tabs.forEachIndexed { index, title ->
+                    Tab(text = { Text(title) }, selected = tabIndex == index, onClick = {
+                        tabIndex = index
+                    }, icon = {
+                        when (index) {
+                            0 -> Icon(imageVector = Icons.Default.Home, contentDescription = null)
+                            1 -> Icon(imageVector = Icons.Default.Info, contentDescription = null)
+                        }
+                    })
+                }
+
             }
-
-
         }
-
-         */
         Box {
             when (tabIndex) {
                 0 -> {
@@ -162,21 +158,20 @@ fun PostPage(
                                         }
 
                                         "image" -> {
-                                            Image(
-                                                painter = rememberImagePainter(it.tagValue),
-                                                contentDescription = null,
-                                                modifier = Modifier.fillMaxWidth().padding(8.dp)
-                                                    .clip(RoundedCornerShape(12.dp))
-                                                    .onClick {
-                                                        Runtime.getRuntime()
-                                                            .exec("cmd /c " + getImagePath(urlToFileName(it.tagValue)))
-                                                    },
-                                                contentScale = ContentScale.Fit,
-                                            )
+                                            ContextImage(scope, it.tagValue)
                                         }
 
                                         "title" -> {
                                             SelectableText(it.tagValue, style = MaterialTheme.typography.headlineMedium)
+                                        }
+
+                                        "ref" -> {
+                                            MarkdownQuote(it.tagValue)
+                                        }
+
+                                        "gameCard" -> {
+
+                                            //GameCard({},HeyClient.getGame(it.tagValue))
                                         }
                                     }
                                 }
@@ -186,37 +181,33 @@ fun PostPage(
                                     text = content
                                 )
 
-
                             }
-
                         }
 
                         // 帖子图片
                         if (!post.isHTML) {
-                            post.images.forEach {
-                                CoilImage(
-                                    imageModel = { it },
-                                    modifier = Modifier.padding(8.dp).clip(RoundedCornerShape(12.dp))
-                                )
-                                /*
-                                Image(
-                                    painter = rememberImagePainter(it),
-                                    contentDescription = "帖子图片",
-                                    modifier = Modifier.padding(8.dp).clip(RoundedCornerShape(12.dp)).onClick {
-                                        Runtime.getRuntime().exec("cmd /c " + getImagePath(urlToFileName(it)))
-                                    },
-                                    contentScale = ContentScale.Fit,
-                                )
-
-                                 */
+                            post.images.forEach { imageUrl ->
+                                ContextImage(scope, imageUrl)
                             }
                         }
 
-
-
                         FlowRow {
                             post.tags.forEach {
-                                AssistChip(onClick = { }, label = { Text(it) }, modifier = Modifier.padding(10.dp)
+                                AssistChip(
+                                    onClick = {
+                                        val state = State("title", it.name)
+                                        onChangeState(state)
+                                        navController.navigate("feeds/${it.name}|${it.id}")
+                                    },
+                                    label = { Text(it.name) },
+                                    modifier = Modifier.padding(10.dp),
+                                    leadingIcon = {
+                                        Image(
+                                            rememberImagePainter(it.icon),
+                                            contentDescription = "Localized description",
+                                            Modifier.size(AssistChipDefaults.IconSize)
+                                        )
+                                    }
                                 )
                             }
                         }
@@ -234,10 +225,23 @@ fun PostPage(
                     ) {
                         items(comments.size, key = { index -> comments[index].commentId }) { index ->
                             val comment = comments[index]
-                            Comment(comment, navController, postId, onClick = {
-                                showSheet = true
+                            if (GlobalState.config.isBlockCube) {
+                                val pattern = "\\[cube_.*?]".toRegex()
+                                val newText = comment.content.replace(pattern, "")
+                                if (newText.isNotEmpty()) {
+                                    Comment(comment, navController, postId, onClick = {
+                                        showSheet = true
 
-                            })
+                                    })
+                                }
+                            } else {
+                                Comment(comment, navController, postId, onClick = {
+                                    showSheet = true
+
+                                })
+                            }
+
+
                         }
                     }
                     LaunchedEffect(listState) {
@@ -296,9 +300,7 @@ fun PostPage(
             )
             FloatingActionButton(
                 onClick = {
-                    val state0 = State()
-                    state0.type = "title"
-                    state0.value = "你干嘛 ~ 哎呦"
+                    val state0 = State("title", "你干嘛 ~ 哎呦")
                     onChangeState(state0)
                     navController.popBackStack();
                 },
@@ -307,12 +309,6 @@ fun PostPage(
             )
         }
     }
-
-
-
-
-
-
 
 
     if (showSheet) {
@@ -440,6 +436,10 @@ fun getImagePath(string: String) = File(
 
 fun getImageDir() = File(
     System.getProperty("user.home") + File.separator + "Pictures" + File.separator + "LoadTheImageCache" + File.separator
+)
+
+fun getStickerDir() = File(
+    System.getProperty("user.home") + File.separator + "Pictures" + File.separator + "HeyImage" + File.separator
 )
 
 private fun getClipboardContents(): String? {

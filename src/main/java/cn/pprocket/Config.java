@@ -13,4 +13,6 @@ public class Config {
     boolean isLogin = false;
     User user = new User();
     boolean blockCube = true;
+    boolean showTab = false;
+    boolean originImage = true;
 }

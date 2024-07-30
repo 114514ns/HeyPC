@@ -18,8 +18,10 @@ import cn.pprocket.State
 import cn.pprocket.items.Topic
 import cn.pprocket.pages.RootPage
 import cn.pprocket.pages.getImageDir
+import cn.pprocket.sticker.StickerManager
 import com.google.gson.Gson
 import com.lt.load_the_image.rememberImagePainter
+import com.materialkolor.DynamicMaterialTheme
 import com.materialkolor.rememberDynamicColorScheme
 import java.awt.Dimension
 import java.awt.Toolkit
@@ -38,6 +40,7 @@ fun main() = application {
         fetchFeedsTask()
         gcTask()
         fetchMeTask()
+        StickerManager
 
     }
 
@@ -52,7 +55,7 @@ fun main() = application {
     logger.info("Real size ${multipy * 450}dp  * ${1050 * multipy}dp")
     val windowState = rememberWindowState(width = (multipy * 450).dp, height = (multipy * 1050).dp)
     val colorScheme = rememberDynamicColorScheme(Color(99, 160, 2), false)
-
+    var color by remember { mutableStateOf(Color(99, 160, 2)) }
 
     Window(
         title = title,
@@ -60,11 +63,14 @@ fun main() = application {
         state = windowState,
         icon = rememberImagePainter(File("icons/icon.png"))
     ) {
-        MaterialTheme(colorScheme) {
+        DynamicMaterialTheme(color,useDarkTheme = false) {
             Box(modifier = Modifier.fillMaxSize()) {
                 RootPage(onChangeState = { state ->
                     if (state.type == "title") {
-                        title = state.value
+                        title = state.value as String
+                    }
+                    if (state.type == "color") {
+                        color = state.value as Color
                     }
                 })
             }

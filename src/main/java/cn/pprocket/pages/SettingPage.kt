@@ -20,13 +20,14 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import cn.pprocket.GlobalState
+import cn.pprocket.State
 import cn.pprocket.components.*
 import com.lt.load_the_image.rememberImagePainter
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 
-fun SettingsPage(navController: NavHostController, snackbarHostState: SnackbarHostState) {
+fun SettingsPage(navController: NavHostController, snackbarHostState: SnackbarHostState,onChangeState: (State) -> Unit) {
 
     var showAbout by remember { mutableStateOf(false) }
     var showAccount by remember { mutableStateOf(false) }
@@ -109,6 +110,7 @@ fun SettingsPage(navController: NavHostController, snackbarHostState: SnackbarHo
             if (showSettings) {
                 SettingDialog(
                     onDismissRequest = { showSettings = false },
+                    onChangeState
                 )
             }
         }

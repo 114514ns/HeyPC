@@ -27,26 +27,31 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.navigation
 import androidx.navigation.compose.rememberNavController
+import androidx.navigation.navArgument
 import cn.pprocket.State
+import cn.pprocket.items.Topic
 
 @Composable
-fun RootPage(onChangeState : (State) -> Unit) {
+fun RootPage(onChangeState: (State) -> Unit) {
     val navController = rememberNavController()
     val snackbarHostState = remember { SnackbarHostState() }
     Box(modifier = Modifier.fillMaxSize()) {
         var showBottomBar by remember { mutableStateOf(true) }
         Scaffold(
-            bottomBar = { if (showBottomBar) {
-                BottomNavigationBar(navController)
-            }},
-            snackbarHost  =  {
+            bottomBar = {
+                if (showBottomBar) {
+                    BottomNavigationBar(navController)
+                }
+            },
+            snackbarHost = {
                 SnackbarHost(hostState = snackbarHostState)
             }
         ) {
 
             LaunchedEffect(navController) {
                 navController.currentBackStackEntryFlow.collect { backStackEntry ->
-                    showBottomBar = backStackEntry.destination.route == "feeds" || backStackEntry.destination.route == "settings"
+                    showBottomBar =
+                        backStackEntry.destination.route!! == "feeds" || backStackEntry.destination.route == "settings"
                 }
             }
             NavHost(navController = navController, startDestination = "home") {
@@ -54,11 +59,17 @@ fun RootPage(onChangeState : (State) -> Unit) {
                     startDestination = "feeds",
                     route = "home"
                 ) {
+                    composable("feeds/{topic}",) { stack ->
+                            val str = stack.arguments?.getString("topic")
+                            val topic = Topic(str!!.split("|")[0], str.split("|")[1].toInt(), "")
+                            FeedsPage(navController, snackbarHostState, topic)
+
+                    }
                     composable("feeds") {
-                        FeedsPage(navController,snackbarHostState)
+                        FeedsPage(navController, snackbarHostState)
                     }
                     composable("settings") {
-                        SettingsPage(navController,snackbarHostState)
+                        SettingsPage(navController, snackbarHostState,onChangeState)
                     }
                     composable(
                         "user/{userId}",
@@ -78,12 +89,18 @@ fun RootPage(onChangeState : (State) -> Unit) {
                         )
                     }
                 ) { stack ->
-                    PostPage(navController, stack.arguments?.getString("postId") ?: "",snackbarHostState,onChangeState)
+                    PostPage(
+                        navController,
+                        stack.arguments?.getString("postId") ?: "",
+                        snackbarHostState,
+                        onChangeState
+                    )
                 }
             }
         }
     }
 }
+
 @Composable
 fun BottomNavigationBar(navController: NavHostController) {
     //var selectedItem by remember { mutableStateOf(0) }
