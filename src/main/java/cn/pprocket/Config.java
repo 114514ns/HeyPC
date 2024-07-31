@@ -15,4 +15,7 @@ public class Config {
     boolean blockCube = true;
     boolean showTab = false;
     boolean originImage = true;
+    int colorRed;
+    int colorGreen;
+    int colorBlue;
 }

@@ -44,9 +44,7 @@
 
 
 
--keep class com.skydoves.** {*;}
--keep enum com.skydoves.** {*;}
--keep interface com.skydoves.** {*;}
+
 
 
 

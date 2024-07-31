@@ -21,6 +21,8 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.window.WindowPlacement
+import androidx.compose.ui.window.WindowState
 import androidx.navigation.NavHostController
 import cn.pprocket.GlobalState
 import cn.pprocket.HeyClient
@@ -40,7 +42,7 @@ import java.lang.management.ManagementFactory
 
 @OptIn(ExperimentalFoundationApi::class, ExperimentalMaterial3Api::class, ExperimentalLayoutApi::class)
 @Composable
-fun FeedsPage(navController: NavHostController, snackbarHostState: SnackbarHostState, topicArg: Topic? = null) {
+fun FeedsPage(navController: NavHostController, snackbarHostState: SnackbarHostState, topicArg: Topic? = null,windowState: WindowState) {
     val posts = rememberSaveable { mutableStateListOf<Post>() }
     var topic by rememberSaveable { mutableStateOf(Topic.LOVE) }
     var selected by rememberSaveable { mutableStateOf(0) }
@@ -54,18 +56,19 @@ fun FeedsPage(navController: NavHostController, snackbarHostState: SnackbarHostS
             Topic.SCHOOL,
             Topic.HARDWARE,
             Topic.DAILY,
+            Topic.MAX,
             Topic("更多", 114514, "")
         )
     }
 
     val listState = rememberLazyGridState()
-    //val scrollState = rememberLazyListState()
     val scrollState = rememberLazyStaggeredGridState()
     val logger = Logger("cn.pprocket.pages.FeedsPage")
     var firstVisibleItemIndex by remember { mutableStateOf(0) }
     val topicScroll = rememberLazyListState()
     var showSheet by remember { mutableStateOf(false) }
     var refresh by rememberSaveable { mutableStateOf(true) }
+    var cell by remember { mutableStateOf(1) }
     LaunchedEffect(selected) {
         if (selected == topics.size - 1) {
             logger.info("last")
@@ -109,6 +112,14 @@ fun FeedsPage(navController: NavHostController, snackbarHostState: SnackbarHostS
                 topics[topics.size -2 ] = topicArg
             }
         }
+    }
+    LaunchedEffect(windowState.placement) {
+        if (windowState.placement == WindowPlacement.Fullscreen || windowState.placement == WindowPlacement.Maximized) {
+            cell = 2
+        } else {
+            cell = 1
+        }
+        logger.info("当前状态  ${windowState.placement}")
     }
     Box {
         Column {
@@ -158,7 +169,6 @@ fun FeedsPage(navController: NavHostController, snackbarHostState: SnackbarHostS
                         firstVisibleItemIndex = index
                     }
             }
-            var itemsPerRow by remember { mutableStateOf(1) }
             LaunchedEffect(scrollState) {
 
                 snapshotFlow { scrollState.layoutInfo.visibleItemsInfo.lastOrNull()?.index }.collectLatest { lastIndex ->
@@ -175,7 +185,7 @@ fun FeedsPage(navController: NavHostController, snackbarHostState: SnackbarHostS
                     }
                 }
             }
-            LazyVerticalStaggeredGrid(StaggeredGridCells.Fixed(itemsPerRow), state = scrollState) {
+            LazyVerticalStaggeredGrid(StaggeredGridCells.Fixed(cell), state = scrollState) {
                 items(
 
                     posts.size, key = { index -> posts[index].postId }) { index ->

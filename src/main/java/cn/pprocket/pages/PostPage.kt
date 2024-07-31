@@ -10,10 +10,7 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
-import androidx.compose.material.icons.filled.Autorenew
-import androidx.compose.material.icons.filled.Create
-import androidx.compose.material.icons.filled.Home
-import androidx.compose.material.icons.filled.Info
+import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
@@ -21,7 +18,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.input.key.*
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.TextRange
@@ -30,22 +26,15 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import cn.pprocket.*
 import cn.pprocket.State
-import cn.pprocket.components.Comment
-import cn.pprocket.components.ContextImage
-import cn.pprocket.components.MarkdownQuote
-import cn.pprocket.components.SelectableText
+import cn.pprocket.components.*
 import cn.pprocket.items.Comment
 import cn.pprocket.items.Tag
 import com.lt.load_the_image.rememberImagePainter
 import com.lt.load_the_image.util.MD5
-import com.skydoves.landscapist.ImageOptions
-import com.skydoves.landscapist.coil3.CoilImage
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import okhttp3.Request
-import java.awt.Desktop
 import java.awt.Image
 import java.awt.Toolkit
 import java.awt.datatransfer.Clipboard
@@ -75,6 +64,7 @@ fun PostPage(
     var showSheet by remember { mutableStateOf(false) }
     val listState = rememberLazyListState()
     var html = remember { mutableStateListOf<Tag>() }
+    var showSticker by remember { mutableStateOf(false) }
     LaunchedEffect(Unit) {
         logger.info(" ${post.postId}  ${post.title}")
 
@@ -186,8 +176,11 @@ fun PostPage(
 
                         // 帖子图片
                         if (!post.isHTML) {
-                            post.images.forEach { imageUrl ->
-                                ContextImage(scope, imageUrl)
+
+                            FlowColumn {
+                                post.images.forEach { imageUrl ->
+                                    ContextImage(scope, imageUrl)
+                                }
                             }
                         }
 
@@ -252,6 +245,7 @@ fun PostPage(
                                 withContext(Dispatchers.IO) {
                                     val new = HeyClient.getComments(post.postId, ++page)
                                     comments += new
+                                    comments.distinctBy { it.commentId }
                                 }
                             }
                         }
@@ -317,6 +311,9 @@ fun PostPage(
             val images = remember { mutableStateListOf<Image>() }
             Column(modifier = Modifier.fillMaxWidth().padding(32.dp, 8.dp).verticalScroll(scoll)) {
                 var textFieldValue by remember { mutableStateOf(TextFieldValue("")) }
+                Icon(Icons.Default.Mood,"", modifier = Modifier.padding(bottom = 10.dp).clickable {
+                    showSticker = true
+                })
                 OutlinedTextField(
                     value = textFieldValue,
                     onValueChange = {
@@ -416,11 +413,15 @@ fun PostPage(
                 }
 
             }
+            if (showSticker) {
+                StickerListDialog (onDismissRequest = {showSticker = false},images)
+            }
 
 
         }
 
     }
+
 
 }
 

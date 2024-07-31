@@ -32,13 +32,14 @@ fun SettingDialog(
     var showCube by remember { mutableStateOf(GlobalState.config.isBlockCube) }
     var showTab by remember { mutableStateOf(GlobalState.config.isBlockCube) }
     var showExpend by remember { mutableStateOf(false) }
-    var originImage by remember { mutableStateOf(GlobalState.config.isBlockCube) }
+    var originImage by remember { mutableStateOf(GlobalState.config.isOriginImage) }
     val dropdownMenuOffset = remember { mutableStateOf(DpOffset(0.dp, 0.dp)) }
     val map = mutableMapOf(
         "Green" to Color(99, 160, 2),
         "Blue" to Color(2, 136, 209),
-        "Pink" to Color(123, 31, 162),
-        "Yellow" to Color(251, 192, 45)
+        "Purple" to Color(123, 31, 162),
+        "Yellow" to Color(251, 192, 45),
+        "Sky" to Color(2,136,209)
     )
     Dialog(onDismissRequest = { onDismissRequest() }) {
         Card(

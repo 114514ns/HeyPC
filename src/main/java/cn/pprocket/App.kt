@@ -61,7 +61,6 @@ fun main() = application {
         title = title,
         onCloseRequest = ::exitApplication,
         state = windowState,
-        icon = rememberImagePainter(File("icons/icon.png"))
     ) {
         DynamicMaterialTheme(color,useDarkTheme = false) {
             Box(modifier = Modifier.fillMaxSize()) {
@@ -72,11 +71,10 @@ fun main() = application {
                     if (state.type == "color") {
                         color = state.value as Color
                     }
-                })
+                },windowState)
             }
 
         }
-
 
     }
 }

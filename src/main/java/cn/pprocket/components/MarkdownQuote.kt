@@ -16,7 +16,6 @@ fun MarkdownQuote(text: String) {
         modifier = Modifier
             .fillMaxWidth()
             .padding(8.dp)
-            .background(color = Color(0xFFF0F0F0)) // 背景颜色
             .border(width = 1.dp, color = Color(0xFFD0D0D0)) // 边框
             .padding(8.dp)
     ) {
@@ -30,7 +29,6 @@ fun MarkdownQuote(text: String) {
         Text(
             text = text,
             fontSize = 16.sp,
-            color = Color.Gray
         )
     }
 }

@@ -17,13 +17,11 @@ import cn.pprocket.GlobalState
 import cn.pprocket.HeyClient
 import cn.pprocket.Logger
 import cn.pprocket.pages.getImageDir
+import cn.pprocket.pages.getImagePath
 import cn.pprocket.pages.urlToFileName
 import com.skydoves.landscapist.ImageOptions
 import com.skydoves.landscapist.coil3.CoilImage
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
+import kotlinx.coroutines.*
 import okhttp3.Request
 import java.awt.Desktop
 import java.io.File
@@ -35,7 +33,7 @@ fun ContextImage(scope: CoroutineScope, img: String) {
     val url = transformImage(img)
     val logger = Logger("cn.pprocket.components.ContextImage")
     if (showSticker) {
-        StickerDialog({ showSticker = false }, img)
+        StickerDialog({ showSticker = false }, getOriginalImage(img))
     }
     ContextMenuArea(
         items = {
@@ -66,9 +64,16 @@ fun ContextImage(scope: CoroutineScope, img: String) {
                             HeyClient.cosClient.newCall(request).execute().use { response ->
                                 if (response.isSuccessful) {
                                     withContext(Dispatchers.IO) {
-                                        response.body?.byteStream()?.copyTo(file.outputStream())
+                                        val arr = response.body?.bytes()
+                                        val stream = file.outputStream()
+                                        stream.write(arr)
+                                        stream.close()
+                                        Desktop.getDesktop().open(file)
+                                        //val cmd = " " + file.absolutePath
+                                        //logger.info("cmd ${cmd}")
+                                        //Runtime.getRuntime().exec(cmd)
                                     }
-                                    Desktop.getDesktop().open(file)
+
                                 }
                             }
                         }
@@ -84,14 +89,17 @@ fun ContextImage(scope: CoroutineScope, img: String) {
 
 fun transformImage(string: String): String {
     if (GlobalState.config.isOriginImage) {
-        val url = URL(string)
-        val processedPath = url.protocol + "://" + url.host + url.path
-        val ext = processedPath.split(".").last()
-
-        var v0 = processedPath.replace("/thumb.${ext}", "")
-        return "${v0}.${ext}"
+        return getOriginalImage(string)
 
     } else {
         return string
     }
+}
+fun getOriginalImage(string: String):String {
+    val url = URL(string)
+    val processedPath = url.protocol + "://" + url.host + url.path
+    val ext = processedPath.split(".").last()
+
+    var v0 = processedPath.replace("/thumb.${ext}", "").replace("/format.${ext}","")
+    return "${v0}.${ext}"
 }

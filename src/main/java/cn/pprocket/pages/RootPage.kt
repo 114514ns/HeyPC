@@ -22,6 +22,7 @@ import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.window.WindowState
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -32,7 +33,7 @@ import cn.pprocket.State
 import cn.pprocket.items.Topic
 
 @Composable
-fun RootPage(onChangeState: (State) -> Unit) {
+fun RootPage(onChangeState: (State) -> Unit,windowState: WindowState) {
     val navController = rememberNavController()
     val snackbarHostState = remember { SnackbarHostState() }
     Box(modifier = Modifier.fillMaxSize()) {
@@ -62,11 +63,11 @@ fun RootPage(onChangeState: (State) -> Unit) {
                     composable("feeds/{topic}",) { stack ->
                             val str = stack.arguments?.getString("topic")
                             val topic = Topic(str!!.split("|")[0], str.split("|")[1].toInt(), "")
-                            FeedsPage(navController, snackbarHostState, topic)
+                            FeedsPage(navController, snackbarHostState, topicArg = topic,windowState)
 
                     }
                     composable("feeds") {
-                        FeedsPage(navController, snackbarHostState)
+                        FeedsPage(navController, snackbarHostState,windowState = windowState)
                     }
                     composable("settings") {
                         SettingsPage(navController, snackbarHostState,onChangeState)

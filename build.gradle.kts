@@ -42,7 +42,6 @@ dependencies {
     compileOnly("com.google.code.gson:gson:2.11.0")
     implementation("com.github.alorma.compose-settings:ui-tiles:2.4.0")
     implementation("com.github.skydoves:landscapist-coil3:2.3.6")
-    //implementation("com.github.skydoves:orbital:0.4.0")
     implementation("com.materialkolor:material-kolor:1.7.0")
     implementation ("io.github.fornewid:material-motion-compose-core:2.0.1")
 

@@ -27,12 +27,17 @@ import com.lt.load_the_image.rememberImagePainter
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 
-fun SettingsPage(navController: NavHostController, snackbarHostState: SnackbarHostState,onChangeState: (State) -> Unit) {
+fun SettingsPage(
+    navController: NavHostController,
+    snackbarHostState: SnackbarHostState,
+    onChangeState: (State) -> Unit
+) {
 
     var showAbout by remember { mutableStateOf(false) }
     var showAccount by remember { mutableStateOf(false) }
     var showDebug by remember { mutableStateOf(false) }
     var showSettings by remember { mutableStateOf(false) }
+    var showStickers by remember { mutableStateOf(false) }
     Box {
         Card(
             modifier = Modifier.fillMaxSize(),
@@ -88,6 +93,13 @@ fun SettingsPage(navController: NavHostController, snackbarHostState: SnackbarHo
                             showSettings = true
                         }
                     )
+                    SettingItem(icon = Icons.Filled.Palette,
+                        title = "表情包",
+                        subtitle = "管理表情包",
+                        onClick = {
+                            showStickers = true
+                        }
+                    )
 
                 }
             }
@@ -104,7 +116,7 @@ fun SettingsPage(navController: NavHostController, snackbarHostState: SnackbarHo
             }
             if (showDebug) {
                 DebugDialog(
-                    onDismissRequest = { showDebug = false }, snackbarHostState,navController
+                    onDismissRequest = { showDebug = false }, snackbarHostState, navController
                 )
             }
             if (showSettings) {
@@ -112,6 +124,9 @@ fun SettingsPage(navController: NavHostController, snackbarHostState: SnackbarHo
                     onDismissRequest = { showSettings = false },
                     onChangeState
                 )
+            }
+            if (showStickers) {
+                StickerListDialog(onDismissRequest = { showStickers = false })
             }
         }
     }
