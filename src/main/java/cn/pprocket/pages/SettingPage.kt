@@ -1,5 +1,6 @@
 package cn.pprocket.pages
 
+import androidx.compose.animation.*
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
@@ -104,20 +105,38 @@ fun SettingsPage(
                 }
             }
             if (showAbout) {
-                AboutDialog(
-                    onDismissRequest = { showAbout = false },
-                    snackbarHostState = snackbarHostState
-                )
+                AnimatedVisibility(showAbout) {
+                    AboutDialog(
+                        onDismissRequest = { showAbout = false },
+                        snackbarHostState = snackbarHostState
+                    )
+                }
+
             }
             if (showAccount) {
-                AccountDialog(
-                    onDismissRequest = { showAccount = false },
-                )
+                AnimatedVisibility(showAccount) {
+                    AccountDialog(
+                        onDismissRequest = { showAccount = false },
+                    )
+                }
             }
             if (showDebug) {
-                DebugDialog(
-                    onDismissRequest = { showDebug = false }, snackbarHostState, navController
-                )
+                AnimatedVisibility(
+                    visible = showDebug,
+                    enter =  expandVertically(
+                        // Expand from the top.
+                        expandFrom = Alignment.Top
+                    ) + fadeIn(
+                        // Fade in with the initial alpha of 0.3f.
+                        initialAlpha = 0.3f
+                    ),
+                    exit = slideOutVertically() + shrinkVertically() + fadeOut()
+                ) {
+                    DebugDialog(
+                        onDismissRequest = { showDebug = false }, snackbarHostState, navController
+                    )
+                }
+
             }
             if (showSettings) {
                 SettingDialog(

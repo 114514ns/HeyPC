@@ -17,34 +17,66 @@ import cn.pprocket.GlobalState
 import cn.pprocket.HeyClient
 import cn.pprocket.Logger
 import cn.pprocket.pages.getImageDir
-import cn.pprocket.pages.getImagePath
 import cn.pprocket.pages.urlToFileName
 import com.skydoves.landscapist.ImageOptions
 import com.skydoves.landscapist.coil3.CoilImage
 import kotlinx.coroutines.*
 import okhttp3.Request
 import java.awt.Desktop
+import java.awt.Image
+import java.awt.Toolkit
+import java.awt.datatransfer.DataFlavor
+import java.awt.datatransfer.Transferable
+import java.awt.datatransfer.UnsupportedFlavorException
 import java.io.File
+import java.io.IOException
 import java.net.URL
+import javax.imageio.ImageIO
+
+
+
 
 @Composable
-fun ContextImage(scope: CoroutineScope, img: String) {
+fun ContextImage(scope: CoroutineScope, img: String,modifier: Modifier=Modifier) {
     var showSticker by remember { mutableStateOf(false) }
     val url = transformImage(img)
     val logger = Logger("cn.pprocket.components.ContextImage")
+    var file = File(getImageDir(), urlToFileName(url))
     if (showSticker) {
         StickerDialog({ showSticker = false }, getOriginalImage(img))
+    }
+    LaunchedEffect(Unit) {
+        val request = Request.Builder().url(url).build()
+        withContext(Dispatchers.IO) {
+            HeyClient.cosClient.newCall(request).execute().use { response ->
+                if (response.isSuccessful) {
+                    val arr = response.body?.bytes()
+                    val stream = file.outputStream()
+                    stream.write(arr)
+                    stream.close()
+                }
+            }
+        }
     }
     ContextMenuArea(
         items = {
             listOf(
                 ContextMenuItem("添加表情包") {
                     showSticker = true
+                },
+                ContextMenuItem("复制图片") {
+
+                    scope.launch {
+                        withContext(Dispatchers.IO) {
+                            val image: Image = ImageIO.read(file)
+                            setClipboardImage(image)
+                        }
+                    }
                 }
             )
         }
     ) {
-        Box {
+        Box(modifier) {
             CoilImage(
                 imageModel = {
                     url
@@ -58,24 +90,7 @@ fun ContextImage(scope: CoroutineScope, img: String) {
                     .clickable {
                         logger.info(url)
                         scope.launch {
-                            val fileName = urlToFileName(url)
-                            val file = File(getImageDir(), fileName)
-                            val request = Request.Builder().url(url).build()
-                            HeyClient.cosClient.newCall(request).execute().use { response ->
-                                if (response.isSuccessful) {
-                                    withContext(Dispatchers.IO) {
-                                        val arr = response.body?.bytes()
-                                        val stream = file.outputStream()
-                                        stream.write(arr)
-                                        stream.close()
-                                        Desktop.getDesktop().open(file)
-                                        //val cmd = " " + file.absolutePath
-                                        //logger.info("cmd ${cmd}")
-                                        //Runtime.getRuntime().exec(cmd)
-                                    }
-
-                                }
-                            }
+                            Desktop.getDesktop().open(file)
                         }
                     }
                     .fillMaxSize(),
@@ -102,4 +117,25 @@ fun getOriginalImage(string: String):String {
 
     var v0 = processedPath.replace("/thumb.${ext}", "").replace("/format.${ext}","")
     return "${v0}.${ext}"
+}
+fun setClipboardImage(image: Image) {
+    val trans: Transferable = object : Transferable {
+        override fun getTransferDataFlavors(): Array<DataFlavor> {
+            return arrayOf(DataFlavor.imageFlavor)
+        }
+
+        override fun isDataFlavorSupported(flavor: DataFlavor): Boolean {
+            return DataFlavor.imageFlavor.equals(flavor)
+        }
+
+        @Throws(UnsupportedFlavorException::class, IOException::class)
+        override fun getTransferData(flavor: DataFlavor): Any {
+            if (isDataFlavorSupported(flavor)) return image
+            throw UnsupportedFlavorException(flavor)
+        }
+    }
+    Toolkit.getDefaultToolkit().systemClipboard.setContents(
+        trans,
+        null
+    )
 }

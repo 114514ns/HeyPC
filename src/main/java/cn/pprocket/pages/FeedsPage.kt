@@ -1,10 +1,14 @@
 package cn.pprocket.pages
 
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.HorizontalScrollbar
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.gestures.*
+import androidx.compose.foundation.gestures.Orientation
+import androidx.compose.foundation.gestures.draggable
+import androidx.compose.foundation.gestures.rememberDraggableState
+import androidx.compose.foundation.gestures.scrollBy
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.grid.rememberLazyGridState
@@ -15,6 +19,8 @@ import androidx.compose.foundation.lazy.staggeredgrid.rememberLazyStaggeredGridS
 import androidx.compose.foundation.rememberScrollbarAdapter
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.filled.Create
+import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
@@ -27,7 +33,6 @@ import androidx.navigation.NavHostController
 import cn.pprocket.GlobalState
 import cn.pprocket.HeyClient
 import cn.pprocket.Logger
-import cn.pprocket.State
 import cn.pprocket.components.PostCard
 import cn.pprocket.items.Post
 import cn.pprocket.items.Topic
@@ -36,7 +41,6 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import java.awt.Desktop
 import java.lang.management.ManagementFactory
 
 
@@ -69,6 +73,7 @@ fun FeedsPage(navController: NavHostController, snackbarHostState: SnackbarHostS
     var showSheet by remember { mutableStateOf(false) }
     var refresh by rememberSaveable { mutableStateOf(true) }
     var cell by remember { mutableStateOf(1) }
+    var showSearch by remember { mutableStateOf(false) }
     LaunchedEffect(selected) {
         if (selected == topics.size - 1) {
             logger.info("last")
@@ -122,6 +127,7 @@ fun FeedsPage(navController: NavHostController, snackbarHostState: SnackbarHostS
         logger.info("当前状态  ${windowState.placement}")
     }
     Box {
+
         Column {
             if (topicArg == null) {
                 LazyRow(
@@ -185,7 +191,14 @@ fun FeedsPage(navController: NavHostController, snackbarHostState: SnackbarHostS
                     }
                 }
             }
-            LazyVerticalStaggeredGrid(StaggeredGridCells.Fixed(cell), state = scrollState) {
+
+            var text by rememberSaveable { mutableStateOf("Search") }
+            AnimatedVisibility(showSearch) {
+                SearchBar(text, onQueryChange = {t -> text = t}, active = true, onSearch = {}, onActiveChange = {},  modifier = Modifier.padding(12.dp).fillMaxHeight(1f)) {
+
+                }
+            }
+            LazyVerticalStaggeredGrid(StaggeredGridCells.Fixed(cell), state = scrollState,modifier = Modifier.fillMaxHeight(1f)) {
                 items(
 
                     posts.size, key = { index -> posts[index].postId }) { index ->
@@ -245,6 +258,13 @@ fun FeedsPage(navController: NavHostController, snackbarHostState: SnackbarHostS
                 modifier = Modifier.align(Alignment.BottomEnd).padding(32.dp)
             )
         }
+        FloatingActionButton(
+            onClick = {
+                showSearch = !showSearch
+            },
+            content = { Icon(Icons.Filled.Search, contentDescription = "发表评论") },
+            modifier = Modifier.align(Alignment.TopEnd).padding(32.dp, 96.dp)
+        )
     }
 
 

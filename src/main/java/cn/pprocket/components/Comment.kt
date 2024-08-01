@@ -16,10 +16,7 @@ import androidx.compose.material3.Card
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.mutableStateListOf
-import androidx.compose.runtime.remember
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -48,6 +45,8 @@ import kotlinx.coroutines.launch
 fun Comment(comment: Comment, navController: NavHostController, postId: String, onClick: () -> Unit = {}) {
     val subComments = remember { mutableStateListOf<Comment>() }
     val logger = Logger("cn.pprocket.components.Comment")
+    val scope = rememberCoroutineScope()
+
     LaunchedEffect(Unit) {
         comment.subComments.forEach { subComments.add(it) }
         subComments.distinctBy { it.commentId }
@@ -101,26 +100,26 @@ fun Comment(comment: Comment, navController: NavHostController, postId: String, 
                 logger.info("Set subCommentId: ${GlobalState.subCommentId}")
                 onClick()
             }) {
+
                 Column(modifier = Modifier.fillMaxWidth().padding(12.dp)) {
                     Spacer(modifier = Modifier.height(8.dp))
                     SelectableText(text = comment.content)
                     Spacer(modifier = Modifier.height(8.dp))
                     comment.images.forEach {
-                        Image(
-                            painter = rememberImagePainter(it),
-                            contentDescription = "Image",
-                            modifier = Modifier.size(120.dp).padding(4.dp).onClick {
-                                Runtime.getRuntime().exec("cmd /c " + getImagePath(urlToFileName(it)))
-                            }.clip(RoundedCornerShape(8.dp))
-                        )
+                        ContextImage(scope, it, modifier = Modifier.size(120.dp).padding(4.dp).clip(RoundedCornerShape(8.dp)))
                     }
                     Spacer(modifier = Modifier.height(8.dp))
                 }
             }
 
             Column(modifier = Modifier.animateContentSize(animationSpec = tween(500))) {
+                val itemsState = remember { mutableStateListOf(*comment.subComments.toTypedArray()) }
+                LaunchedEffect(comment.subComments) {
+                    itemsState.clear()
+                    itemsState.addAll(comment.subComments)
+                }
                 val post = GlobalState.map[postId]
-                subComments.forEach {
+                itemsState.forEach {
                     val str = buildAnnotatedString {
                         withStyle(
                             style = SpanStyle(
@@ -186,9 +185,9 @@ fun Comment(comment: Comment, navController: NavHostController, postId: String, 
                         modifier = Modifier.padding(top = 8.dp, bottom = 8.dp).align(Alignment.CenterHorizontally)
                             .clickable {
                                 CoroutineScope(Dispatchers.IO).launch() {
-                                    subComments.clear()
-                                    subComments.addAll(comment.fillSubComments())
-                                    subComments.distinctBy { it.commentId }
+                                    itemsState.clear()
+                                    itemsState.addAll(comment.fillSubComments())
+                                    itemsState.distinctBy { it.commentId }
                                 }
                             },
                         color = MaterialTheme.colorScheme.primary,

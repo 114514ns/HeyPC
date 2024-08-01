@@ -2,6 +2,7 @@ package cn.pprocket.pages
 
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.rememberLazyListState
@@ -54,17 +55,25 @@ fun UserPage(navController: NavHostController, userId: String) {
             Card {
                 Row(modifier = Modifier.fillMaxWidth().padding(8.dp)) {
                     Column(
-                        modifier = Modifier.weight(1f), horizontalAlignment = Alignment.CenterHorizontally
+                        modifier = Modifier.weight(1f).clickable {
+                            GlobalState.isFlowing = true
+                            navController.navigate("fans/${userId}")
+                        }, horizontalAlignment = Alignment.CenterHorizontally
                     ) {
                         Text(user.followings.toString(), textAlign = TextAlign.Center)
                         Spacer(modifier = Modifier.height(16.dp))
+
                         Text("关注", textAlign = TextAlign.Center, color = Color.Gray)
                     }
                     Column(
-                        modifier = Modifier.weight(1f), horizontalAlignment = Alignment.CenterHorizontally
+                        modifier = Modifier.weight(1f).clickable {
+                            GlobalState.isFlowing = false
+                            navController.navigate("fans/${userId}")
+                        }, horizontalAlignment = Alignment.CenterHorizontally
                     ) {
                         Text(user.followers.toString(), textAlign = TextAlign.Center)
                         Spacer(modifier = Modifier.height(16.dp))
+
                         Text(text = "粉丝", textAlign = TextAlign.Center, color = Color.Gray)
                     }
                     Column(

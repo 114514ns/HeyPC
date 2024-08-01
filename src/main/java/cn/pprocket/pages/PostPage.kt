@@ -1,5 +1,6 @@
 package cn.pprocket.pages
 
+import androidx.compose.animation.animateContentSize
 import androidx.compose.desktop.ui.tooling.preview.Preview
 import androidx.compose.foundation.*
 import androidx.compose.foundation.gestures.ScrollableDefaults
@@ -177,9 +178,9 @@ fun PostPage(
                         // 帖子图片
                         if (!post.isHTML) {
 
-                            FlowColumn {
+                            Column {
                                 post.images.forEach { imageUrl ->
-                                    ContextImage(scope, imageUrl)
+                                    ContextImage(scope, imageUrl,Modifier.animateContentSize())
                                 }
                             }
                         }
@@ -343,13 +344,19 @@ fun PostPage(
                                             val url = HeyClient.uploadImage(it)
                                             list.add(url)
                                         }
-                                        HeyClient.reply(post.postId, textFieldValue.text, images = list)
+                                        HeyClient.reply(
+                                            post.postId,
+                                            textFieldValue.text,
+                                            images = list
+                                        )
+
+                                        GlobalState.subCommentId = "-1"
+
                                     }.start()
                                     comments.add(
                                         listState.firstVisibleItemIndex + if (comments.isEmpty()) 0 else 1,
                                         sentComment
                                     )
-                                    logger.info("scoll.value: $scoll.value")
                                 } else {
                                     Thread {
 
@@ -363,9 +370,10 @@ fun PostPage(
                                             GlobalState.subCommentId,
                                             list
                                         )
+                                        GlobalState.subCommentId = "-1"
                                     }.start()
                                 }
-                                GlobalState.subCommentId = "-1"
+
                                 snackbarHostState.showSnackbar(
                                     message = "评论成功", actionLabel = "取消", duration = SnackbarDuration.Short
                                 )

@@ -56,6 +56,7 @@ fun main() = application {
     val windowState = rememberWindowState(width = (multipy * 450).dp, height = (multipy * 1050).dp)
     val colorScheme = rememberDynamicColorScheme(Color(99, 160, 2), false)
     var color by remember { mutableStateOf(Color(99, 160, 2)) }
+    HeyClient.debug = true
 
     Window(
         title = title,

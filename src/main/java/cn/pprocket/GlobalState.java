@@ -18,4 +18,5 @@ public class GlobalState {
     public static boolean started = false;
     public static List<Topic> topicList = new ArrayList<>();
     public static Object feeds = null;
+    public static boolean isFlowing = false;
 }

@@ -33,7 +33,7 @@ import cn.pprocket.State
 import cn.pprocket.items.Topic
 
 @Composable
-fun RootPage(onChangeState: (State) -> Unit,windowState: WindowState) {
+fun RootPage(onChangeState: (State) -> Unit, windowState: WindowState) {
     val navController = rememberNavController()
     val snackbarHostState = remember { SnackbarHostState() }
     Box(modifier = Modifier.fillMaxSize()) {
@@ -60,22 +60,29 @@ fun RootPage(onChangeState: (State) -> Unit,windowState: WindowState) {
                     startDestination = "feeds",
                     route = "home"
                 ) {
-                    composable("feeds/{topic}",) { stack ->
-                            val str = stack.arguments?.getString("topic")
-                            val topic = Topic(str!!.split("|")[0], str.split("|")[1].toInt(), "")
-                            FeedsPage(navController, snackbarHostState, topicArg = topic,windowState)
+                    composable("feeds/{topic}") { stack ->
+                        val str = stack.arguments?.getString("topic")
+                        val topic = Topic(str!!.split("|")[0], str.split("|")[1].toInt(), "")
+                        FeedsPage(navController, snackbarHostState, topicArg = topic, windowState)
 
                     }
                     composable("feeds") {
-                        FeedsPage(navController, snackbarHostState,windowState = windowState)
+                        FeedsPage(navController, snackbarHostState, windowState = windowState)
                     }
                     composable("settings") {
-                        SettingsPage(navController, snackbarHostState,onChangeState)
+                        SettingsPage(navController, snackbarHostState, onChangeState)
                     }
                     composable(
                         "user/{userId}",
                     ) { stack ->
                         UserPage(navController, stack.arguments?.getString("userId") ?: "")
+                    }
+                    composable(
+                        "fans/{userId}"
+                    ) { stack ->
+                        FansPage(stack.arguments?.getString("userId")!!, navController)
+
+
                     }
                 }
                 composable(

@@ -39,7 +39,8 @@ fun SettingDialog(
         "Blue" to Color(2, 136, 209),
         "Purple" to Color(123, 31, 162),
         "Yellow" to Color(251, 192, 45),
-        "Sky" to Color(2,136,209)
+        "Sky" to Color(2,136,209),
+        "Black" to Color(38,50,56)
     )
     Dialog(onDismissRequest = { onDismissRequest() }) {
         Card(
