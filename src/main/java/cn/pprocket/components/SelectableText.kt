@@ -36,7 +36,7 @@ fun SelectableText(text: String, modifier: Modifier = Modifier,style:TextStyle =
             newText,
             modifier = Modifier.fillMaxSize().padding(8.dp),
             style = TextStyle(fontSize = 18.sp).plus(style),
-            color = Color.Black,
+
             lineHeight = 25.sp,
         )
     }

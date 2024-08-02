@@ -2,11 +2,13 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.*
+import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Window
+import androidx.compose.ui.window.WindowExceptionHandler
 import androidx.compose.ui.window.WindowPlacement
 import androidx.compose.ui.window.application
 import androidx.compose.ui.window.rememberWindowState
@@ -24,12 +26,14 @@ import com.lt.load_the_image.rememberImagePainter
 import com.materialkolor.DynamicMaterialTheme
 import com.materialkolor.rememberDynamicColorScheme
 import java.awt.Dimension
+import java.awt.SystemColor.window
 import java.awt.Toolkit
 import java.io.File
 
 
 val logger = Logger(Object())
 
+@OptIn(ExperimentalComposeUiApi::class)
 fun main() = application {
     LaunchedEffect(Unit) {
         GlobalState.config = loadConfig()

@@ -34,6 +34,7 @@ import cn.pprocket.GlobalState
 import cn.pprocket.HeyClient
 import cn.pprocket.Logger
 import cn.pprocket.components.PostCard
+import cn.pprocket.components.SearchArea
 import cn.pprocket.items.Post
 import cn.pprocket.items.Topic
 import com.lt.load_the_image.rememberImagePainter
@@ -46,7 +47,7 @@ import java.lang.management.ManagementFactory
 
 @OptIn(ExperimentalFoundationApi::class, ExperimentalMaterial3Api::class, ExperimentalLayoutApi::class)
 @Composable
-fun FeedsPage(navController: NavHostController, snackbarHostState: SnackbarHostState, topicArg: Topic? = null,windowState: WindowState) {
+fun FeedsPage(navController: NavHostController, snackbarHostState: SnackbarHostState, topicArg: Topic? = null,windowState: WindowState,keyWord:String? = null) {
     val posts = rememberSaveable { mutableStateListOf<Post>() }
     var topic by rememberSaveable { mutableStateOf(Topic.LOVE) }
     var selected by rememberSaveable { mutableStateOf(0) }
@@ -74,6 +75,7 @@ fun FeedsPage(navController: NavHostController, snackbarHostState: SnackbarHostS
     var refresh by rememberSaveable { mutableStateOf(true) }
     var cell by remember { mutableStateOf(1) }
     var showSearch by remember { mutableStateOf(false) }
+    var searchPage by remember { mutableStateOf(1)}
     LaunchedEffect(selected) {
         if (selected == topics.size - 1) {
             logger.info("last")
@@ -85,11 +87,13 @@ fun FeedsPage(navController: NavHostController, snackbarHostState: SnackbarHostS
                     scrollState.animateScrollToItem(0, 0)
                 }
                 logger.info("selected ${topics[selected]}")
-                val fetch = if (GlobalState.started == true && topic == Topic.RECOMMEND) {
+                val fetch = if (GlobalState.started  && topic == Topic.RECOMMEND && GlobalState.feeds != null) {
 
                     GlobalState.feeds as List<Post>
-                } else {
+                } else if (keyWord == null){
                     HeyClient.getPosts(topics[selected])
+                } else {
+                    HeyClient.searchPost(keyWord,searchPage++)
                 }
                 val newList = mutableListOf<Post>()
                 fetch.forEach { newList.add(it) }
@@ -181,7 +185,7 @@ fun FeedsPage(navController: NavHostController, snackbarHostState: SnackbarHostS
                     if (lastIndex != null && lastIndex >= posts.size - 3) {
                         // 在后台线程执行网络请求
                         withContext(Dispatchers.IO) {
-                            val new = HeyClient.getPosts(topic)
+                            val new = if (keyWord == null) {HeyClient.getPosts(topic) }else {HeyClient.searchPost(keyWord,searchPage++)}
                             posts.addAll(new)
                             posts.forEach {
                                 GlobalState.map[it.postId] = it
@@ -192,11 +196,9 @@ fun FeedsPage(navController: NavHostController, snackbarHostState: SnackbarHostS
                 }
             }
 
-            var text by rememberSaveable { mutableStateOf("Search") }
-            AnimatedVisibility(showSearch) {
-                SearchBar(text, onQueryChange = {t -> text = t}, active = true, onSearch = {}, onActiveChange = {},  modifier = Modifier.padding(12.dp).fillMaxHeight(1f)) {
 
-                }
+            AnimatedVisibility(showSearch) {
+                SearchArea(navController)
             }
             LazyVerticalStaggeredGrid(StaggeredGridCells.Fixed(cell), state = scrollState,modifier = Modifier.fillMaxHeight(1f)) {
                 items(
@@ -218,7 +220,8 @@ fun FeedsPage(navController: NavHostController, snackbarHostState: SnackbarHostS
                         imgs = post.images,
                         modifier = Modifier.animateItemPlacement(
                             tween(durationMillis = 250)
-                        )
+                        ),
+                        scope = coroutineScope
                     )
 
 

@@ -101,7 +101,8 @@ fun RootPage(onChangeState: (State) -> Unit, windowState: WindowState) {
                         navController,
                         stack.arguments?.getString("postId") ?: "",
                         snackbarHostState,
-                        onChangeState
+                        onChangeState,
+                        windowState
                     )
                 }
             }

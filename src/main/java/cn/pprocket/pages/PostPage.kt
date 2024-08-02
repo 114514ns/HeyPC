@@ -1,20 +1,16 @@
 package cn.pprocket.pages
 
-import androidx.compose.animation.animateContentSize
+import androidx.compose.animation.*
+import androidx.compose.animation.core.tween
 import androidx.compose.desktop.ui.tooling.preview.Preview
 import androidx.compose.foundation.*
-import androidx.compose.foundation.gestures.ScrollableDefaults
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.rememberLazyListState
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
-import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -24,18 +20,16 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.TextRange
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.window.WindowPlacement
+import androidx.compose.ui.window.WindowState
 import androidx.navigation.NavHostController
 import cn.pprocket.*
 import cn.pprocket.State
 import cn.pprocket.components.*
 import cn.pprocket.items.Comment
-import cn.pprocket.items.Tag
 import com.lt.load_the_image.rememberImagePainter
 import com.lt.load_the_image.util.MD5
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 import java.awt.Image
 import java.awt.Toolkit
 import java.awt.datatransfer.Clipboard
@@ -46,53 +40,35 @@ import javax.imageio.ImageIO
 import kotlin.random.Random
 
 
-@OptIn(ExperimentalMaterial3Api::class, ExperimentalFoundationApi::class, ExperimentalLayoutApi::class)
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalFoundationApi::class, ExperimentalLayoutApi::class,
+    ExperimentalAnimationApi::class
+)
 @Composable
 @Preview
 fun PostPage(
     navController: NavHostController,
     postId: String,
     snackbarHostState: SnackbarHostState,
-    onChangeState: (State) -> Unit
+    onChangeState: (State) -> Unit,
+    windowState: WindowState
 ) {
     var post = GlobalState.map[postId] ?: return
-    var content by rememberSaveable { mutableStateOf(post.description) }
-    val state = rememberScrollState()
-    var comments by remember { mutableStateOf(mutableStateListOf<Comment>()) }
-
     val scope = rememberCoroutineScope()
     val logger = Logger("cn.pprocket.pages.PostPage")
     var showSheet by remember { mutableStateOf(false) }
-    val listState = rememberLazyListState()
-    var html = remember { mutableStateListOf<Tag>() }
     var showSticker by remember { mutableStateOf(false) }
     LaunchedEffect(Unit) {
         logger.info(" ${post.postId}  ${post.title}")
-
-        withContext(Dispatchers.IO) {
-            if (!post.isHTML) {
-                var str = ""
-                try {
-                    str = post.fillContent()
-                } catch (e: NullPointerException) {
-                    logger.error("post.fillContent() error: $e")
-                    logger.error("postId $postId  title ${post.title}")
-                    throw e
-                }
-                content = str
-            } else {
-                html.addAll(post.renderHTML())
-            }
-
+    }
+    var isFullScreen by remember { mutableStateOf(windowState.placement != WindowPlacement.Floating) }
+    LaunchedEffect(windowState.placement) {
+        if (windowState.placement == WindowPlacement.Fullscreen || windowState.placement == WindowPlacement.Maximized) {
+            isFullScreen = true
+        } else {
+            isFullScreen = false
         }
     }
-    LaunchedEffect(Unit) {
-        withContext(Dispatchers.IO) {
-            comments.addAll(HeyClient.getComments(postId, 1))
-        }
-        val state0 = State("title", post.title)
-        onChangeState(state0)
-    }
+
 
     var tabIndex by remember { mutableStateOf(0) }
     Spacer(modifier = Modifier.height(32.dp))
@@ -114,144 +90,46 @@ fun PostPage(
             }
         }
         Box {
-            when (tabIndex) {
-                0 -> {
-                    Column(modifier = Modifier.fillMaxSize().verticalScroll(state).padding(top = 16.dp)) {
-                        // 作者信息
-                        Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.clickable(onClick = {
-                            GlobalState.users[post.userId] = HeyClient.getUser(post.userId)
-                            navController.navigate("user/${post.userId}")
-                        })) {
-                            Image(
-                                painter = rememberImagePainter(
-                                    post.userAvatar
-                                ),
-                                contentDescription = "作者头像",
-                                modifier = Modifier.size(40.dp).clip(CircleShape),
-                                contentScale = ContentScale.Crop
-                            )
-                            Spacer(modifier = Modifier.width(8.dp))
-                            Column {
-                                Text(text = post.userName)
-                                Text(text = post.createAt)
+
+            Row(
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                if (isFullScreen) {
+                    PostContent(
+                        navController,
+                        post,
+                        onChangeState,
+                        scope,
+                        Modifier
+                            .weight(1f)
+                            .fillMaxWidth()
+                            .animateContentSize()
+                    )
+                    PostComment(
+                        navController,
+                        post,
+                        onChangeState,
+                        {
+                            showSheet = true
+                        },
+                        Modifier
+                            .weight(1f)
+                            .fillMaxWidth()
+                            .animateContentSize()
+                    )
+                } else {
+                    Crossfade(targetState = tabIndex) { selectedTab ->
+                        when (selectedTab) {
+                            0 -> {
+                                PostContent(navController, post, onChangeState, scope, Modifier.fillMaxSize())
                             }
-                        }
-
-                        Spacer(modifier = Modifier.height(16.dp))
-
-                        Card {
-
-                            if (post.isHTML) {
-                                html.forEach {
-                                    when (it.tagType) {
-                                        "text" -> {
-                                            SelectableText(it.tagValue)
-                                        }
-
-                                        "image" -> {
-                                            ContextImage(scope, it.tagValue)
-                                        }
-
-                                        "title" -> {
-                                            SelectableText(it.tagValue, style = MaterialTheme.typography.headlineMedium)
-                                        }
-
-                                        "ref" -> {
-                                            MarkdownQuote(it.tagValue)
-                                        }
-
-                                        "gameCard" -> {
-
-                                            //GameCard({},HeyClient.getGame(it.tagValue))
-                                        }
-                                    }
-                                }
-                            } else {
-
-                                SelectableText(
-                                    text = content
-                                )
-
-                            }
-                        }
-
-                        // 帖子图片
-                        if (!post.isHTML) {
-
-                            Column {
-                                post.images.forEach { imageUrl ->
-                                    ContextImage(scope, imageUrl,Modifier.animateContentSize())
-                                }
-                            }
-                        }
-
-                        FlowRow {
-                            post.tags.forEach {
-                                AssistChip(
-                                    onClick = {
-                                        val state = State("title", it.name)
-                                        onChangeState(state)
-                                        navController.navigate("feeds/${it.name}|${it.id}")
-                                    },
-                                    label = { Text(it.name) },
-                                    modifier = Modifier.padding(10.dp),
-                                    leadingIcon = {
-                                        Image(
-                                            rememberImagePainter(it.icon),
-                                            contentDescription = "Localized description",
-                                            Modifier.size(AssistChipDefaults.IconSize)
-                                        )
-                                    }
-                                )
-                            }
-                        }
-                    }
-
-
-                }
-
-                1 -> {
-                    var page by rememberSaveable { (mutableStateOf(1)) }
-                    LazyColumn(
-                        state = listState,
-                        modifier = Modifier.height(1800.dp),
-                        flingBehavior = ScrollableDefaults.flingBehavior()
-                    ) {
-                        items(comments.size, key = { index -> comments[index].commentId }) { index ->
-                            val comment = comments[index]
-                            if (GlobalState.config.isBlockCube) {
-                                val pattern = "\\[cube_.*?]".toRegex()
-                                val newText = comment.content.replace(pattern, "")
-                                if (newText.isNotEmpty()) {
-                                    Comment(comment, navController, postId, onClick = {
-                                        showSheet = true
-
-                                    })
-                                }
-                            } else {
-                                Comment(comment, navController, postId, onClick = {
+                            1 -> {
+                                PostComment(navController, post, onChangeState, {
                                     showSheet = true
-
-                                })
-                            }
-
-
-                        }
-                    }
-                    LaunchedEffect(listState) {
-                        snapshotFlow { listState.layoutInfo.visibleItemsInfo.lastOrNull()?.index }.collectLatest { lastIndex ->
-                            // 如果最后一个可见的项目是列表中的最后一个项目，那么加载更多数据
-                            if (lastIndex != null && lastIndex >= comments.size - 3) {
-                                // 在后台线程执行网络请求
-                                withContext(Dispatchers.IO) {
-                                    val new = HeyClient.getComments(post.postId, ++page)
-                                    comments += new
-                                    comments.distinctBy { it.commentId }
-                                }
+                                }, Modifier.fillMaxSize())
                             }
                         }
                     }
-
                 }
             }
             FloatingActionButton(
@@ -312,7 +190,7 @@ fun PostPage(
             val images = remember { mutableStateListOf<Image>() }
             Column(modifier = Modifier.fillMaxWidth().padding(32.dp, 8.dp).verticalScroll(scoll)) {
                 var textFieldValue by remember { mutableStateOf(TextFieldValue("")) }
-                Icon(Icons.Default.Mood,"", modifier = Modifier.padding(bottom = 10.dp).clickable {
+                Icon(Icons.Default.Mood, "", modifier = Modifier.padding(bottom = 10.dp).clickable {
                     showSticker = true
                 })
                 OutlinedTextField(
@@ -353,10 +231,13 @@ fun PostPage(
                                         GlobalState.subCommentId = "-1"
 
                                     }.start()
+                                    /*
                                     comments.add(
                                         listState.firstVisibleItemIndex + if (comments.isEmpty()) 0 else 1,
                                         sentComment
                                     )
+
+                                     */
                                 } else {
                                     Thread {
 
@@ -422,7 +303,7 @@ fun PostPage(
 
             }
             if (showSticker) {
-                StickerListDialog (onDismissRequest = {showSticker = false},images)
+                StickerListDialog(onDismissRequest = { showSticker = false }, images)
             }
 
 

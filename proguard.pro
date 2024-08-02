@@ -43,7 +43,7 @@
 -keep class com.sun.jna.** { *; }
 
 
-
+-keep class com.skydoves.landscapist.** { *; }
 
 
 

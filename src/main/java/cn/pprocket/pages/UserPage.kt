@@ -39,6 +39,7 @@ import kotlinx.coroutines.withContext
 @Composable
 fun UserPage(navController: NavHostController, userId: String) {
     val user: User = GlobalState.users[userId]!!
+    val scope = rememberCoroutineScope()
     Box {
         Column(modifier = Modifier.fillMaxSize().padding(16.dp)) {
             Card(modifier = Modifier.fillMaxHeight(0.08f).fillMaxWidth()) {
@@ -159,7 +160,8 @@ fun UserPage(navController: NavHostController, userId: String) {
                                     GlobalState.map[post.postId] = post
                                     navController.navigate("post/${post.postId}")
                                 },
-                                modifier = Modifier.animateItemPlacement()
+                                modifier = Modifier.animateItemPlacement(),
+                                scope = scope
                             )
                         }
                     }

@@ -1,14 +1,11 @@
 package cn.pprocket.components
 
-import androidx.compose.foundation.ExperimentalFoundationApi
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.List
 import androidx.compose.material.icons.filled.Favorite
-import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -19,10 +16,9 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
-import com.lt.load_the_image.rememberImagePainter
 import com.skydoves.landscapist.coil3.CoilImage
+import kotlinx.coroutines.CoroutineScope
 
-@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun PostCard(
     title: String,
@@ -34,7 +30,8 @@ fun PostCard(
     onCardClick: () -> Unit,
     userAvatar: String,
     imgs: List<String>,
-    modifier: Modifier
+    modifier: Modifier,
+    scope: CoroutineScope
 ) {
 
     Box(
@@ -80,10 +77,10 @@ fun PostCard(
             Row {
                 imgs.forEach { img ->
 
-                    CoilImage(
-                        imageModel = {img},
-                        modifier = Modifier.size(120.dp).padding(4.dp)
-
+                    ContextImage(
+                        scope,
+                        img,
+                        modifier = Modifier.size(150.dp)
                     )
 
 
