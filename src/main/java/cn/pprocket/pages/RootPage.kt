@@ -31,6 +31,12 @@ import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import cn.pprocket.State
 import cn.pprocket.items.Topic
+import soup.compose.material.motion.animation.materialSharedAxisXIn
+import soup.compose.material.motion.animation.materialSharedAxisXOut
+import java.awt.Desktop
+import java.awt.Toolkit
+import java.net.URI
+import kotlin.random.Random
 
 @Composable
 fun RootPage(onChangeState: (State) -> Unit, windowState: WindowState) {
@@ -58,12 +64,54 @@ fun RootPage(onChangeState: (State) -> Unit, windowState: WindowState) {
             NavHost(navController = navController, startDestination = "home") {
                 navigation(
                     startDestination = "feeds",
-                    route = "home"
+                    route = "home",
+                    enterTransition = {
+
+
+                        slideIntoContainer(
+                            AnimatedContentTransitionScope.SlideDirection.Left,
+                            animationSpec = tween(700)
+                        )
+
+                    },
+                    exitTransition = {
+                        slideOutOfContainer(
+                            AnimatedContentTransitionScope.SlideDirection.Left,
+                            animationSpec = tween(700)
+                        )
+
+                    },
+                    popEnterTransition = {
+
+                        slideIntoContainer(
+                            AnimatedContentTransitionScope.SlideDirection.Right,
+                            animationSpec = tween(700)
+                        )
+
+                    },
+                    popExitTransition = {
+
+                        slideOutOfContainer(
+                            AnimatedContentTransitionScope.SlideDirection.Right,
+                            animationSpec = tween(700)
+                        )
+
+                    }
                 ) {
                     composable("feeds/{topic}") { stack ->
                         val str = stack.arguments?.getString("topic")
-                        val topic = Topic(str!!.split("|")[0], str.split("|")[1].toInt(), "")
-                        FeedsPage(navController, snackbarHostState, topicArg = topic, windowState)
+
+                        if (str!!.contains("search")) {
+                            FeedsPage(
+                                navController,
+                                snackbarHostState,
+                                windowState = windowState,
+                                keyWord = str.replace("feeds/search", "")
+                            )
+                        } else {
+                            val topic = Topic(str!!.split("|")[0], str.split("|")[1].toInt(), "")
+                            FeedsPage(navController, snackbarHostState, topicArg = topic, windowState)
+                        }
 
                     }
                     composable("feeds") {
@@ -86,16 +134,7 @@ fun RootPage(onChangeState: (State) -> Unit, windowState: WindowState) {
                     }
                 }
                 composable(
-                    "post/{postId}",
-                    enterTransition = {
-                        return@composable fadeIn(tween(1000))
-                    }, exitTransition = {
-                        return@composable fadeOut(tween(700)) //这坨动画是网上抄的
-                    }, popEnterTransition = {
-                        return@composable slideIntoContainer(
-                            AnimatedContentTransitionScope.SlideDirection.End, tween(700)
-                        )
-                    }
+                    "post/{postId}"
                 ) { stack ->
                     PostPage(
                         navController,
@@ -128,9 +167,18 @@ fun BottomNavigationBar(navController: NavHostController) {
                 label = { Text(item.capitalize()) },
                 selected = index == selectedItem,
                 onClick = {
-                    selectedItem = index
-                    navController.navigate(item)
-
+                    if (index == 1) {
+                        val links = listOf(
+                            "https://www.bilibili.com/video/BV1GJ411x7h7/",
+                            "https://www.bilibili.com/video/BV1J4411v7g6/",
+                            //"https://www.bilibili.com/video/BV1U1421974u/",
+                            "https://www.bilibili.com/video/BV1Fo4y1K7F2/"
+                        )
+                        Desktop.getDesktop().browse(URI(links[Random.nextInt(0, links.size)]))
+                    } else {
+                        selectedItem = index
+                        navController.navigate(item)
+                    }
                 },
                 modifier = Modifier.padding(4.dp)
             )

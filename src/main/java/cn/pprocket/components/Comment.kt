@@ -40,7 +40,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
-@OptIn(ExperimentalFoundationApi::class)
+@OptIn(ExperimentalFoundationApi::class, ExperimentalLayoutApi::class)
 @Composable
 fun Comment(comment: Comment, navController: NavHostController, postId: String, onClick: () -> Unit = {}) {
     val subComments = remember { mutableStateListOf<Comment>() }
@@ -105,8 +105,11 @@ fun Comment(comment: Comment, navController: NavHostController, postId: String, 
                     Spacer(modifier = Modifier.height(8.dp))
                     SelectableText(text = comment.content)
                     Spacer(modifier = Modifier.height(8.dp))
-                    comment.images.forEach {
-                        ContextImage(scope, it, modifier = Modifier.size(120.dp).padding(4.dp).clip(RoundedCornerShape(8.dp)))
+
+                    FlowRow {
+                        comment.images.forEach {
+                            ContextImage(scope, it, modifier = Modifier.size(120.dp).padding(4.dp).clip(RoundedCornerShape(8.dp)))
+                        }
                     }
                     Spacer(modifier = Modifier.height(8.dp))
                 }

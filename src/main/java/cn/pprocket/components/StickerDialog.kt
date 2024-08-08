@@ -15,7 +15,11 @@ import cn.pprocket.pages.getStickerDir
 import cn.pprocket.sticker.Sticker
 import cn.pprocket.sticker.StickerManager
 import com.skydoves.landscapist.coil3.CoilImage
+import io.ktor.client.request.*
+import io.ktor.client.statement.*
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import okhttp3.Request
 import java.io.File
 import java.security.MessageDigest
@@ -43,15 +47,15 @@ fun StickerDialog(onDismissRequest : (() -> Unit),image:String) {
             TextButton(
                 onClick = {
                     scope.launch {
-                        val bytes = HeyClient.cosClient.newCall(Request.Builder().get().url(image).build()).execute().body!!.bytes()
-                        val file = File(getStickerDir(), MD5(image) +"." +  image.split(".").last())
-                        file.createNewFile()
-                        file.writeBytes(bytes)
-                        val sticker = Sticker(keyword,file.absolutePath)
-                        StickerManager.add(sticker)
+                        withContext(Dispatchers.IO) {
+                            val sticker = Sticker(keyword,image)
+                            StickerManager.add(sticker)
+                            onDismissRequest()
+                        }
+
                     }
 
-                    onDismissRequest()
+
                 },
                 enabled = keyword.isNotBlank()
             ) {

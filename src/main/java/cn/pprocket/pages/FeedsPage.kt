@@ -20,6 +20,7 @@ import androidx.compose.foundation.rememberScrollbarAdapter
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Create
+import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -133,7 +134,7 @@ fun FeedsPage(navController: NavHostController, snackbarHostState: SnackbarHostS
     Box {
 
         Column {
-            if (topicArg == null) {
+            if (topicArg == null && keyWord == null) {
                 LazyRow(
                     state = topicScroll,
                     modifier = Modifier.draggable(
@@ -252,7 +253,7 @@ fun FeedsPage(navController: NavHostController, snackbarHostState: SnackbarHostS
 
 
         }
-        if (topicArg != null) {
+        if (topicArg != null || keyWord != null) {
             FloatingActionButton(
                 onClick = {
                     navController.popBackStack()
@@ -267,6 +268,18 @@ fun FeedsPage(navController: NavHostController, snackbarHostState: SnackbarHostS
             },
             content = { Icon(Icons.Filled.Search, contentDescription = "发表评论") },
             modifier = Modifier.align(Alignment.TopEnd).padding(32.dp, 96.dp)
+        )
+        FloatingActionButton(
+            onClick = {
+                posts.clear()
+                val new = if (keyWord == null) {HeyClient.getPosts(topic) }else {HeyClient.searchPost(keyWord,searchPage++)}
+                posts.addAll(new)
+                posts.forEach {
+                    GlobalState.map[it.postId] = it
+                }
+            },
+            content = { Icon(Icons.Filled.Refresh, contentDescription = "发表评论") },
+            modifier = Modifier.align(Alignment.TopEnd).padding(32.dp, 160.dp)
         )
     }
 

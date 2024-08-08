@@ -32,10 +32,9 @@ dependencies {
     implementation(compose.runtime)
     implementation(compose.materialIconsExtended)
     implementation("com.github.ltttttttttttt:load-the-image:1.1.1")
-    implementation("cn.pprocket:heybox:240802-2")
+    implementation("cn.pprocket:heybox:240807-4")
     implementation("org.jetbrains.kotlinx:kotlinx-serialization-core:1.7.0")
     implementation("org.jetbrains.androidx.navigation:navigation-compose:2.7.0-alpha07")
-    implementation("com.google.zxing:core:3.5.3")
     implementation("com.google.zxing:javase:3.5.3")
     annotationProcessor("org.projectlombok:lombok:1.18.32")
     compileOnly("org.projectlombok:lombok:1.18.32")
@@ -44,6 +43,7 @@ dependencies {
     implementation("com.github.skydoves:landscapist-coil3:2.3.6")
     implementation("com.materialkolor:material-kolor:1.7.0")
     implementation ("io.github.fornewid:material-motion-compose-core:2.0.1")
+    implementation("io.github.g0dkar:qrcode-kotlin:4.1.1")
 
 }
 
@@ -57,11 +57,13 @@ compose.desktop {
         }
         nativeDistributions {
             targetFormats(TargetFormat.Dmg, TargetFormat.Msi, TargetFormat.Deb)
-            packageName = "Compose Fluent Design Gallery"
+            packageName = "HeyPC"
             packageVersion = "1.0.0"
             windows {
                 iconFile.set(project.file("icons/icon.ico"))
             }
+            modules("jdk.unsupported")
+            modules("java.management")
         }
     }
 

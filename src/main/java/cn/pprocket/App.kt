@@ -21,6 +21,7 @@ import cn.pprocket.items.Topic
 import cn.pprocket.pages.RootPage
 import cn.pprocket.pages.getImageDir
 import cn.pprocket.sticker.StickerManager
+import cn.pprocket.sticker.StickerManager.list
 import com.google.gson.Gson
 import com.lt.load_the_image.rememberImagePainter
 import com.materialkolor.DynamicMaterialTheme
@@ -29,6 +30,8 @@ import java.awt.Dimension
 import java.awt.SystemColor.window
 import java.awt.Toolkit
 import java.io.File
+import java.io.FileInputStream
+import java.io.FileOutputStream
 
 
 val logger = Logger(Object())
@@ -45,7 +48,7 @@ fun main() = application {
         gcTask()
         fetchMeTask()
         StickerManager
-
+        createImageDirectory()
     }
 
     var title by remember { mutableStateOf("迎面走来的你让我如此蠢蠢欲动") }
@@ -60,7 +63,6 @@ fun main() = application {
     val windowState = rememberWindowState(width = (multipy * 450).dp, height = (multipy * 1050).dp)
     val colorScheme = rememberDynamicColorScheme(Color(99, 160, 2), false)
     var color by remember { mutableStateOf(Color(99, 160, 2)) }
-    HeyClient.debug = true
 
     Window(
         title = title,
@@ -105,10 +107,11 @@ fun saveTask() {
                 last = json
             } else if (last != json) {
                 last = json
-                File("config.json").writeText(json)
+                val file = File("config.json")
+                file.writeText(json)
                 logger.info("写入配置文件")
             }
-            Thread.sleep(1000)
+            Thread.sleep(5000)
         }
     }.start()
 }
@@ -135,10 +138,7 @@ fun cleanupTask() {
             logger.info("清理缓存耗时  ${System.currentTimeMillis() - start}ms")
             logger.info("文件数量  ${files.size}")
         }
-
-
     }.start()
-
 }
 
 fun fetchTopicTask() {
@@ -160,4 +160,9 @@ fun fetchFeedsTask() {
     Thread {
         GlobalState.feeds = HeyClient.getPosts(Topic.RECOMMEND)
     }.start()
+}
+fun createImageDirectory() {
+    if (!getImageDir().exists()) {
+        getImageDir().mkdir()
+    }
 }

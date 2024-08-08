@@ -1,7 +1,9 @@
 package cn.pprocket.components
 
+import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.ContextMenuArea
 import androidx.compose.foundation.ContextMenuItem
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
@@ -18,8 +20,11 @@ import cn.pprocket.HeyClient
 import cn.pprocket.Logger
 import cn.pprocket.pages.getImageDir
 import cn.pprocket.pages.urlToFileName
+import com.lt.load_the_image.rememberImagePainter
 import com.skydoves.landscapist.ImageOptions
 import com.skydoves.landscapist.coil3.CoilImage
+import io.ktor.client.request.*
+import io.ktor.client.statement.*
 import kotlinx.coroutines.*
 import okhttp3.Request
 import java.awt.Desktop
@@ -34,10 +39,8 @@ import java.net.URL
 import javax.imageio.ImageIO
 
 
-
-
 @Composable
-fun ContextImage(scope: CoroutineScope, img: String,modifier: Modifier=Modifier) {
+fun ContextImage(scope: CoroutineScope, img: String, modifier: Modifier = Modifier) {
     var showSticker by remember { mutableStateOf(false) }
     val url = transformImage(img)
     val logger = Logger("cn.pprocket.components.ContextImage")
@@ -46,16 +49,12 @@ fun ContextImage(scope: CoroutineScope, img: String,modifier: Modifier=Modifier)
         StickerDialog({ showSticker = false }, getOriginalImage(img))
     }
     LaunchedEffect(Unit) {
-        val request = Request.Builder().url(url).build()
         withContext(Dispatchers.IO) {
-            HeyClient.cosClient.newCall(request).execute().use { response ->
-                if (response.isSuccessful) {
-                    val arr = response.body?.bytes()
-                    val stream = file.outputStream()
-                    stream.write(arr)
-                    stream.close()
-                }
-            }
+            val bytes = HeyClient.ktorClient.get(url).readBytes()
+            val stream = file.outputStream()
+            stream.write(bytes)
+            stream.close()
+
         }
     }
     ContextMenuArea(
@@ -77,6 +76,8 @@ fun ContextImage(scope: CoroutineScope, img: String,modifier: Modifier=Modifier)
         }
     ) {
         Box(modifier) {
+
+
             CoilImage(
                 imageModel = {
                     url
@@ -98,6 +99,33 @@ fun ContextImage(scope: CoroutineScope, img: String,modifier: Modifier=Modifier)
                     contentScale = ContentScale.Crop
                 )
             )
+
+             /*
+
+
+
+            Image(
+                rememberImagePainter(url), null,
+                modifier = modifier
+                    .animateContentSize()
+                    .padding(8.dp)
+                    .clip(RoundedCornerShape(12.dp))
+                    .graphicsLayer {
+                        //alpha = 0.8f // 降低亮度
+                    }
+                    .clickable {
+                        logger.info(url)
+                        scope.launch {
+                            Desktop.getDesktop().open(file)
+                        }
+                    }
+                    .fillMaxSize(),
+                contentScale = ContentScale.Fit
+            )
+
+              */
+
+
         }
     }
 }
@@ -110,14 +138,16 @@ fun transformImage(string: String): String {
         return string
     }
 }
-fun getOriginalImage(string: String):String {
+
+fun getOriginalImage(string: String): String {
     val url = URL(string)
     val processedPath = url.protocol + "://" + url.host + url.path
     val ext = processedPath.split(".").last()
 
-    var v0 = processedPath.replace("/thumb.${ext}", "").replace("/format.${ext}","")
+    var v0 = processedPath.replace("/thumb.${ext}", "").replace("/format.${ext}", "")
     return "${v0}.${ext}"
 }
+
 fun setClipboardImage(image: Image) {
     val trans: Transferable = object : Transferable {
         override fun getTransferDataFlavors(): Array<DataFlavor> {

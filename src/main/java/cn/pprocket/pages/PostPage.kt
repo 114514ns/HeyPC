@@ -40,8 +40,7 @@ import javax.imageio.ImageIO
 import kotlin.random.Random
 
 
-@OptIn(ExperimentalMaterial3Api::class, ExperimentalFoundationApi::class, ExperimentalLayoutApi::class,
-    ExperimentalAnimationApi::class
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalFoundationApi::class
 )
 @Composable
 @Preview
@@ -59,6 +58,8 @@ fun PostPage(
     var showSticker by remember { mutableStateOf(false) }
     LaunchedEffect(Unit) {
         logger.info(" ${post.postId}  ${post.title}")
+        val state = State("title", post.title)
+        onChangeState(state)
     }
     var isFullScreen by remember { mutableStateOf(windowState.placement != WindowPlacement.Floating) }
     LaunchedEffect(windowState.placement) {
@@ -316,7 +317,12 @@ fun PostPage(
 
 
 fun urlToFileName(url: String): String {
-    return MD5.GetMD5Code(url) + url.length + url.hashCode() + ".jpg"
+    var ext = ""
+    if (ext.contains("jpg")) ext ="jpg"
+    else if (ext.contains("png")) ext = "png"
+    else if (ext.contains("gif")) ext = "gif"
+    else ext = "jpg"
+    return MD5.GetMD5Code(url) + url.length + url.hashCode() + ".${ext}"
 }
 
 fun getImagePath(string: String) = File(

@@ -1,5 +1,6 @@
 package cn.pprocket.components
 
+import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
@@ -19,6 +20,7 @@ import androidx.compose.ui.unit.dp
 import com.skydoves.landscapist.coil3.CoilImage
 import kotlinx.coroutines.CoroutineScope
 
+@OptIn(ExperimentalLayoutApi::class)
 @Composable
 fun PostCard(
     title: String,
@@ -35,7 +37,7 @@ fun PostCard(
 ) {
 
     Box(
-         modifier = modifier.fillMaxWidth().padding(16.dp).clickable { onCardClick() }
+        modifier = modifier.fillMaxWidth().padding(16.dp).clickable { onCardClick() }
     ) {
         Column(
             modifier = Modifier.padding(16.dp)
@@ -51,8 +53,9 @@ fun PostCard(
             Row(
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                CoilImage(
-                    imageModel = {userAvatar},
+                ContextImage(
+                    scope,
+                    userAvatar,
                     modifier = Modifier.size(48.dp).padding(6.dp).clip(CircleShape)
                 )
                 Text(
@@ -74,15 +77,13 @@ fun PostCard(
             Spacer(modifier = Modifier.height(16.dp))
             SelectableText(content)
             Spacer(modifier = Modifier.height(16.dp))
-            Row {
+            FlowRow {
                 imgs.forEach { img ->
-
                     ContextImage(
                         scope,
                         img,
-                        modifier = Modifier.size(150.dp)
+                        modifier = Modifier.animateContentSize().size(150.dp)
                     )
-
 
                 }
             }

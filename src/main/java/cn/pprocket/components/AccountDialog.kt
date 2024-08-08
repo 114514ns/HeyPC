@@ -23,7 +23,13 @@ import com.lt.load_the_image.rememberImagePainter
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import org.jetbrains.skiko.toBitmap
+import java.awt.MultipleGradientPaint.CycleMethod.NO_CYCLE
+import qrcode.QRCode
+import qrcode.color.Colors
+import qrcode.color.Colors.css
 import java.awt.Color
+import java.awt.RadialGradientPaint
+import java.awt.geom.Point2D
 import java.awt.image.BufferedImage
 import java.io.ByteArrayOutputStream
 import javax.imageio.ImageIO
@@ -54,6 +60,10 @@ fun AccountDialog(onDismissRequest: () -> Unit) {
     }
 
     Dialog(onDismissRequest = { onDismissRequest() }) {
+        val color = MaterialTheme.colorScheme.primary
+        val code = QRCode.ofSquares()
+            .withColor(Colors.rgba(99,160, 2, 255))
+            .build(url)
 
         Card(
             modifier = Modifier.fillMaxWidth().height(450.dp).padding(16.dp),
@@ -64,9 +74,11 @@ fun AccountDialog(onDismissRequest: () -> Unit) {
                 horizontalAlignment = Alignment.CenterHorizontally,
                 //verticalArrangement = Arrangement.Center
             ) {
+
                 Text("请使用小黑盒app扫描二维码", modifier = Modifier.padding(top = 15.dp))
                 if (qrCodeImage != null) {
-                    Image(painter = rememberImagePainter(qrCodeImage!!.toBitmap()), "")
+                    //Image(painter = rememberImagePainter(qrCodeImage!!.toBitmap()), "")
+                    Image(painter = rememberImagePainter(code.renderToBytes()), "")
                 }
                 CircularProgressIndicator(
                     modifier = Modifier.width(64.dp),

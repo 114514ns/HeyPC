@@ -25,18 +25,18 @@ import kotlinx.coroutines.withContext
 
 @Composable
 fun UserComment(comment: Comment,modifier: Modifier,navController: NavHostController) {
-    val post = comment.extraPost
+    //val post = comment.extraPost
     val scope = rememberCoroutineScope()
     Card(modifier =modifier.fillMaxWidth().clickable {
 
         scope.launch {
             withContext(Dispatchers.IO) {
 
-                GlobalState.map[post.postId] = HeyClient.getPost(post.postId)
+                GlobalState.map[comment.postId] = HeyClient.getPost(comment.postId)
             }
         }
 
-        navController.navigate("post/${comment.extraPost.postId}")
+        navController.navigate("post/${comment.postId}")
     }) {
         Row {
             Image(rememberImagePainter(comment.userAvatar),"", modifier = Modifier.size(64.dp).clip(CircleShape).padding(12.dp))
@@ -49,7 +49,7 @@ fun UserComment(comment: Comment,modifier: Modifier,navController: NavHostContro
         Spacer(modifier = Modifier.height(8.dp))
         Text(comment.content,modifier = Modifier.padding(12.dp))
         Row {
-            Text(post.title,modifier = Modifier.padding(12.dp),color = Color(0xff8c9196))
+            Text(comment.postTitle,modifier = Modifier.padding(12.dp),color = Color(0xff8c9196))
             Spacer(modifier = Modifier.width(8.dp))
         }
     }

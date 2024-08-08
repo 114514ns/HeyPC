@@ -16,6 +16,16 @@
 
 
 
+
+
+
+
+# A resource is loaded with a relative path so the package of this class must be preserved.
+-keeppackagenames okhttp3.internal.publicsuffix.*
+-adaptresourcefilenames okhttp3/internal/publicsuffix/PublicSuffixDatabase.gz
+
+
+
 -dontwarn okhttp3.**
 -keep class okhttp3.** { *; }
 -keep interface okhttp3.** { *; }
@@ -25,25 +35,13 @@
 -keep interface okio.** { *; }
 -keep enum okio.** { *; }
 
--dontwarn com.alibaba.**
--dontwarn org.apache.**
--dontwarn net.dongliu.**
+
+
 -dontwarn org.slf4j.**
 
--keep class org.apache.** { *; }
--keep interface org.apache.** { *; }
--keep enum org.apache.** { *; }
-
-# 保留本地库加载相关的代码
--keep class org.scijava.nativelib.** { *; }
--keep class unicorn.** { *; }
--keep class com.github.unidbg.** { *; }
-
-# 保留 JNA 库中的所有类和方法
--keep class com.sun.jna.** { *; }
 
 
--keep class com.skydoves.landscapist.** { *; }
+
 
 
 

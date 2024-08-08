@@ -4,6 +4,8 @@ import cn.pprocket.pages.getStickerDir
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import java.io.File
+import java.io.FileInputStream
+import java.io.FileOutputStream
 
 object StickerManager {
     val list = mutableListOf<Sticker>()
@@ -28,7 +30,9 @@ object StickerManager {
 
     fun save() {
         val text = Gson().toJson(list)
-        file.writeText(text)
+        FileOutputStream(file).use {
+            it.write(text.toByteArray())
+        }
     }
 
     fun delete(sticker: Sticker) {
