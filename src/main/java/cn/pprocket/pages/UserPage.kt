@@ -47,7 +47,7 @@ fun UserPage(navController: NavHostController, userId: String) {
                     Image(rememberImagePainter(user.avatar), "", modifier = Modifier.clip(CircleShape))
                     Row(modifier = Modifier.fillMaxWidth().padding(16.dp)) {
                         SelectableText(user.userName)
-                        SelectableText(user.signature, modifier = Modifier.padding(16.dp))
+                        //SelectableText(user.signature, modifier = Modifier.padding(16.dp))
                     }
                 }
 

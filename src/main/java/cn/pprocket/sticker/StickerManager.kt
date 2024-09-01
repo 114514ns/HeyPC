@@ -12,6 +12,7 @@ object StickerManager {
     val file = File("sticker.json")
 
     init {
+        /*
         if (!file.exists()) {
             file.createNewFile()
         } else {
@@ -21,6 +22,8 @@ object StickerManager {
         if (!getStickerDir().exists()) {
             getStickerDir().mkdirs()
         }
+
+         */
     }
 
     fun add(sticker: Sticker) {

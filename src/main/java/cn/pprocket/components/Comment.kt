@@ -181,7 +181,7 @@ fun Comment(comment: Comment, navController: NavHostController, postId: String, 
                             onClick()
                         })
                 }
-                if (comment.isHasMore) {
+                if (comment.hasMore) {
 
                     Text(
                         "加载更多",
@@ -189,7 +189,10 @@ fun Comment(comment: Comment, navController: NavHostController, postId: String, 
                             .clickable {
                                 CoroutineScope(Dispatchers.IO).launch() {
                                     itemsState.clear()
-                                    itemsState.addAll(comment.fillSubComments())
+                                    //itemsState.addAll(comment.fillSubComments())
+                                    comment.fillSubComments()!!.forEach {
+                                        itemsState.add(it)
+                                    }
                                     itemsState.distinctBy { it.commentId }
                                 }
                             },

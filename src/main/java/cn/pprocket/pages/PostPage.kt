@@ -214,7 +214,7 @@ fun PostPage(
                                 sentComment.likes = 0;
                                 sentComment.createdAt = "刚刚"
                                 sentComment.images = emptyList()
-                                sentComment.subComments = emptyList()
+                                sentComment.subComments = mutableListOf()
                                 sentComment.commentId = Random(114514).nextInt().toString()
                                 if (GlobalState.subCommentId == "-1") {
                                     Thread {

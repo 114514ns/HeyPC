@@ -92,6 +92,7 @@ fun loadConfig(): Config {
         file.createNewFile()
         return Config()
     }
+
     val content = file.readText()
     return Gson().fromJson(content, Config::class.java)
 
@@ -99,15 +100,18 @@ fun loadConfig(): Config {
 
 fun saveTask() {
     var last = ""
+    val file = File("config.json")
     Thread {
         while (true) {
 
             val json = Gson().toJson(GlobalState.config)
             if (last == "") {
                 last = json
+                if (!file.exists() || file.length() == 0L) {
+                    file.writeText(json)
+                }
             } else if (last != json) {
                 last = json
-                val file = File("config.json")
                 file.writeText(json)
                 logger.info("写入配置文件")
             }
@@ -143,7 +147,7 @@ fun cleanupTask() {
 
 fun fetchTopicTask() {
     Thread {
-        GlobalState.topicList = Topic.getTopics()
+        GlobalState.topicList = Topic.topics
     }.start()
 }
 

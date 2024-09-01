@@ -49,6 +49,7 @@ fun AccountDialog(onDismissRequest: () -> Unit) {
                     GlobalState.config.cookies = HeyClient.cookie
                     GlobalState.config.isLogin = true
                     GlobalState.config.user = HeyClient.user
+                    GlobalState.users[HeyClient.user.userId] = HeyClient.user
                     break
                 }
                 Thread.sleep(500)
