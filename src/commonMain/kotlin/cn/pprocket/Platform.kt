@@ -1,5 +1,8 @@
 package cn.pprocket.ui
 
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Typography
+
 
 expect object PlatformU {
     fun isFullScreen(): Boolean
@@ -8,4 +11,5 @@ expect object PlatformU {
     fun createFile(name: String)
     fun saveFile(name: String, content: String)
     fun containFile(name: String): Boolean
+    fun getTypography() : Typography
 }

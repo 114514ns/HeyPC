@@ -1,3 +1,8 @@
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.text.font.Font
+import androidx.compose.ui.text.font.FontFamily
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.platform.SystemFont
 import cn.pprocket.*
 import cn.pprocket.items.Topic
 import cn.pprocket.ui.PlatformU
@@ -5,7 +10,6 @@ import kotlinx.serialization.json.Json
 
 
 val logger = Logger("App")
-
 
 fun loadConfig(): Config {
     val file = File("config.json")

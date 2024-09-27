@@ -67,14 +67,17 @@ kotlin {
 
                 implementation(compose.material3)
                 implementation(compose.runtime)
+                implementation(compose.ui)
+                implementation(compose.foundation)
                 implementation(compose.materialIconsExtended)
-                implementation("cn.pprocket:heybox:240926-1")
+                implementation("cn.pprocket:heybox:240927-2")
                 implementation("org.jetbrains.androidx.navigation:navigation-compose:2.7.0-alpha07")
                 implementation("com.github.alorma.compose-settings:ui-tiles:2.4.0")
                 implementation("media.kamel:kamel-image:1.0.0-beta.7")
                 implementation("com.materialkolor:material-kolor:1.7.0")
                 implementation("com.russhwolf:multiplatform-settings:1.2.0")
                 compileOnly("org.jetbrains.kotlinx:kotlinx-datetime:0.6.1")
+                compileOnly("io.ktor:ktor-client-core:3.0.0-beta-2")
                 implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.7.3")
             }
         }

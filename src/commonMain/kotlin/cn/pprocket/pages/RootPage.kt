@@ -47,6 +47,7 @@ fun RootPage(onChangeState: (State) -> Unit) {
                     showBottomBar =
                         backStackEntry.destination.route!! == "feeds" || backStackEntry.destination.route == "settings"
                 }
+
             }
             NavHost(navController = navController, startDestination = "home") {
                 navigation(

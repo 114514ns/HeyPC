@@ -59,9 +59,7 @@ fun ContextImage(scope: CoroutineScope, img: String, modifier: Modifier = Modifi
         )
 
          */
-        KamelImage(
-            asyncPainterResource(url),
-            null,
+        KamelImage({ asyncPainterResource(url) }, null,
             modifier = Modifier
                 .padding(8.dp)
                 .clip(RoundedCornerShape(12.dp))

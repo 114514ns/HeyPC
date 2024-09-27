@@ -2,6 +2,7 @@ package cn.pprocket
 
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.*
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
@@ -28,13 +29,13 @@ fun main() = application {
         GlobalState.config = loadConfig()
         HeyClient.cookie = GlobalState.config.cookies
         fetchTopicTask()
-        fetchFeedsTask()
         fetchMeTask()
     }
 
     var title by remember { mutableStateOf("迎面走来的你让我如此蠢蠢欲动") }
 
 
+    PlatformU.typography = MaterialTheme.typography
     val screenSize: Dimension = Toolkit.getDefaultToolkit().getScreenSize()
 
     val width = screenSize.width

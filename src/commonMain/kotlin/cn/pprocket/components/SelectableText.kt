@@ -11,6 +11,7 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import cn.pprocket.GlobalState
+import cn.pprocket.ui.PlatformU
 
 @Composable
 fun SelectableText(text: String, modifier: Modifier = Modifier,style:TextStyle = TextStyle.Default) {
@@ -35,7 +36,7 @@ fun SelectableText(text: String, modifier: Modifier = Modifier,style:TextStyle =
         Text(
             newText,
             modifier = Modifier.fillMaxSize().padding(8.dp),
-            style = TextStyle(fontSize = 18.sp).plus(style),
+            style = TextStyle(fontSize = 18.sp).plus(style).plus(TextStyle(fontFamily = PlatformU.getTypography().bodyLarge.fontFamily)),
 
             lineHeight = 25.sp,
         )

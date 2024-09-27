@@ -89,7 +89,7 @@ fun FeedsPage(
             refresh = false
             withContext(Dispatchers.Default) {
                 coroutineScope.launch {
-                    scrollState.animateScrollToItem(0, 0)
+                    //scrollState.animateScrollToItem(0, 0)
                 }
                 logger.info("selected ${topics[selected]}")
                 val fetch = if (GlobalState.started && topic == Topic.RECOMMEND && GlobalState.feeds != null) {
@@ -122,6 +122,8 @@ fun FeedsPage(
                 topics[topics.size - 2] = topicArg
             }
         }
+        //GlobalState.users["36331242"] = HeyClient.getUser("36331242")
+        //navController.navigate("user/36331242")
     }
     Box {
 

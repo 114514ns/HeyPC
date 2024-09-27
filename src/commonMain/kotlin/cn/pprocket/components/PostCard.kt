@@ -17,6 +17,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import cn.pprocket.ui.PlatformU
 import kotlinx.coroutines.CoroutineScope
 
 @OptIn(ExperimentalLayoutApi::class)
@@ -43,7 +44,7 @@ fun PostCard(
         ) {
             Text(
                 text = title.ifEmpty { "这个b没有写标题" },
-                style = MaterialTheme.typography.headlineSmall,
+                style = PlatformU.getTypography().headlineSmall,
                 fontWeight = FontWeight.Bold,
                 maxLines = 2,
                 overflow = TextOverflow.Ellipsis
@@ -59,7 +60,7 @@ fun PostCard(
                 )
                 Text(
                     text = author,
-                    style = MaterialTheme.typography.bodyMedium,
+                    style = PlatformU.getTypography().bodyMedium,
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
                 Spacer(modifier = Modifier.width(8.dp))
@@ -69,7 +70,7 @@ fun PostCard(
                 Spacer(modifier = Modifier.width(8.dp))
                 Text(
                     text = publishTime,
-                    style = MaterialTheme.typography.bodySmall,
+                    style = PlatformU.getTypography().bodySmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
             }
@@ -99,7 +100,7 @@ fun PostCard(
                 )
                 Spacer(modifier = Modifier.width(4.dp))
                 Text(
-                    text = likesCount.toString(), style = MaterialTheme.typography.bodySmall
+                    text = likesCount.toString(), style = PlatformU.getTypography().bodySmall
                 )
                 Spacer(modifier = Modifier.width(8.dp))
                 Icon(
@@ -107,7 +108,7 @@ fun PostCard(
                 )
                 Spacer(modifier = Modifier.width(4.dp))
                 Text(
-                    text = commentsCount.toString(), style = MaterialTheme.typography.bodySmall
+                    text = commentsCount.toString(), style = PlatformU.getTypography().bodySmall
                 )
                 Spacer(modifier = Modifier.width(8.dp))
             }

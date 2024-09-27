@@ -1,11 +1,15 @@
 package cn.pprocket.ui
 
+import androidx.compose.material3.Typography
 import java.awt.Desktop
 import java.awt.GraphicsDevice
 import java.awt.GraphicsEnvironment
 import java.net.URI
 
 actual object PlatformU {
+
+    var typography = Typography()
+
     actual fun isFullScreen(): Boolean {
         return GraphicsEnvironment.getLocalGraphicsEnvironment().defaultScreenDevice.fullScreenWindow == null
     }
@@ -34,6 +38,10 @@ actual object PlatformU {
     actual fun containFile(name: String): Boolean {
         val file = java.io.File(name)
         return file.exists()
+    }
+
+    actual fun getTypography(): Typography {
+        return typography
     }
 
 }
