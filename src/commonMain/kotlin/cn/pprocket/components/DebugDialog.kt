@@ -20,8 +20,7 @@ import androidx.compose.ui.window.Dialog
 import androidx.navigation.NavHostController
 import cn.pprocket.GlobalState
 import cn.pprocket.HeyClient
-import io.kamel.image.KamelImage
-import io.kamel.image.asyncPainterResource
+import coil3.compose.AsyncImage
 import kotlinx.coroutines.launch
 
 
@@ -105,7 +104,11 @@ fun DebugDialog(
                                     placeholderVerticalAlign = PlaceholderVerticalAlign.TextCenter
                                 )
                             ) {
-                                KamelImage(asyncPainterResource("https://imgheybox1.max-c.com/bbs/2024/07/27/11708872c01f81a63af82191eacb245a/thumb.jpeg"), contentDescription = "")
+                                AsyncImage(
+                                    "https://imgheybox1.max-c.com/bbs/2024/07/27/11708872c01f81a63af82191eacb245a/thumb.jpeg",
+                                    null
+                                )
+
                             }
                         )
                     )

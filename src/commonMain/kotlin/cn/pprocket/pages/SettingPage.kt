@@ -5,7 +5,7 @@ import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.onClick
+
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
@@ -23,8 +23,7 @@ import androidx.navigation.NavHostController
 import cn.pprocket.GlobalState
 import cn.pprocket.State
 import cn.pprocket.components.*
-import io.kamel.image.KamelImage
-import io.kamel.image.asyncPainterResource
+import coil3.compose.AsyncImage
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
@@ -46,14 +45,12 @@ fun SettingsPage(
 
             ) {
             Box {
-                KamelImage(
-                    asyncPainterResource(
+                AsyncImage(
                         GlobalState.config.user.avatar
-                            ?: "https://cdn.max-c.com/app/heybox/icon_83.5@3x.png?imageMogr2/thumbnail/!100p/format/jpg"
-                    ),
+                            ?: "https://cdn.max-c.com/app/heybox/icon_83.5@3x.png?imageMogr2/thumbnail/!100p/format/jpg",
                     "",
                     modifier = Modifier.size(96.dp).align(Alignment.TopEnd).padding(top = 16.dp, end = 16.dp)
-                        .clip(CircleShape).onClick {
+                        .clip(CircleShape).clickable {
                             if (GlobalState.config.isLogin) {
                                 val userId = GlobalState.config.user.userId
                                 navController.navigate("user/${userId}")
@@ -63,6 +60,7 @@ fun SettingsPage(
 
                         }
                 )
+
                 Column(
                     modifier = Modifier.fillMaxSize().padding(top = 96.dp)
                 ) {

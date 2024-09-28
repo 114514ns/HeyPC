@@ -35,7 +35,7 @@ fun main() = application {
     var title by remember { mutableStateOf("迎面走来的你让我如此蠢蠢欲动") }
 
 
-    PlatformU.typography = MaterialTheme.typography
+    PlatformU.mTypography = MaterialTheme.typography
     val screenSize: Dimension = Toolkit.getDefaultToolkit().getScreenSize()
 
     val width = screenSize.width

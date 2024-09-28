@@ -158,7 +158,11 @@ fun BottomNavigationBar(navController: NavHostController) {
                             "https://www.bilibili.com/video/BV1GJ411x7h7/",
                             "https://www.bilibili.com/video/BV1J4411v7g6/",
                             //"https://www.bilibili.com/video/BV1U1421974u/",
-                            "https://www.bilibili.com/video/BV1Fo4y1K7F2/"
+                            "https://www.bilibili.com/video/BV1Fo4y1K7F2/",
+                            "https://www.bilibili.com/video/BV1wu4m137W7/",
+                            "https://www.bilibili.com/video/BV1EM4y1Y7m2/",
+                            "https://www.bilibili.com/video/BV1pV4y1z7zw/",
+                            "https://www.bilibili.com/video/BV1k94y1Y7We"
                         )
                         PlatformU.openImage((links[Random.nextInt(0, links.size)]))
                     } else {

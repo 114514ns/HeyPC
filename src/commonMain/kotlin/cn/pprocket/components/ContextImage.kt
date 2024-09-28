@@ -15,8 +15,7 @@ import cn.pprocket.GlobalState
 import cn.pprocket.Logger
 import cn.pprocket.Platform
 import cn.pprocket.ui.PlatformU
-import io.kamel.image.KamelImage
-import io.kamel.image.asyncPainterResource
+import coil3.compose.AsyncImage
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 
@@ -59,6 +58,7 @@ fun ContextImage(scope: CoroutineScope, img: String, modifier: Modifier = Modifi
         )
 
          */
+        /*
         KamelImage({ asyncPainterResource(url) }, null,
             modifier = Modifier
                 .padding(8.dp)
@@ -75,6 +75,22 @@ fun ContextImage(scope: CoroutineScope, img: String, modifier: Modifier = Modifi
                 .fillMaxSize(),
             contentScale = ContentScale.Crop
         )
+
+         */
+        AsyncImage(url, null, modifier = Modifier
+            .padding(8.dp)
+            .clip(RoundedCornerShape(12.dp))
+            .graphicsLayer {
+                //alpha = 0.8f // 降低亮度
+            }
+            .clickable {
+                logger.info(url)
+                scope.launch {
+                    PlatformU.openImage(url)
+                }
+            }
+            .fillMaxSize(),
+            contentScale = ContentScale.Crop)
 
         /*
 

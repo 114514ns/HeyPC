@@ -8,7 +8,7 @@ import java.net.URI
 
 actual object PlatformU {
 
-    var typography = Typography()
+    var mTypography = Typography()
 
     actual fun isFullScreen(): Boolean {
         return GraphicsEnvironment.getLocalGraphicsEnvironment().defaultScreenDevice.fullScreenWindow == null
@@ -41,7 +41,7 @@ actual object PlatformU {
     }
 
     actual fun getTypography(): Typography {
-        return typography
+        return mTypography
     }
 
 }

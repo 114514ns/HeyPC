@@ -15,8 +15,7 @@ import androidx.navigation.NavHostController
 import cn.pprocket.GlobalState
 import cn.pprocket.HeyClient
 import cn.pprocket.items.Comment
-import io.kamel.image.KamelImage
-import io.kamel.image.asyncPainterResource
+import coil3.compose.AsyncImage
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -37,7 +36,7 @@ fun UserComment(comment: Comment,modifier: Modifier,navController: NavHostContro
         navController.navigate("post/${comment.postId}")
     }) {
         Row {
-            KamelImage(asyncPainterResource(comment.userAvatar),"", modifier = Modifier.size(64.dp).clip(CircleShape).padding(12.dp))
+            AsyncImage(comment.userAvatar,null, modifier = Modifier.size(64.dp).clip(CircleShape).padding(12.dp))
             Column() {
                 Text(comment.userName,modifier = Modifier.padding(12.dp))
                 Spacer(modifier = Modifier.height(8.dp))

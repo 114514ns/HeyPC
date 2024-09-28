@@ -14,8 +14,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import cn.pprocket.GlobalState
 import cn.pprocket.HeyClient
-import io.kamel.image.KamelImage
-import io.kamel.image.asyncPainterResource
+import coil3.compose.AsyncImage
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.withContext
@@ -59,7 +58,7 @@ fun AccountDialog(onDismissRequest: () -> Unit) {
 
                 Text("请使用小黑盒app扫描二维码", modifier = Modifier.padding(top = 15.dp))
                 //Image(painter = rememberImagePainter(qrCodeImage!!.toBitmap()), "")
-                KamelImage(asyncPainterResource("https://api.cl2wm.cn/api/qrcode/code?text=${url}&mhid=sELPDFnok80gPHovKdI"), "")
+                AsyncImage("https://api.cl2wm.cn/api/qrcode/code?text=${url}&mhid=sELPDFnok80gPHovKdI",null)
 
                 CircularProgressIndicator(
                     modifier = Modifier.width(64.dp),

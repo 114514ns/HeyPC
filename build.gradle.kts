@@ -4,13 +4,15 @@ import org.jetbrains.compose.desktop.application.dsl.TargetFormat
 
 
 plugins {
-    var composeVersion = "1.6.11"
+    var composeVersion = "1.7.0-dev1852"
     kotlin("multiplatform") version "2.0.20"
     id("org.jetbrains.kotlin.plugin.compose")
     id("org.jetbrains.compose") version composeVersion
     kotlin("plugin.lombok") version "2.0.0"
     id("io.freefair.lombok") version "8.6"
     kotlin("plugin.serialization") version "2.0.20"
+    id("com.android.application") version "8.2.0"
+    id("org.jetbrains.kotlin.android") version "2.0.20" apply false
 }
 group = "cn.pprocket"
 version = "1.0-SNAPSHOT"
@@ -36,6 +38,7 @@ dependencies {
 }
 kotlin {
     jvm()
+    android()
 
 
     js() {
@@ -52,7 +55,7 @@ kotlin {
     wasmJs {
         browser {
             webpackTask {
-                mainOutputFileName = "app.js"  // 自定义文件名
+                mainOutputFileName = "HeyPC.js"  // 自定义文件名
             }
         }
         binaries.executable()
@@ -70,15 +73,17 @@ kotlin {
                 implementation(compose.ui)
                 implementation(compose.foundation)
                 implementation(compose.materialIconsExtended)
-                implementation("cn.pprocket:heybox:240927-2")
-                implementation("org.jetbrains.androidx.navigation:navigation-compose:2.7.0-alpha07")
+                implementation("cn.pprocket:heybox:240928-1")
+                implementation("org.jetbrains.androidx.navigation:navigation-compose:2.8.0-dev1852")
                 implementation("com.github.alorma.compose-settings:ui-tiles:2.4.0")
-                implementation("media.kamel:kamel-image:1.0.0-beta.7")
                 implementation("com.materialkolor:material-kolor:1.7.0")
                 implementation("com.russhwolf:multiplatform-settings:1.2.0")
                 compileOnly("org.jetbrains.kotlinx:kotlinx-datetime:0.6.1")
                 compileOnly("io.ktor:ktor-client-core:3.0.0-beta-2")
                 implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.7.3")
+                implementation("io.coil-kt.coil3:coil-compose:3.0.0-alpha10")
+                implementation("io.coil-kt.coil3:coil-compose-core:3.0.0-alpha10")
+                implementation("io.coil-kt.coil3:coil-network-ktor3:3.0.0-alpha10")
             }
         }
         val jvmMain by getting {
@@ -95,7 +100,25 @@ kotlin {
         }
     }
 }
+android {
+    namespace = "org.company.app"
+    compileSdk = 34
 
+    defaultConfig {
+        minSdk = 26
+        targetSdk = 34
+
+        applicationId = "org.company.app.androidApp"
+        versionCode = 1
+        versionName = "1.0.0"
+
+        testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+    }
+    compileOptions {
+        sourceCompatibility = JavaVersion.VERSION_17
+        targetCompatibility = JavaVersion.VERSION_17
+    }
+}
 compose.desktop {
     application {
         mainClass = "AppKt"

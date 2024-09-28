@@ -29,8 +29,7 @@ import cn.pprocket.components.UserComment
 import cn.pprocket.items.Comment
 import cn.pprocket.items.Post
 import cn.pprocket.items.User
-import io.kamel.image.KamelImage
-import io.kamel.image.asyncPainterResource
+import coil3.compose.AsyncImage
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.withContext
@@ -44,7 +43,7 @@ fun UserPage(navController: NavHostController, userId: String) {
         Column(modifier = Modifier.fillMaxSize().padding(16.dp)) {
             Card(modifier = Modifier.fillMaxHeight(0.08f).fillMaxWidth()) {
                 Row(modifier = Modifier.padding(16.dp)) {
-                    KamelImage(asyncPainterResource(user.avatar), "", modifier = Modifier.clip(CircleShape))
+                    AsyncImage(user.avatar, "", modifier = Modifier.clip(CircleShape))
                     Row(modifier = Modifier.fillMaxWidth().padding(16.dp)) {
                         SelectableText(user.userName)
                         //SelectableText(user.signature, modifier = Modifier.padding(16.dp))

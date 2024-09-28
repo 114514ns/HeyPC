@@ -32,7 +32,8 @@ fun main() {
 
 
     CanvasBasedWindow("Multiplatform App") {
-        HeyClient.domain = "http://172.23.21.14"
+        //HeyClient.domain = "http://172.23.21.14"
+        HeyClient.domain = "https://api.ikun.dev"
 
         var color by remember { mutableStateOf(Color(99, 160, 2)) }
         val scope = rememberCoroutineScope()
@@ -47,7 +48,7 @@ fun main() {
         val origin = MaterialTheme.typography
         var fontState by remember { mutableStateOf(origin) }
         LaunchedEffect(Unit) {
-            val bytes = HeyClient.ktorClient.get("http://localhost:8082/font/Hey.ttf").readBytes()
+            val bytes = HeyClient.ktorClient.get("https://r2.ikun.dev/LXGWWenKaiMono-Regular.ttf").readBytes()
             fontState = Typography().run {
 
 

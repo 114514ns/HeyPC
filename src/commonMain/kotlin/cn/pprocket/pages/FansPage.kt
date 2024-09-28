@@ -21,15 +21,11 @@ import cn.pprocket.GlobalState
 import cn.pprocket.HeyClient
 import cn.pprocket.HeyClient.getFollowers
 import cn.pprocket.HeyClient.getFollowings
-import cn.pprocket.State
 import cn.pprocket.items.User
-import io.kamel.image.KamelImage
-import io.kamel.image.asyncPainterResource
+import coil3.compose.AsyncImage
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 
 
 @Composable
@@ -107,9 +103,7 @@ fun UserList(  fetch:suspend  (Int) -> List<User>, navHostController: NavHostCon
                 }
 
             }) {
-                KamelImage(
-                    asyncPainterResource(list[index].avatar),"",Modifier.clip(RoundedCornerShape(12.dp)).padding(20.dp),
-                )
+                AsyncImage(list[index].avatar,"",Modifier.clip(RoundedCornerShape(12.dp)).padding(20.dp))
                 Text(text = list[index].userName, modifier = Modifier.padding(top = 10.dp))
             }
         }

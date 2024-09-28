@@ -24,8 +24,7 @@ import cn.pprocket.Logger
 import cn.pprocket.State
 import cn.pprocket.items.Post
 import cn.pprocket.items.Tag
-import io.kamel.image.KamelImage
-import io.kamel.image.asyncPainterResource
+import coil3.compose.AsyncImage
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -67,13 +66,12 @@ fun PostContent(
         Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.clickable(onClick = {
             scope.launch {
                 GlobalState.users[post.userId] = HeyClient.getUser(post.userId)
+                navController.navigate("user/${post.userId}")
             }
-            navController.navigate("user/${post.userId}")
+
         })) {
-            KamelImage(
-                asyncPainterResource(post.userAvatar),
-                contentDescription = "作者头像",
-                modifier = Modifier.size(40.dp).clip(CircleShape),
+            AsyncImage(
+                post.userAvatar, null, modifier = Modifier.size(40.dp).clip(CircleShape),
                 contentScale = ContentScale.Crop
             )
             Spacer(modifier = Modifier.width(8.dp))
@@ -142,7 +140,7 @@ fun PostContent(
                     label = { Text(it.name) },
                     modifier = Modifier.padding(10.dp),
                     leadingIcon = {
-                        KamelImage(asyncPainterResource(it.icon), null, Modifier.size(AssistChipDefaults.IconSize))
+                        AsyncImage(it.icon, null, Modifier.size(AssistChipDefaults.IconSize))
                     }
                 )
             }

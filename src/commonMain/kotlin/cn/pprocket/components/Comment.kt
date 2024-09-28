@@ -2,16 +2,14 @@ package cn.pprocket.components
 
 import androidx.compose.animation.animateContentSize
 import androidx.compose.animation.core.tween
-import androidx.compose.foundation.*
+import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.ClickableText
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ThumbUp
 import androidx.compose.material.icons.outlined.Favorite
-import androidx.compose.material.icons.outlined.ThumbUp
-import androidx.compose.material.icons.sharp.Favorite
-import androidx.compose.material.icons.sharp.ThumbUp
 import androidx.compose.material3.Card
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -23,6 +21,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.withStyle
@@ -33,8 +32,8 @@ import cn.pprocket.GlobalState
 import cn.pprocket.HeyClient
 import cn.pprocket.Logger
 import cn.pprocket.items.Comment
-import io.kamel.image.KamelImage
-import io.kamel.image.asyncPainterResource
+import cn.pprocket.ui.PlatformU
+import coil3.compose.AsyncImage
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -51,9 +50,7 @@ fun Comment(comment: Comment, navController: NavHostController, postId: String, 
         subComments.distinctBy { it.commentId }
 
     }
-    Box(modifier = Modifier.onClick {
-
-    }) {
+    Box {
         Column(
             modifier = Modifier.fillMaxWidth().background(MaterialTheme.colorScheme.background).padding(12.dp)
 
@@ -62,9 +59,8 @@ fun Comment(comment: Comment, navController: NavHostController, postId: String, 
             Row(
                 modifier = Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically
             ) {
-                KamelImage(
-                    asyncPainterResource(comment.userAvatar),
-                    contentDescription = "User Avatar",
+                AsyncImage(
+                    comment.userAvatar, null,
                     modifier = Modifier.size(40.dp).clip(shape = MaterialTheme.shapes.medium).clickable {
                         scope.launch {
                             GlobalState.users[comment.userId] = HeyClient.getUser(comment.userId)
@@ -72,8 +68,7 @@ fun Comment(comment: Comment, navController: NavHostController, postId: String, 
                         }
                     },
                     contentScale = ContentScale.Crop,
-
-                    )
+                )
                 Spacer(modifier = Modifier.width(8.dp))
                 Column {
                     Text(
@@ -96,7 +91,7 @@ fun Comment(comment: Comment, navController: NavHostController, postId: String, 
                 Text(comment.likes.toString(), modifier = Modifier.padding(start = 6.dp))
 
             }
-            Card(modifier = Modifier.padding(top = 12.dp).onClick {
+            Card(modifier = Modifier.padding(top = 12.dp).clickable {
                 GlobalState.subCommentId = comment.commentId
                 logger.info("Set subCommentId: ${GlobalState.subCommentId}")
                 onClick()
@@ -109,7 +104,11 @@ fun Comment(comment: Comment, navController: NavHostController, postId: String, 
 
                     FlowRow {
                         comment.images.forEach {
-                            ContextImage(scope, it, modifier = Modifier.size(120.dp).padding(4.dp).clip(RoundedCornerShape(8.dp)))
+                            ContextImage(
+                                scope,
+                                it,
+                                modifier = Modifier.size(120.dp).padding(4.dp).clip(RoundedCornerShape(8.dp))
+                            )
                         }
                     }
                     Spacer(modifier = Modifier.height(8.dp))
@@ -156,6 +155,7 @@ fun Comment(comment: Comment, navController: NavHostController, postId: String, 
                     }
                     ClickableText(
                         str,
+                        style = TextStyle(fontFamily = PlatformU.getTypography().bodyLarge.fontFamily),
                         modifier = Modifier.padding(12.dp).animateContentSize(animationSpec = tween(500)),
                         onClick = { offset ->
                             str.getStringAnnotations(start = offset, end = offset)
@@ -192,7 +192,7 @@ fun Comment(comment: Comment, navController: NavHostController, postId: String, 
                         "加载更多",
                         modifier = Modifier.padding(top = 8.dp, bottom = 8.dp).align(Alignment.CenterHorizontally)
                             .clickable {
-                                CoroutineScope(Dispatchers.Main).launch() {
+                                CoroutineScope(Dispatchers.Default).launch() {
                                     itemsState.clear()
                                     //itemsState.addAll(comment.fillSubComments())
                                     comment.fillSubComments()!!.forEach {

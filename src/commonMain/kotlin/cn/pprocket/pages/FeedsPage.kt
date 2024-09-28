@@ -3,8 +3,6 @@ package cn.pprocket.pages
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.ExperimentalFoundationApi
-import androidx.compose.foundation.HorizontalScrollbar
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.gestures.Orientation
 import androidx.compose.foundation.gestures.draggable
 import androidx.compose.foundation.gestures.rememberDraggableState
@@ -16,10 +14,8 @@ import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.lazy.staggeredgrid.LazyVerticalStaggeredGrid
 import androidx.compose.foundation.lazy.staggeredgrid.StaggeredGridCells
 import androidx.compose.foundation.lazy.staggeredgrid.rememberLazyStaggeredGridState
-import androidx.compose.foundation.rememberScrollbarAdapter
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
-import androidx.compose.material.icons.filled.Create
 import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.*
@@ -36,9 +32,10 @@ import cn.pprocket.components.PostCard
 import cn.pprocket.components.SearchArea
 import cn.pprocket.items.Post
 import cn.pprocket.items.Topic
-import io.kamel.image.KamelImage
-import io.kamel.image.asyncPainterResource
+import cn.pprocket.ui.PlatformU
+import coil3.compose.AsyncImage
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -58,7 +55,7 @@ fun FeedsPage(
     val coroutineScope = rememberCoroutineScope()
 
     val topics = rememberSaveable {
-        mutableStateListOf<Topic>(
+        mutableStateListOf(
             Topic.HOTS,
             Topic.RECOMMEND,
             Topic.LOVE,
@@ -85,6 +82,7 @@ fun FeedsPage(
         if (selected == topics.size - 1) {
             logger.info("last")
             showSheet = true
+            logger.info("last0")
         } else if (topics[selected].id != 114514 && refresh) {
             refresh = false
             withContext(Dispatchers.Default) {
@@ -125,6 +123,12 @@ fun FeedsPage(
         //GlobalState.users["36331242"] = HeyClient.getUser("36331242")
         //navController.navigate("user/36331242")
     }
+    LaunchedEffect(Unit) {
+        while (true) {
+            cell = if (PlatformU.isFullScreen() ) 2 else 1
+            delay(40)
+        }
+    }
     Box {
 
         Column {
@@ -161,12 +165,6 @@ fun FeedsPage(
                 }
             }
 
-            HorizontalScrollbar(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(end = 12.dp),
-                adapter = rememberScrollbarAdapter(topicScroll),
-            )
 
             LaunchedEffect(scrollState) {
                 snapshotFlow { scrollState.firstVisibleItemIndex }
@@ -328,13 +326,7 @@ fun FeedsPage(
                         label = { Text(it.name) },
                         leadingIcon = {
 
-                            asyncPainterResource(it.icon)
-                            KamelImage(
-                                asyncPainterResource(it.icon),
-                                null,
-                                Modifier.size(AssistChipDefaults.IconSize)
-
-                            )
+                            AsyncImage(it.icon,null,Modifier.size(AssistChipDefaults.IconSize))
                         },
                         modifier = Modifier.padding(8.dp)
                     )

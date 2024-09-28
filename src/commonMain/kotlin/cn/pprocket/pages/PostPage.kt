@@ -23,13 +23,15 @@ import cn.pprocket.*
 import cn.pprocket.State
 import cn.pprocket.components.*
 import cn.pprocket.items.Comment
-import io.kamel.image.KamelImage
-import io.kamel.image.asyncPainterResource
+import cn.pprocket.ui.PlatformU
+import coil3.compose.AsyncImage
+
 import kotlinx.coroutines.launch
 import kotlin.random.Random
 
 
-@OptIn(ExperimentalMaterial3Api::class, ExperimentalFoundationApi::class
+@OptIn(
+    ExperimentalMaterial3Api::class, ExperimentalFoundationApi::class
 )
 @Composable
 fun PostPage(
@@ -51,7 +53,7 @@ fun PostPage(
 
 
     var tabIndex by remember { mutableStateOf(0) }
-    var isFullScreen = false
+    var isFullScreen = PlatformU.isFullScreen()
     Spacer(modifier = Modifier.height(32.dp))
     Column(modifier = Modifier.padding(16.dp)) {
         if (GlobalState.config.showTab) {
@@ -104,6 +106,7 @@ fun PostPage(
                             0 -> {
                                 PostContent(navController, post, onChangeState, scope, Modifier.fillMaxSize())
                             }
+
                             1 -> {
                                 PostComment(navController, post, onChangeState, {
                                     showSheet = true
@@ -113,30 +116,33 @@ fun PostPage(
                     }
                 }
             }
-            FloatingActionButton(
-                onClick = {
-                    tabIndex = if (tabIndex == 0) {
-                        1
-                    } else {
-                        0
-                    }
-                },
-                content = {
-                    BadgedBox(
-                        badge = {
-                            Badge(
-                                containerColor = Color.Red,
-                                contentColor = Color.White
-                            ) {
-                                Text("${post.comments}")
-                            }
+
+            if (!PlatformU.isFullScreen()) {
+                FloatingActionButton(
+                    onClick = {
+                        tabIndex = if (tabIndex == 0) {
+                            1
+                        } else {
+                            0
                         }
-                    ) {
-                        Icon(Icons.Filled.Autorenew, contentDescription = "发表评论")
-                    }
-                },
-                modifier = Modifier.align(Alignment.BottomEnd).padding(32.dp, 160.dp)
-            )
+                    },
+                    content = {
+                        BadgedBox(
+                            badge = {
+                                Badge(
+                                    containerColor = Color.Red,
+                                    contentColor = Color.White
+                                ) {
+                                    Text("${post.comments}")
+                                }
+                            }
+                        ) {
+                            Icon(Icons.Filled.Autorenew, contentDescription = "发表评论")
+                        }
+                    },
+                    modifier = Modifier.align(Alignment.BottomEnd).padding(32.dp, 160.dp)
+                )
+            }
             FloatingActionButton(
                 onClick = {
                     if (GlobalState.config.isLogin) {
@@ -267,10 +273,20 @@ fun PostPage(
                 )
                 Row {
                     images.forEach {
+                        /*
                         KamelImage(
                              asyncPainterResource(it),
                             contentDescription = "图片",
                             modifier = Modifier.padding(8.dp).clip(RoundedCornerShape(8.dp)).onClick {
+                                images.remove(it)
+                            }.width(50.dp).height(50.dp),
+                            contentScale = ContentScale.Fit,
+                        )
+
+                         */
+                        AsyncImage(
+                            it, null,
+                            modifier = Modifier.padding(8.dp).clip(RoundedCornerShape(8.dp)).clickable {
                                 images.remove(it)
                             }.width(50.dp).height(50.dp),
                             contentScale = ContentScale.Fit,
