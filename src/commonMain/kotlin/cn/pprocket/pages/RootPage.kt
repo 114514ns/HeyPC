@@ -4,42 +4,95 @@ import androidx.compose.animation.AnimatedContentTransitionScope
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.Settings
-import androidx.compose.material3.*
+import androidx.compose.material3.Icon
+import androidx.compose.material3.SnackbarHostState
+import androidx.compose.material3.adaptive.navigationsuite.NavigationSuiteScaffold
+import androidx.compose.material3.adaptive.navigationsuite.NavigationSuiteScaffoldDefaults
+import androidx.compose.material3.adaptive.navigationsuite.NavigationSuiteType
 import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.unit.dp
-import androidx.navigation.NavHostController
+import androidx.compose.ui.layout.onSizeChanged
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.navigation
 import androidx.navigation.compose.rememberNavController
-import cn.pprocket.Platform
 import cn.pprocket.State
 import cn.pprocket.items.Topic
 import cn.pprocket.ui.PlatformU
+import kotlinx.coroutines.delay
 import kotlin.random.Random
 
 @Composable
 fun RootPage(onChangeState: (State) -> Unit) {
     val navController = rememberNavController()
     val snackbarHostState = remember { SnackbarHostState() }
+    val items = listOf("home", "profile", "settings")
+    val icons = listOf(
+        Icons.Default.Home,
+        Icons.Default.Person,
+        Icons.Default.Settings
+    )
     Box(modifier = Modifier.fillMaxSize()) {
         var showBottomBar by remember { mutableStateOf(true) }
-        Scaffold(
-            bottomBar = {
+
+        var selectedItem by rememberSaveable { mutableStateOf(0) }
+        var time by remember { mutableStateOf(0) }  // 计时器，或者你可以根据需要更新其他状态
+
+
+        NavigationSuiteScaffold(
+
+            //这里当isFullScreen发送变化时不会重组，但是正常情况下也应该不会发生变化
+            layoutType = if (PlatformU.isFullScreen()) {
+                NavigationSuiteType.NavigationRail
+            } else {
                 if (showBottomBar) {
-                    BottomNavigationBar(navController)
+                    NavigationSuiteType.NavigationBar
+                } else {
+                    NavigationSuiteType.None
                 }
             },
-            snackbarHost = {
-                SnackbarHost(hostState = snackbarHostState)
-            }
+            modifier = Modifier.onSizeChanged {  },
+            navigationSuiteItems = {
+                if (showBottomBar || PlatformU.isFullScreen()) {
+                    items.forEachIndexed { index, item ->
+                        item(
+                            icon = {
+                                Icon(
+                                    icons[index],
+                                    items[index]
+                                )
+                            },
+                            onClick = {
+                                if (index == 1) {
+                                    val links = listOf(
+                                        "https://www.bilibili.com/video/BV1GJ411x7h7/",
+                                        "https://www.bilibili.com/video/BV1J4411v7g6/",
+                                        //"https://www.bilibili.com/video/BV1U1421974u/",
+                                        "https://www.bilibili.com/video/BV1Fo4y1K7F2/",
+                                        "https://www.bilibili.com/video/BV1wu4m137W7/",
+                                        "https://www.bilibili.com/video/BV1EM4y1Y7m2/",
+                                        "https://www.bilibili.com/video/BV1pV4y1z7zw/",
+                                        "https://www.bilibili.com/video/BV1k94y1Y7We"
+                                    )
+                                    PlatformU.openImage((links[Random.nextInt(0, links.size)]))
+                                } else {
+                                    selectedItem = index
+                                    navController.navigate(item)
+                                }
+                            },
+                            selected = index == selectedItem,
+
+                            )
+                    }
+
+                }
+            },
+
         ) {
 
             LaunchedEffect(navController) {
@@ -135,6 +188,7 @@ fun RootPage(onChangeState: (State) -> Unit) {
     }
 }
 
+/*
 @Composable
 fun BottomNavigationBar(navController: NavHostController) {
     //var selectedItem by remember { mutableStateOf(0) }
@@ -145,13 +199,13 @@ fun BottomNavigationBar(navController: NavHostController) {
         Icons.Default.Settings
     )
 
-    var selectedItem by rememberSaveable { mutableStateOf(0) }
+
     NavigationBar {
         items.forEachIndexed { index, item ->
             NavigationBarItem(
                 icon = { Icon(icons[index], contentDescription = null) },
                 label = { Text(item.capitalize()) },
-                selected = index == selectedItem,
+                //selected = index == selectedItem,
                 onClick = {
                     if (index == 1) {
                         val links = listOf(
@@ -175,3 +229,6 @@ fun BottomNavigationBar(navController: NavHostController) {
         }
     }
 }
+
+
+ */

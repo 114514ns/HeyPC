@@ -10,7 +10,7 @@ actual object PlatformU {
     var typography = Typography()
 
     actual fun isFullScreen(): Boolean {
-        return !window.navigator.userAgent.contains("Android") || !window.navigator.userAgent.contains("iPhone")
+        return !window.navigator.userAgent.contains("Android")
     }
 
     actual fun openImage(url: String) {

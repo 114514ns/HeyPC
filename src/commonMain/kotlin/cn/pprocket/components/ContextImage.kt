@@ -131,6 +131,10 @@ fun transformImage(string: String): String {
 }
 
 fun getOriginalImage(string: String): String {
+
+    if (string.contains("steamstatic")) {
+        return string
+    }
     // 解析 URL 协议
     val protocolEndIndex = string.indexOf("://")
     if (protocolEndIndex == -1) return string // 如果没有协议部分，返回原字符串

@@ -4,7 +4,7 @@ import org.jetbrains.compose.desktop.application.dsl.TargetFormat
 
 
 plugins {
-    var composeVersion = "1.7.0-dev1852"
+    var composeVersion = "1.7.0-dev1809"
     kotlin("multiplatform") version "2.0.20"
     id("org.jetbrains.kotlin.plugin.compose")
     id("org.jetbrains.compose") version composeVersion
@@ -43,9 +43,7 @@ kotlin {
 
     js() {
         browser {
-            webpackTask {
-                mainOutputFileName = "app.js"  // 自定义文件名
-            }
+
         }
         binaries.executable()
 
@@ -54,9 +52,7 @@ kotlin {
 
     wasmJs {
         browser {
-            webpackTask {
-                mainOutputFileName = "HeyPC.js"  // 自定义文件名
-            }
+
         }
         binaries.executable()
     }
@@ -74,7 +70,8 @@ kotlin {
                 implementation(compose.foundation)
                 implementation(compose.materialIconsExtended)
                 implementation("cn.pprocket:heybox:240928-1")
-                implementation("org.jetbrains.androidx.navigation:navigation-compose:2.8.0-dev1852")
+                implementation("org.jetbrains.androidx.navigation:navigation-compose:2.8.0-alpha10")
+                implementation(compose.material3AdaptiveNavigationSuite)
                 implementation("com.github.alorma.compose-settings:ui-tiles:2.4.0")
                 implementation("com.materialkolor:material-kolor:1.7.0")
                 implementation("com.russhwolf:multiplatform-settings:1.2.0")

@@ -31,6 +31,7 @@ import loadConfig
 fun main() {
 
 
+
     CanvasBasedWindow("Multiplatform App") {
         //HeyClient.domain = "http://172.23.21.14"
         HeyClient.domain = "https://api.ikun.dev"
@@ -48,7 +49,7 @@ fun main() {
         val origin = MaterialTheme.typography
         var fontState by remember { mutableStateOf(origin) }
         LaunchedEffect(Unit) {
-            val bytes = HeyClient.ktorClient.get("https://r2.ikun.dev/LXGWWenKaiMono-Regular.ttf").readBytes()
+            val bytes = HeyClient.ktorClient.get("https://r2.ikun.dev/MiSans-Regular.ttf").readBytes()
             fontState = Typography().run {
 
 

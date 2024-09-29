@@ -3,10 +3,7 @@ package cn.pprocket.pages
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.ExperimentalFoundationApi
-import androidx.compose.foundation.gestures.Orientation
-import androidx.compose.foundation.gestures.draggable
-import androidx.compose.foundation.gestures.rememberDraggableState
-import androidx.compose.foundation.gestures.scrollBy
+import androidx.compose.foundation.gestures.*
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.grid.rememberLazyGridState
@@ -14,6 +11,7 @@ import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.lazy.staggeredgrid.LazyVerticalStaggeredGrid
 import androidx.compose.foundation.lazy.staggeredgrid.StaggeredGridCells
 import androidx.compose.foundation.lazy.staggeredgrid.rememberLazyStaggeredGridState
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Refresh
@@ -295,7 +293,8 @@ fun FeedsPage(
 
     if (showSheet) {
         ModalBottomSheet(onDismissRequest = { showSheet = false;selected = 1 }) {
-            FlowRow(modifier = Modifier.padding(12.dp)) {
+            val state = rememberScrollState()
+            FlowRow(modifier = Modifier.padding(12.dp).scrollable(state,Orientation.Horizontal)) {
                 GlobalState.topicList.forEach {
                     AssistChip(
                         onClick = {
