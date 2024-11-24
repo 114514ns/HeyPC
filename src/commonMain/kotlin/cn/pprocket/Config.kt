@@ -1,8 +1,25 @@
 package cn.pprocket
 
 import cn.pprocket.items.User
+import kotlinx.serialization.KSerializer
 import kotlinx.serialization.Serializable
+import kotlinx.serialization.descriptors.SerialDescriptor
+import kotlinx.serialization.encoding.Decoder
+import kotlinx.serialization.encoding.Encoder
 
+
+object UserSerializer : KSerializer<User> {
+    override val descriptor: SerialDescriptor
+        get() = TODO("Not yet implemented")
+
+    override fun deserialize(decoder: Decoder): User {
+        return decoder.
+    }
+
+    override fun serialize(encoder: Encoder, value: User) {
+        encoder.encodeString(value.toString())
+    }
+}
 
 @Serializable
 data class Config(

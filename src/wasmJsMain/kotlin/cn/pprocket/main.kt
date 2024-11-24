@@ -49,7 +49,7 @@ fun main() {
         val origin = MaterialTheme.typography
         var fontState by remember { mutableStateOf(origin) }
         LaunchedEffect(Unit) {
-            val bytes = HeyClient.ktorClient.get("https://r2.ikun.dev/MiSans-Regular.ttf").readBytes()
+            val bytes = HeyClient.ktorClient.get("https://img2.lulufind.com/file/other/student/1727593030529_u20220225212d3906_74370349_.png").readBytes()
             fontState = Typography().run {
 
 

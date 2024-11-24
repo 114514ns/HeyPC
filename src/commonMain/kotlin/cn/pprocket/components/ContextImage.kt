@@ -1,5 +1,6 @@
 package cn.pprocket.components
 
+import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
@@ -89,7 +90,8 @@ fun ContextImage(scope: CoroutineScope, img: String, modifier: Modifier = Modifi
                     PlatformU.openImage(url)
                 }
             }
-            .fillMaxSize(),
+            .fillMaxSize()
+            .animateContentSize(),
             contentScale = ContentScale.Crop)
 
         /*

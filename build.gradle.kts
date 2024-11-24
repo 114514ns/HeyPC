@@ -4,7 +4,7 @@ import org.jetbrains.compose.desktop.application.dsl.TargetFormat
 
 
 plugins {
-    var composeVersion = "1.7.0-dev1809"
+    var composeVersion = "1.7.0"
     kotlin("multiplatform") version "2.0.20"
     id("org.jetbrains.kotlin.plugin.compose")
     id("org.jetbrains.compose") version composeVersion
@@ -41,13 +41,6 @@ kotlin {
     android()
 
 
-    js() {
-        browser {
-
-        }
-        binaries.executable()
-
-    }
 
 
     wasmJs {
@@ -69,7 +62,7 @@ kotlin {
                 implementation(compose.ui)
                 implementation(compose.foundation)
                 implementation(compose.materialIconsExtended)
-                implementation("cn.pprocket:heybox:240928-1")
+                implementation("cn.pprocket:heybox:241123-1")
                 implementation("org.jetbrains.androidx.navigation:navigation-compose:2.8.0-alpha10")
                 implementation(compose.material3AdaptiveNavigationSuite)
                 implementation("com.github.alorma.compose-settings:ui-tiles:2.4.0")
@@ -77,6 +70,7 @@ kotlin {
                 implementation("com.russhwolf:multiplatform-settings:1.2.0")
                 compileOnly("org.jetbrains.kotlinx:kotlinx-datetime:0.6.1")
                 compileOnly("io.ktor:ktor-client-core:3.0.0-beta-2")
+                implementation("cn.pprocket:heybase:20241025-1")
                 implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.7.3")
                 implementation("io.coil-kt.coil3:coil-compose:3.0.0-alpha10")
                 implementation("io.coil-kt.coil3:coil-compose-core:3.0.0-alpha10")
