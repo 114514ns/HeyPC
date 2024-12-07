@@ -23,6 +23,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
+import client
 import cn.pprocket.GlobalState
 import cn.pprocket.HeyClient
 import cn.pprocket.Logger
@@ -37,6 +38,8 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import logger
+import kotlin.random.Random
 
 
 @OptIn(ExperimentalFoundationApi::class, ExperimentalMaterial3Api::class, ExperimentalLayoutApi::class)
@@ -47,23 +50,30 @@ fun FeedsPage(
     topicArg: Topic? = null,
     keyWord: String? = null
 ) {
+
+
     val posts = rememberSaveable { mutableStateListOf<Post>() }
-    var topic by rememberSaveable { mutableStateOf(Topic.LOVE) }
+    var topic by rememberSaveable { mutableStateOf(Topic("",0,"")) }
     var selected by rememberSaveable { mutableStateOf(0) }
     val coroutineScope = rememberCoroutineScope()
 
     val topics = rememberSaveable {
-        mutableStateListOf(
-            Topic.HOTS,
-            Topic.RECOMMEND,
-            Topic.LOVE,
-            Topic.SCHOOL,
-            Topic.HARDWARE,
-            Topic.DAILY,
-            Topic.MAX,
-            Topic("更多", 114514, "")
+
+        mutableStateListOf<Topic>(
+
         )
+
+
     }
+    LaunchedEffect(Unit) {
+
+
+            val g = client.getDefaultTopics()
+            topic = g[0]
+            topics.addAll(g)
+
+    }
+
 
     val listState = rememberLazyGridState()
     val scrollState = rememberLazyStaggeredGridState()
@@ -77,6 +87,9 @@ fun FeedsPage(
     var searchPage by remember { mutableStateOf(1) }
     var scope = rememberCoroutineScope()
     LaunchedEffect(selected) {
+        if (topics.size<2) {
+            return@LaunchedEffect
+        }
         if (selected == topics.size - 1) {
             logger.info("last")
             showSheet = true
@@ -88,13 +101,10 @@ fun FeedsPage(
                     //scrollState.animateScrollToItem(0, 0)
                 }
                 logger.info("selected ${topics[selected]}")
-                val fetch = if (GlobalState.started && topic == Topic.RECOMMEND && GlobalState.feeds != null) {
-
-                    GlobalState.feeds as List<Post>
-                } else if (keyWord == null) {
-                    HeyClient.getPosts(topics[selected])
+                val fetch = if (keyWord == null) {
+                    client.getPosts(topics[selected])
                 } else {
-                    HeyClient.searchPost(keyWord, searchPage++)
+                    client.searchPost(keyWord, searchPage++)
                 }
                 val newList = mutableListOf<Post>()
                 fetch.forEach { newList.add(it) }
@@ -122,8 +132,9 @@ fun FeedsPage(
         //navController.navigate("user/36331242")
     }
     LaunchedEffect(Unit) {
+
         while (true) {
-            cell = if (PlatformU.isFullScreen() ) 2 else 1
+            cell = if (PlatformU.isFullScreen()) 2 else 1
             delay(40)
         }
     }
@@ -144,7 +155,8 @@ fun FeedsPage(
                     contentPadding = PaddingValues(horizontal = 8.dp),
                     horizontalArrangement = Arrangement.spacedBy(8.dp)
                 ) {
-                    items(topics.size, key = { index -> topics[index].name }) { index ->
+
+                    items(topics.distinctBy { it.name }.size, key = { index -> topics[index].name }) { index ->
                         val theTopic = topics[index]
                         FilterChip(
                             onClick = {
@@ -176,12 +188,12 @@ fun FeedsPage(
                     if (lastIndex != null && lastIndex >= posts.size - 3) {
                         // 在后台线程执行网络请求
                         val new = if (keyWord == null) {
-                            HeyClient.getPosts(topic)
+                            client.getPosts(topic)
                         } else {
-                            HeyClient.searchPost(keyWord, searchPage++)
+                            client.searchPost(keyWord, searchPage++)
                         }
                         new.forEach {
-                            if (it.postId != "") {
+                            if (it.postId != "" && !posts.contains(it)) {
                                 posts.add(it)
                             }
                         }
@@ -204,7 +216,7 @@ fun FeedsPage(
             ) {
                 items(
 
-                    posts.size, key = { index -> posts[index].postId }) { index ->
+                    posts.size, key = { index -> posts[index].postId + Random.nextInt() }) { index ->
                     val post = posts[index]
                     PostCard(
                         title = post.title,
@@ -274,9 +286,9 @@ fun FeedsPage(
                 scope.launch {
                     posts.clear()
                     val new = if (keyWord == null) {
-                        HeyClient.getPosts(topic)
+                        client.getPosts(topic)
                     } else {
-                        HeyClient.searchPost(keyWord, searchPage++)
+                        client.searchPost(keyWord, searchPage++)
                     }
                     posts.addAll(new)
                     posts.forEach {
@@ -294,7 +306,7 @@ fun FeedsPage(
     if (showSheet) {
         ModalBottomSheet(onDismissRequest = { showSheet = false;selected = 1 }) {
             val state = rememberScrollState()
-            FlowRow(modifier = Modifier.padding(12.dp).scrollable(state,Orientation.Horizontal)) {
+            FlowRow(modifier = Modifier.padding(12.dp).scrollable(state, Orientation.Horizontal)) {
                 GlobalState.topicList.forEach {
                     AssistChip(
                         onClick = {
@@ -325,7 +337,7 @@ fun FeedsPage(
                         label = { Text(it.name) },
                         leadingIcon = {
 
-                            AsyncImage(it.icon,null,Modifier.size(AssistChipDefaults.IconSize))
+                            AsyncImage(it.icon, null, Modifier.size(AssistChipDefaults.IconSize))
                         },
                         modifier = Modifier.padding(8.dp)
                     )

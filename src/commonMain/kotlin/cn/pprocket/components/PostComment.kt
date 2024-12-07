@@ -10,6 +10,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import androidx.navigation.NavHostController
+import client
 import cn.pprocket.GlobalState
 import cn.pprocket.HeyClient
 import cn.pprocket.State
@@ -31,7 +32,7 @@ fun PostComment(
     val listState = rememberLazyListState()
     var comments by remember { mutableStateOf(mutableStateListOf<Comment>()) }
     LaunchedEffect(Unit) {
-        comments.addAll(HeyClient.getComments(post.postId, 1))
+        comments.addAll(client.getComments(post.postId, 1))
         val state0 = State("title", post.title)
         onChangeState(state0)
     }
@@ -66,7 +67,7 @@ fun PostComment(
             // 如果最后一个可见的项目是列表中的最后一个项目，那么加载更多数据
             if (lastIndex != null && lastIndex >= comments.size - 3) {
                 // 在后台线程执行网络请求
-                val new = HeyClient.getComments(post.postId, ++page)
+                val new = client.getComments(post.postId, ++page)
                 comments += new
                 comments.distinctBy { it.commentId }
             }

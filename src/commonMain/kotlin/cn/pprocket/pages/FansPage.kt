@@ -17,6 +17,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
+import client
 import cn.pprocket.GlobalState
 import cn.pprocket.HeyClient
 import cn.pprocket.HeyClient.getFollowers
@@ -98,7 +99,7 @@ fun UserList(  fetch:suspend  (Int) -> List<User>, navHostController: NavHostCon
         items(list.size) { index ->
             Row(modifier = Modifier.fillMaxWidth().height(70.dp).clickable {
                 scope.launch {
-                    GlobalState.users[list[index].userId] = HeyClient.getUser(list[index].userId)
+                    GlobalState.users[list[index].userId] = client.getUser(list[index].userId)
                     navHostController.navigate("user/${list[index].userId}")
                 }
 

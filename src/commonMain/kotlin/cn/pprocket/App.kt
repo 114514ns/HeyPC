@@ -20,15 +20,14 @@ fun loadConfig(): Config {
         PlatformU.saveFile("config.json",Json.encodeToString(Config()))
         return Config()
     }
-
     val content = file.read()
     return Config()
 
 }
-
+var client = TClient
 
 suspend fun fetchTopicTask() {
-    GlobalState.topicList = Topic.fetchTopics()
+    GlobalState.topicList = client.fetchTopics()
 }
 
 suspend fun fetchMeTask() {
@@ -37,8 +36,7 @@ suspend fun fetchMeTask() {
         GlobalState.users[userId]= HeyClient.getUser (userId)
     }
 }
+fun saveConfigTask() {
 
-suspend fun fetchFeedsTask() {
-    GlobalState.feeds = HeyClient.getPosts(Topic.RECOMMEND)
 }
 

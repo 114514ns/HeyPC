@@ -1,17 +1,13 @@
-import org.jetbrains.compose.ComposeBuildConfig
-import org.jetbrains.compose.desktop.application.dsl.TargetFormat
-
-
 
 plugins {
-    var composeVersion = "1.7.0"
+    var composeVersion = "1.7.1"
     kotlin("multiplatform") version "2.0.20"
-    id("org.jetbrains.kotlin.plugin.compose")
+    id("org.jetbrains.kotlin.plugin.compose")version "2.1.0-RC2"
     id("org.jetbrains.compose") version composeVersion
     kotlin("plugin.lombok") version "2.0.0"
     id("io.freefair.lombok") version "8.6"
     kotlin("plugin.serialization") version "2.0.20"
-    id("com.android.application") version "8.2.0"
+    id("com.android.application") version "8.5.2"
     id("org.jetbrains.kotlin.android") version "2.0.20" apply false
 }
 group = "cn.pprocket"
@@ -38,7 +34,7 @@ dependencies {
 }
 kotlin {
     jvm()
-    android()
+    androidTarget()
 
 
 
@@ -53,7 +49,6 @@ kotlin {
 
 
     sourceSets {
-        println(ComposeBuildConfig.composeVersion)
         val commonMain by getting {
             dependencies {
 
@@ -62,15 +57,16 @@ kotlin {
                 implementation(compose.ui)
                 implementation(compose.foundation)
                 implementation(compose.materialIconsExtended)
-                implementation("cn.pprocket:heybox:241123-1")
+                implementation("cn.pprocket:heybox:241207-4")
+                implementation("cn.pprocket:HeyBase:241207-4")
                 implementation("org.jetbrains.androidx.navigation:navigation-compose:2.8.0-alpha10")
                 implementation(compose.material3AdaptiveNavigationSuite)
+                implementation("cn.pprocket:TiebaSDK:241207-11")
                 implementation("com.github.alorma.compose-settings:ui-tiles:2.4.0")
                 implementation("com.materialkolor:material-kolor:1.7.0")
                 implementation("com.russhwolf:multiplatform-settings:1.2.0")
                 compileOnly("org.jetbrains.kotlinx:kotlinx-datetime:0.6.1")
                 compileOnly("io.ktor:ktor-client-core:3.0.0-beta-2")
-                implementation("cn.pprocket:heybase:20241025-1")
                 implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.7.3")
                 implementation("io.coil-kt.coil3:coil-compose:3.0.0-alpha10")
                 implementation("io.coil-kt.coil3:coil-compose-core:3.0.0-alpha10")
@@ -119,7 +115,6 @@ compose.desktop {
             configurationFiles.from("proguard.pro")
         }
         nativeDistributions {
-            targetFormats(TargetFormat.Dmg, TargetFormat.Msi, TargetFormat.Deb)
             packageName = "HeyPC"
             packageVersion = "1.0.0"
             windows {

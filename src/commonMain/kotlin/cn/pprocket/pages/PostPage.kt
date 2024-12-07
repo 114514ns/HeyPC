@@ -19,6 +19,7 @@ import androidx.compose.ui.text.TextRange
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
+import client
 import cn.pprocket.*
 import cn.pprocket.State
 import cn.pprocket.components.*
@@ -206,10 +207,10 @@ fun PostPage(
                                     scope.launch {
                                         val list = mutableListOf<String>()
                                         images.forEach {
-                                            val url = HeyClient.uploadImage()
+                                            val url = client.uploadImage()
                                             list.add(url)
                                         }
-                                        HeyClient.reply(
+                                        client.reply(
                                             post.postId,
                                             textFieldValue.text,
                                             images = list

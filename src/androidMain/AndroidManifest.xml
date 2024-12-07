@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        android:versionCode="1"
+        android:versionName="1.0">
+
+    <!-- Beware that these values are overridden by the build.gradle file -->
+    <uses-sdk android:minSdkVersion="15" android:targetSdkVersion="33" />
+
+    <application
+            android:allowBackup="true"
+            android:label="HeyPC"
+            android:supportsRtl="true"
+
+            >
+        <activity android:name="cn.pprocket.MainActivity" android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+    </application>
+
+        <!-- This name is resolved to com.example.myapp.MainActivity
+             based on the namespace property in the build.gradle file -->
+
+
+
+</manifest>

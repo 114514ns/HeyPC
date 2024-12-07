@@ -24,10 +24,8 @@ import kotlinx.coroutines.withContext
 fun AccountDialog(onDismissRequest: () -> Unit) {
     var url by remember { mutableStateOf("") }
     LaunchedEffect(Unit) {
-        url = HeyClient.genQRCode()
-    }
-    LaunchedEffect(Unit) {
         withContext(Dispatchers.Default) {
+            url = HeyClient.genQRCode()
             while (true) {
                 if (HeyClient.checkLogin(url)) {
                     GlobalState.config.cookies = HeyClient.cookie

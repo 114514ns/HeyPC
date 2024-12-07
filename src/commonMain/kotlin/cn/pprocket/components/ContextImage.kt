@@ -16,7 +16,12 @@ import cn.pprocket.GlobalState
 import cn.pprocket.Logger
 import cn.pprocket.Platform
 import cn.pprocket.ui.PlatformU
+import coil3.ImageLoader
 import coil3.compose.AsyncImage
+import coil3.compose.LocalPlatformContext
+import coil3.network.NetworkHeaders
+import coil3.network.httpHeaders
+import coil3.request.ImageRequest
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 
@@ -24,7 +29,7 @@ import kotlinx.coroutines.launch
 @Composable
 fun ContextImage(scope: CoroutineScope, img: String, modifier: Modifier = Modifier) {
     var showSticker by remember { mutableStateOf(false) }
-    val url = transformImage(img)
+    val url = (img)
     val logger = Logger("cn.pprocket.components.ContextImage")
     if (showSticker) {
         //StickerDialog({ showSticker = false }, getOriginalImage(img))
@@ -58,8 +63,7 @@ fun ContextImage(scope: CoroutineScope, img: String, modifier: Modifier = Modifi
             )
         )
 
-         */
-        /*
+         *//*
         KamelImage({ asyncPainterResource(url) }, null,
             modifier = Modifier
                 .padding(8.dp)
@@ -78,20 +82,21 @@ fun ContextImage(scope: CoroutineScope, img: String, modifier: Modifier = Modifi
         )
 
          */
-        AsyncImage(url, null, modifier = Modifier
-            .padding(8.dp)
-            .clip(RoundedCornerShape(12.dp))
-            .graphicsLayer {
-                //alpha = 0.8f // 降低亮度
-            }
-            .clickable {
-                logger.info(url)
-                scope.launch {
-                    PlatformU.openImage(url)
-                }
-            }
-            .fillMaxSize()
-            .animateContentSize(),
+        val headers = NetworkHeaders.Builder().set(
+                "Referer", "https://tieba.baidu.com/"
+            ).build()
+        AsyncImage(
+
+            ImageRequest.Builder(LocalPlatformContext.current).data(url).httpHeaders(headers).build(),
+            null,
+            modifier = Modifier.padding(8.dp).clip(RoundedCornerShape(12.dp)).graphicsLayer {
+                    //alpha = 0.8f // 降低亮度
+                }.clickable {
+                    logger.info(url)
+                    scope.launch {
+                        PlatformU.openImage(url)
+                    }
+                }.fillMaxSize().animateContentSize(),
             contentScale = ContentScale.Crop)
 
         /*

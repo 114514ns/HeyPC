@@ -11,11 +11,13 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Window
 import androidx.compose.ui.window.application
 import androidx.compose.ui.window.rememberWindowState
+import client
 import cn.pprocket.items.Topic
 import cn.pprocket.pages.RootPage
 import cn.pprocket.ui.PlatformU
 import com.materialkolor.DynamicMaterialTheme
 import com.materialkolor.rememberDynamicColorScheme
+import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import java.awt.Dimension
 import java.awt.Toolkit
@@ -27,7 +29,8 @@ val logger = Logger("App")
 fun main() = application {
     LaunchedEffect(Unit) {
         GlobalState.config = loadConfig()
-        HeyClient.cookie = GlobalState.config.cookies
+        saveTask()
+        client.cookie = GlobalState.config.cookies
         fetchTopicTask()
         fetchMeTask()
     }
@@ -80,19 +83,23 @@ fun loadConfig(): Config {
 
 }
 
+fun saveTask() {
+    Thread {
+        while (true) {
+            File("config.json").write(Json.encodeToString(GlobalState.config))
+            Thread.sleep(1000)
+        }
+    }.start()
+}
 
 suspend fun fetchTopicTask() {
-    GlobalState.topicList = Topic.fetchTopics()
+    GlobalState.topicList = client.fetchTopics()
 }
 
 suspend fun fetchMeTask() {
     if (GlobalState.config.isLogin) {
         val userId = GlobalState.config.user.userId
-        GlobalState.users[userId]= HeyClient.getUser (userId)
+        GlobalState.users[userId]= client.getUser (userId)
     }
-}
-
-suspend fun fetchFeedsTask() {
-    GlobalState.feeds = HeyClient.getPosts(Topic.RECOMMEND)
 }
 

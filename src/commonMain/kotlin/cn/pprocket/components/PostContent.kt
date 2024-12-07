@@ -16,6 +16,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
+import client
 import cn.pprocket.GlobalState
 import cn.pprocket.HeyClient
 import cn.pprocket.HeyClient.fillContent
@@ -48,7 +49,7 @@ fun PostContent(
             if (!post.isHTML) {
                 var str = ""
                 try {
-                    str = post.fillContent()
+                    str = client.fillContent(post)
                 } catch (e: NullPointerException) {
                     logger.error("post.fillContent() error: $e")
                     logger.error("postId ${post.postId}  title ${post.title}")
@@ -65,7 +66,7 @@ fun PostContent(
         // 作者信息
         Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.clickable(onClick = {
             scope.launch {
-                GlobalState.users[post.userId] = HeyClient.getUser(post.userId)
+                GlobalState.users[post.userId] = client.getUser(post.userId)
                 navController.navigate("user/${post.userId}")
             }
 

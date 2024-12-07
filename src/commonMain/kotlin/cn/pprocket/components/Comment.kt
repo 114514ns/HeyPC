@@ -30,6 +30,7 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import cn.pprocket.GlobalState
 import cn.pprocket.HeyClient
+import cn.pprocket.HeyClient.fillSubComments
 import cn.pprocket.Logger
 import cn.pprocket.items.Comment
 import cn.pprocket.ui.PlatformU
