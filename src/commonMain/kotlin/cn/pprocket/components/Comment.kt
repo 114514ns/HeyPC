@@ -121,6 +121,20 @@ fun Comment(comment: Comment, navController: NavHostController, postId: String, 
                 LaunchedEffect(comment.subComments) {
                     itemsState.clear()
                     itemsState.addAll(comment.subComments)
+                    /*
+                    comment.subComments.forEach { subComment ->
+                        itemsState.forEach {
+                            var c = true
+                            if (subComment.commentId == it.commentId) {
+                                c = false
+                            }
+                            if (c) {
+                                itemsState.add(subComment)
+                            }
+                        }
+                    }
+
+                     */
                 }
                 val post = GlobalState.map[postId]
                 itemsState.forEach {
@@ -194,12 +208,32 @@ fun Comment(comment: Comment, navController: NavHostController, postId: String, 
                         modifier = Modifier.padding(top = 8.dp, bottom = 8.dp).align(Alignment.CenterHorizontally)
                             .clickable {
                                 CoroutineScope(Dispatchers.Default).launch() {
+                                    /*
                                     itemsState.clear()
-                                    //itemsState.addAll(comment.fillSubComments())
+                                    itemsState.addAll(comment.fillSubComments())
                                     comment.fillSubComments()!!.forEach {
                                         itemsState.add(it)
                                     }
                                     itemsState.distinctBy { it.commentId }
+
+
+                                     */
+                                    comment.fillSubComments()
+                                    val copy = itemsState.toList()
+                                    comment.subComments.forEach { subComment ->
+                                        var c = true
+                                        copy.forEach {
+                                            if (subComment.commentId == it.commentId) {
+                                                c = false
+                                            }
+
+                                        }
+                                        if (c) {
+                                            itemsState.add(subComment)
+                                        }
+                                    }
+
+
                                 }
                             },
                         color = MaterialTheme.colorScheme.primary,

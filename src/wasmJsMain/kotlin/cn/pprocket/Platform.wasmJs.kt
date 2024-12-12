@@ -45,4 +45,7 @@ actual object PlatformU {
     actual fun setFullscreen(fullscreen: Boolean) {
     }
 
+    actual fun initFirebase() {
+    }
+
 }

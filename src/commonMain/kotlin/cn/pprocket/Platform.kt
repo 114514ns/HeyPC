@@ -14,5 +14,6 @@ expect object PlatformU {
     fun getTypography() : Typography
     fun getPlatform():String
     fun setFullscreen(fullscreen:Boolean)
+    fun initFirebase()
 
 }

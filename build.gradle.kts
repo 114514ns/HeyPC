@@ -35,19 +35,12 @@ dependencies {
 kotlin {
     jvm()
     androidTarget()
-
-
-
-
     wasmJs {
         browser {
 
         }
         binaries.executable()
     }
-
-
-
     sourceSets {
         val commonMain by getting {
             dependencies {
@@ -71,6 +64,7 @@ kotlin {
                 implementation("io.coil-kt.coil3:coil-compose:3.0.0-alpha10")
                 implementation("io.coil-kt.coil3:coil-compose-core:3.0.0-alpha10")
                 implementation("io.coil-kt.coil3:coil-network-ktor3:3.0.0-alpha10")
+
             }
         }
         val jvmMain by getting {
@@ -78,6 +72,8 @@ kotlin {
                 implementation(compose.desktop.currentOs) {
                     exclude("org.jetbrains.compose.material")
                 }
+                implementation("dev.gitlive:firebase-perf:2.1.0")
+                implementation("dev.gitlive:firebase-analytics:2.1.0")
             }
         }
         val wasmJsMain by getting {
@@ -93,7 +89,7 @@ kotlin {
     }
 }
 android {
-    namespace = "org.company.app"
+    namespace = "cn.pprocket.android"
     compileSdk = 34
     lint {
         baseline = file("lint-baseline.xml")
@@ -102,7 +98,7 @@ android {
         minSdk = 26
         targetSdk = 34
 
-        applicationId = "org.company.app.androidApp"
+        applicationId = "cn.pprocket.android"
         versionCode = 1
         versionName = "1.0.0"
 

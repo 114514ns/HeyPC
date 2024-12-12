@@ -1,6 +1,7 @@
 package cn.pprocket.ui
 
 import android.annotation.SuppressLint
+import android.app.Application
 import android.content.Context
 import android.content.Intent
 import android.content.res.Configuration
@@ -8,8 +9,7 @@ import android.net.Uri
 import android.os.Build
 import androidx.annotation.RequiresApi
 import androidx.compose.material3.Typography
-import androidx.compose.ui.platform.LocalConfiguration
-import java.util.*
+
 
 @SuppressLint("StaticFieldLeak")
 actual object PlatformU {
@@ -59,6 +59,19 @@ actual object PlatformU {
 
     actual fun setFullscreen(fullscreen: Boolean) {
         this.mFullscreen = fullscreen
+    }
+
+    actual fun initFirebase() {
+        /*
+        val options: FirebaseOptions = FirebaseOptions(
+            applicationId = "1:842179786357:android:d8938731447386c989ea3c",
+            apiKey = "AIzaSyCGyaVawlhpHbp9OI5xeVYOpWP2XPxQKRM",
+            projectId = "PPHub",
+        )
+
+        val app = Firebase.initialize(Application(), options)
+
+         */
     }
 
 }

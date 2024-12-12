@@ -52,6 +52,7 @@ fun main() = application {
     val colorScheme = rememberDynamicColorScheme(Color(99, 160, 2), false)
     var color by remember { mutableStateOf(Color(99, 160, 2)) }
 
+    PlatformU.initFirebase()
     LaunchedEffect(windowState.placement) {
         PlatformU.isFull = (windowState.placement != WindowPlacement.Floating)
     }
