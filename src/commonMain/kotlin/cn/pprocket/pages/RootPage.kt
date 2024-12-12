@@ -43,11 +43,12 @@ fun RootPage(onChangeState: (State) -> Unit) {
         var selectedItem by rememberSaveable { mutableStateOf(0) }
         var time by remember { mutableStateOf(0) }  // 计时器，或者你可以根据需要更新其他状态
 
+        var full = remember { mutableStateOf(PlatformU.isFullScreen()) }
 
         NavigationSuiteScaffold(
 
             //这里当isFullScreen发送变化时不会重组，但是正常情况下也应该不会发生变化
-            layoutType = if (PlatformU.isFullScreen()) {
+            layoutType = if (full.value) {
                 NavigationSuiteType.NavigationRail
             } else {
                 if (showBottomBar) {

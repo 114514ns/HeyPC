@@ -105,7 +105,7 @@ fun UserPage(navController: NavHostController, userId: String) {
             var page = 0
             val postList = remember { mutableStateListOf<Post>() }
             var commentPage = 1
-            val comments = rememberSaveable { mutableStateListOf<Comment>() }
+            val comments = remember { mutableStateListOf<Comment>() }
             LaunchedEffect(userId) {
                 withContext(Dispatchers.Default) {
                     postList.clear()

@@ -8,6 +8,7 @@
     <uses-sdk android:minSdkVersion="15" android:targetSdkVersion="33" />
 
     <application
+            android:theme="@style/Theme.AppCompat.Light.NoActionBar"
             android:allowBackup="true"
             android:label="HeyPC"
             android:supportsRtl="true"
@@ -20,6 +21,8 @@
             </intent-filter>
         </activity>
     </application>
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
 
         <!-- This name is resolved to com.example.myapp.MainActivity
              based on the namespace property in the build.gradle file -->

@@ -18,6 +18,8 @@ import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
+import androidx.compose.runtime.saveable.Saver
+import androidx.compose.runtime.saveable.listSaver
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -38,6 +40,8 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import kotlinx.serialization.encodeToString
+import kotlinx.serialization.json.Json
 import logger
 import kotlin.random.Random
 
@@ -52,25 +56,54 @@ fun FeedsPage(
 ) {
 
 
-    val posts = rememberSaveable { mutableStateListOf<Post>() }
-    var topic by rememberSaveable { mutableStateOf(Topic("",0,"")) }
+
+    val posts = if (PlatformU.getPlatform() == "Android") {
+
+        rememberSaveable(
+            saver = Saver(
+                save = { Json.encodeToString(it.toList())},
+                restore = { jsonString ->
+                    val list = Json.decodeFromString<List<Post>>(jsonString) // 从 JSON 恢复为普通列表
+                    list.toMutableStateList()
+                }
+            )
+        ) { mutableStateListOf<Post>() }
+    } else {
+        rememberSaveable { mutableStateListOf() }
+    }
+
+    //var topic by remember {mutableStateOf(Topic("", 0, ""))}
+
+    var topic by rememberSaveable(
+        saver = Saver(
+            save = { listOf(it.value.id, it.value.name, it.value.icon) }, // 保存为 List
+            restore = { mutableStateOf(Topic(it[1] as String, it[0] as Int, it[2] as String)) } // 从 List 恢复
+        )
+    ) { mutableStateOf(Topic("", 0, "")) }
+
+
     var selected by rememberSaveable { mutableStateOf(0) }
     val coroutineScope = rememberCoroutineScope()
 
-    val topics = rememberSaveable {
-
-        mutableStateListOf<Topic>(
-
+    /*
+    val topics = rememberSaveable(
+        saver = listSaver<MutableList<Topic>, Topic>(
+            save = { it }, // 直接保存列表
+            restore = { it.toMutableStateList() } // 恢复为 SnapshotStateList
         )
-
-
+    ) {
+        mutableStateListOf()
     }
+
+     */
+
+    val topics = remember { mutableStateListOf<Topic>() }
     LaunchedEffect(Unit) {
 
 
-            val g = client.getDefaultTopics()
-            topic = g[0]
-            topics.addAll(g)
+        val g = client.getDefaultTopics()
+        topic = g[0]
+        topics.addAll(g)
 
     }
 
@@ -87,7 +120,7 @@ fun FeedsPage(
     var searchPage by remember { mutableStateOf(1) }
     var scope = rememberCoroutineScope()
     LaunchedEffect(selected) {
-        if (topics.size<2) {
+        if (topics.size < 2) {
             return@LaunchedEffect
         }
         if (selected == topics.size - 1) {
@@ -151,7 +184,7 @@ fun FeedsPage(
                                 scrollState.scrollBy(-delta)
                             }
                         },
-                    ),
+                    ).padding(top = if (PlatformU.getPlatform() == "Android") 25.dp else 0.dp),
                     contentPadding = PaddingValues(horizontal = 8.dp),
                     horizontalArrangement = Arrangement.spacedBy(8.dp)
                 ) {

@@ -38,4 +38,11 @@ actual object PlatformU {
         return typography
     }
 
+    actual fun getPlatform(): String {
+        return "Wasm"
+    }
+
+    actual fun setFullscreen(fullscreen: Boolean) {
+    }
+
 }

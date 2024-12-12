@@ -12,4 +12,7 @@ expect object PlatformU {
     fun saveFile(name: String, content: String)
     fun containFile(name: String): Boolean
     fun getTypography() : Typography
+    fun getPlatform():String
+    fun setFullscreen(fullscreen:Boolean)
+
 }

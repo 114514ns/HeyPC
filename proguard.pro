@@ -11,6 +11,8 @@
 # Kotlinx coroutines rules seems to be outdated with the latest version of Kotlin and Proguard
 -keep class kotlinx.coroutines.** { *; }
 
+-keep class androidx.lifecycle.** {*;}
+
 -dontwarn  org.jsoup.**
 -dontwarn com.googlecode.**
 
@@ -34,6 +36,9 @@
 -keep class okio.** { *; }
 -keep interface okio.** { *; }
 -keep enum okio.** { *; }
+
+-dontwarn io.ktor.**
+-dontwarn cn.pprocket.**
 
 
 

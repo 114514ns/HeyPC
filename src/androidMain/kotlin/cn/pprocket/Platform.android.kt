@@ -1,26 +1,32 @@
 package cn.pprocket.ui
 
+import android.annotation.SuppressLint
+import android.content.Context
+import android.content.Intent
+import android.content.res.Configuration
+import android.net.Uri
+import android.os.Build
+import androidx.annotation.RequiresApi
 import androidx.compose.material3.Typography
-import java.awt.Desktop
-import java.awt.GraphicsDevice
-import java.awt.GraphicsEnvironment
-import java.net.URI
+import androidx.compose.ui.platform.LocalConfiguration
+import java.util.*
 
+@SuppressLint("StaticFieldLeak")
 actual object PlatformU {
-
     var mTypography = Typography()
-
-    var isFull = false
-
+    var mFullscreen = false
+    var mContext: Context? = null
     actual fun isFullScreen(): Boolean {
-        //return GraphicsEnvironment.getLocalGraphicsEnvironment().defaultScreenDevice.fullScreenWindow != null
-        return isFull
+        return mFullscreen
     }
 
+    @RequiresApi(Build.VERSION_CODES.O)
     actual fun openImage(url: String) {
-        Thread {
-            Desktop.getDesktop().browse(URI.create(url))
-        }.start()
+
+        val intent = Intent()
+        intent.data = Uri.parse(url)
+        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+        mContext?.startActivity(intent)
     }
 
     actual fun read(name: String) : String{
@@ -48,10 +54,11 @@ actual object PlatformU {
     }
 
     actual fun getPlatform(): String {
-        return "Desktop"
+        return "Android"
     }
 
     actual fun setFullscreen(fullscreen: Boolean) {
+        this.mFullscreen = fullscreen
     }
 
 }

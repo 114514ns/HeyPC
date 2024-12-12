@@ -9,16 +9,19 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Window
+import androidx.compose.ui.window.WindowPlacement
 import androidx.compose.ui.window.application
 import androidx.compose.ui.window.rememberWindowState
 import client
-import cn.pprocket.items.Topic
 import cn.pprocket.pages.RootPage
 import cn.pprocket.ui.PlatformU
 import com.materialkolor.DynamicMaterialTheme
 import com.materialkolor.rememberDynamicColorScheme
+import fetchMeTask
+import fetchTopicTask
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
+import loadConfig
 import java.awt.Dimension
 import java.awt.Toolkit
 
@@ -49,6 +52,9 @@ fun main() = application {
     val colorScheme = rememberDynamicColorScheme(Color(99, 160, 2), false)
     var color by remember { mutableStateOf(Color(99, 160, 2)) }
 
+    LaunchedEffect(windowState.placement) {
+        PlatformU.isFull = (windowState.placement != WindowPlacement.Floating)
+    }
     Window(
         title = title,
         onCloseRequest = ::exitApplication,
@@ -71,17 +77,7 @@ fun main() = application {
     }
 }
 
-fun loadConfig(): Config {
-    val file = cn.pprocket.File("config.json")
-    if (!PlatformU.containFile("config.json")) {
-        PlatformU.createFile("config.json")
-        return Config()
-    }
 
-    val content = file.read()
-    return Json.decodeFromString<Config>(content)
-
-}
 
 fun saveTask() {
     Thread {
@@ -92,14 +88,5 @@ fun saveTask() {
     }.start()
 }
 
-suspend fun fetchTopicTask() {
-    GlobalState.topicList = client.fetchTopics()
-}
 
-suspend fun fetchMeTask() {
-    if (GlobalState.config.isLogin) {
-        val userId = GlobalState.config.user.userId
-        GlobalState.users[userId]= client.getUser (userId)
-    }
-}
 

@@ -17,7 +17,7 @@ import androidx.compose.ui.window.CanvasBasedWindow
 import cn.pprocket.pages.RootPage
 import cn.pprocket.ui.PlatformU
 import com.materialkolor.DynamicMaterialTheme
-import fetchFeedsTask
+
 import fetchMeTask
 import fetchTopicTask
 import io.ktor.client.request.*

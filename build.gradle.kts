@@ -57,11 +57,11 @@ kotlin {
                 implementation(compose.ui)
                 implementation(compose.foundation)
                 implementation(compose.materialIconsExtended)
-                implementation("cn.pprocket:heybox:241207-4")
-                implementation("cn.pprocket:HeyBase:241207-4")
+                implementation("cn.pprocket:heybox:241212-1")
+                implementation("cn.pprocket:HeyBase:241212-1")
                 implementation("org.jetbrains.androidx.navigation:navigation-compose:2.8.0-alpha10")
                 implementation(compose.material3AdaptiveNavigationSuite)
-                implementation("cn.pprocket:TiebaSDK:241207-11")
+                implementation("cn.pprocket:TiebaSDK:241208-6")
                 implementation("com.github.alorma.compose-settings:ui-tiles:2.4.0")
                 implementation("com.materialkolor:material-kolor:1.7.0")
                 implementation("com.russhwolf:multiplatform-settings:1.2.0")
@@ -85,12 +85,19 @@ kotlin {
                 implementation("org.jetbrains.kotlinx:kotlinx-browser:0.1")
             }
         }
+        val androidMain by getting {
+            dependencies {
+                implementation("com.google.accompanist:accompanist-systemuicontroller:0.36.0")
+            }
+        }
     }
 }
 android {
     namespace = "org.company.app"
     compileSdk = 34
-
+    lint {
+        baseline = file("lint-baseline.xml")
+    }
     defaultConfig {
         minSdk = 26
         targetSdk = 34
@@ -108,7 +115,7 @@ android {
 }
 compose.desktop {
     application {
-        mainClass = "AppKt"
+        mainClass = "cn.pprocket.App_jvmKt"
 
         buildTypes.release.proguard {
             version.set("7.5.0")
@@ -118,7 +125,7 @@ compose.desktop {
             packageName = "HeyPC"
             packageVersion = "1.0.0"
             windows {
-                iconFile.set(project.file("icons/icon.ico"))
+                //iconFile.set(project.file("icons/icon.ico"))
             }
             modules("jdk.unsupported")
             modules("java.management")
