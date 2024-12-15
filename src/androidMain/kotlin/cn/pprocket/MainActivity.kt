@@ -1,8 +1,5 @@
 package cn.pprocket
 
-import android.app.Activity
-import android.app.UiModeManager
-import android.content.Context
 import android.os.Build
 import android.os.Bundle
 import androidx.activity.ComponentActivity
@@ -10,15 +7,14 @@ import androidx.activity.SystemBarStyle
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.annotation.RequiresApi
-import androidx.compose.foundation.isSystemInDarkTheme
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.core.view.WindowCompat
 import cn.pprocket.pages.RootPage
 import cn.pprocket.ui.PlatformU
-import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import com.materialkolor.DynamicMaterialTheme
 
 class MainActivity : ComponentActivity() {

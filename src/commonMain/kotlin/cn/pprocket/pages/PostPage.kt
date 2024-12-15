@@ -9,6 +9,7 @@ import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -53,7 +54,7 @@ fun PostPage(
     }
 
 
-    var tabIndex by remember { mutableStateOf(0) }
+    var tabIndex by rememberSaveable { mutableStateOf(0) }
     var isFullScreen = PlatformU.isFullScreen()
     Spacer(modifier = Modifier.height(32.dp))
     Column(modifier = Modifier.padding(16.dp)) {

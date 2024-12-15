@@ -108,8 +108,7 @@ fun Comment(comment: Comment, navController: NavHostController, postId: String, 
                             ContextImage(
                                 scope,
                                 it,
-                                modifier = Modifier.size(120.dp).padding(4.dp).clip(RoundedCornerShape(8.dp))
-                            )
+                                modifier = Modifier.size(120.dp).padding(4.dp).clip(RoundedCornerShape(8.dp)),navController)
                         }
                     }
                     Spacer(modifier = Modifier.height(8.dp))
@@ -121,20 +120,6 @@ fun Comment(comment: Comment, navController: NavHostController, postId: String, 
                 LaunchedEffect(comment.subComments) {
                     itemsState.clear()
                     itemsState.addAll(comment.subComments)
-                    /*
-                    comment.subComments.forEach { subComment ->
-                        itemsState.forEach {
-                            var c = true
-                            if (subComment.commentId == it.commentId) {
-                                c = false
-                            }
-                            if (c) {
-                                itemsState.add(subComment)
-                            }
-                        }
-                    }
-
-                     */
                 }
                 val post = GlobalState.map[postId]
                 itemsState.forEach {

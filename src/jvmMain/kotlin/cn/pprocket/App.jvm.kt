@@ -49,7 +49,7 @@ fun main() = application {
     logger.info("Screen size :  ${screenSize.width} * ${screenSize.height}")
     logger.info("Real size ${multipy * 450}dp  * ${1050 * multipy}dp")
     val windowState = rememberWindowState(width = (multipy * 450).dp, height = (multipy * 1050).dp)
-    val colorScheme = rememberDynamicColorScheme(Color(99, 160, 2), false)
+    //val colorScheme = rememberDynamicColorScheme(Color(99, 160, 2), false)
     var color by remember { mutableStateOf(Color(99, 160, 2)) }
 
     PlatformU.initFirebase()

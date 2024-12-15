@@ -4,7 +4,11 @@ import androidx.compose.animation.*
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.gestures.Orientation
+import androidx.compose.foundation.gestures.scrollable
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.rememberScrollState
 
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -39,6 +43,7 @@ fun SettingsPage(
     var showDebug by remember { mutableStateOf(false) }
     var showSettings by remember { mutableStateOf(false) }
     var showStickers by remember { mutableStateOf(false) }
+    var scroll = rememberScrollState()
     Box {
         Card(
             modifier = Modifier.fillMaxSize(),
@@ -62,7 +67,7 @@ fun SettingsPage(
                 )
 
                 Column(
-                    modifier = Modifier.fillMaxSize().padding(top = 96.dp)
+                    modifier = Modifier.fillMaxSize().padding(top = 96.dp).scrollable(scroll, Orientation.Vertical),
                 ) {
 
                     SettingItem(icon = Icons.Filled.Palette,

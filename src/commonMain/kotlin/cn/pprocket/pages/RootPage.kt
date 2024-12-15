@@ -171,7 +171,9 @@ fun RootPage(onChangeState: (State) -> Unit) {
                     ) { stack ->
                         FansPage(stack.arguments?.getString("userId")!!, navController)
 
-
+                    }
+                    composable("image/{url}") { stack ->
+                        ImagePage(stack.arguments?.getString("url")?.replace("/","1145141919810") ?: "",{navController.popBackStack()})
                     }
                 }
                 composable(

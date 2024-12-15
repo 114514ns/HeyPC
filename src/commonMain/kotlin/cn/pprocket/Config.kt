@@ -15,7 +15,7 @@ data class Config(
     var cookies: String = "",
     var isLogin: Boolean = false,
     var user: User = User(),
-    var blockCube: Boolean = false,
+    var blockCube: Boolean = true,
     var showTab: Boolean = false,
     var originImage: Boolean = true,
     var colorRed: Int = 0,

@@ -7,7 +7,7 @@ plugins {
     kotlin("plugin.lombok") version "2.0.0"
     id("io.freefair.lombok") version "8.6"
     kotlin("plugin.serialization") version "2.0.20"
-    id("com.android.application") version "8.5.2"
+    id("com.android.application") version "8.7.3"
     id("org.jetbrains.kotlin.android") version "2.0.20" apply false
 }
 group = "cn.pprocket"
@@ -50,20 +50,19 @@ kotlin {
                 implementation(compose.ui)
                 implementation(compose.foundation)
                 implementation(compose.materialIconsExtended)
-                implementation("cn.pprocket:heybox:241212-1")
+                implementation("cn.pprocket:heybox:241215-2")
                 implementation("cn.pprocket:HeyBase:241212-1")
-                implementation("org.jetbrains.androidx.navigation:navigation-compose:2.8.0-alpha10")
+                implementation("org.jetbrains.androidx.navigation:navigation-compose:2.8.0-alpha11")
                 implementation(compose.material3AdaptiveNavigationSuite)
                 implementation("cn.pprocket:TiebaSDK:241208-6")
-                implementation("com.github.alorma.compose-settings:ui-tiles:2.4.0")
-                implementation("com.materialkolor:material-kolor:1.7.0")
-                implementation("com.russhwolf:multiplatform-settings:1.2.0")
+                implementation("com.github.alorma.compose-settings:ui-tiles:2.6.0")
+                implementation("com.materialkolor:material-kolor:2.0.0")
                 compileOnly("org.jetbrains.kotlinx:kotlinx-datetime:0.6.1")
-                compileOnly("io.ktor:ktor-client-core:3.0.0-beta-2")
-                implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.7.3")
-                implementation("io.coil-kt.coil3:coil-compose:3.0.0-alpha10")
-                implementation("io.coil-kt.coil3:coil-compose-core:3.0.0-alpha10")
-                implementation("io.coil-kt.coil3:coil-network-ktor3:3.0.0-alpha10")
+                compileOnly("io.ktor:ktor-client-core:3.0.1")
+                implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.8.0-RC")
+                implementation("io.coil-kt.coil3:coil-compose:3.0.4")
+                implementation("io.coil-kt.coil3:coil-compose-core:3.0.4")
+                implementation("io.coil-kt.coil3:coil-network-ktor3:3.0.4")
 
             }
         }
@@ -82,21 +81,19 @@ kotlin {
             }
         }
         val androidMain by getting {
-            dependencies {
-                implementation("com.google.accompanist:accompanist-systemuicontroller:0.36.0")
-            }
+
         }
     }
 }
 android {
     namespace = "cn.pprocket.android"
-    compileSdk = 34
+    compileSdk = 35
     lint {
         baseline = file("lint-baseline.xml")
     }
     defaultConfig {
         minSdk = 26
-        targetSdk = 34
+        targetSdk = 35
 
         applicationId = "cn.pprocket.android"
         versionCode = 1

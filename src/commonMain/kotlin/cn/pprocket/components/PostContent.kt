@@ -94,7 +94,7 @@ fun PostContent(
                         }
 
                         "image" -> {
-                            ContextImage(scope, it.tagValue)
+                            ContextImage(scope, it.tagValue,nav = navController)
                         }
 
                         "title" -> {

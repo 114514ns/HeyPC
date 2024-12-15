@@ -56,7 +56,7 @@ fun PostCard(
                 ContextImage(
                     scope,
                     userAvatar,
-                    modifier = Modifier.size(48.dp).padding(6.dp).clip(CircleShape)
+                    modifier = Modifier.size(48.dp).padding(6.dp).clip(CircleShape),
                 )
                 Text(
                     text = author,

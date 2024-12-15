@@ -15,19 +15,7 @@ import cn.pprocket.ui.PlatformU
 
 @Composable
 fun SelectableText(text: String, modifier: Modifier = Modifier,style:TextStyle = TextStyle.Default) {
-    // SelectionContainer allows text to be selectable
     SelectionContainer {
-
-        /*
-        BasicTextField(
-            value = text,
-            onValueChange = {},
-            textStyle = TextStyle(fontSize = 18.sp),
-            readOnly = true, // Make sure the text is read-only
-            modifier = Modifier.fillMaxSize().padding(8.dp)
-        )
-
-         */
         var newText = text
         if (GlobalState.config.blockCube) {
             val pattern = "\\[cube_.*?]".toRegex()

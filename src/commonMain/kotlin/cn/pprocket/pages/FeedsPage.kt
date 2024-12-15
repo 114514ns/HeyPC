@@ -25,6 +25,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
+import androidx.navigation.compose.currentBackStackEntryAsState
 import client
 import cn.pprocket.GlobalState
 import cn.pprocket.HeyClient
@@ -55,8 +56,7 @@ fun FeedsPage(
     keyWord: String? = null
 ) {
 
-
-
+    val savedStateHandle = navController.currentBackStackEntryAsState().value?.savedStateHandle
 
     val posts = if (PlatformU.getPlatform() == "Android") {
 
@@ -68,12 +68,13 @@ fun FeedsPage(
                     list.toMutableStateList()
                 }
             )
-        ) { mutableStateListOf<Post>() }
+        ) { Json.decodeFromString<List<Post>>(savedStateHandle?.get("json")?:"[]").toMutableStateList() }
     } else {
-        rememberSaveable { mutableStateListOf() }
+        rememberSaveable {
+            logger.info(savedStateHandle?.get("json")?:"[]")
+            Json.decodeFromString<List<Post>>(savedStateHandle?.get("json")?:"[]").toMutableStateList() }
     }
 
-    //var topic by remember {mutableStateOf(Topic("", 0, ""))}
 
     var topic by rememberSaveable(
         saver = Saver(
@@ -82,21 +83,9 @@ fun FeedsPage(
         )
     ) { mutableStateOf(Topic("", 0, "")) }
 
-
     var selected by rememberSaveable { mutableStateOf(0) }
     val coroutineScope = rememberCoroutineScope()
 
-    /*
-    val topics = rememberSaveable(
-        saver = listSaver<MutableList<Topic>, Topic>(
-            save = { it }, // 直接保存列表
-            restore = { it.toMutableStateList() } // 恢复为 SnapshotStateList
-        )
-    ) {
-        mutableStateListOf()
-    }
-
-     */
 
     val topics = remember { mutableStateListOf<Topic>() }
     LaunchedEffect(Unit) {
@@ -105,6 +94,7 @@ fun FeedsPage(
         val g = client.getDefaultTopics()
         topic = g[0]
         topics.addAll(g)
+        topics.add(Topic("更多",1145,""))
 
     }
 
@@ -124,11 +114,7 @@ fun FeedsPage(
         if (topics.size < 2) {
             return@LaunchedEffect
         }
-        if (selected == topics.size - 1) {
-            logger.info("last")
-            showSheet = true
-            logger.info("last0")
-        } else if (topics[selected].id != 114514 && refresh) {
+        else if (topics[selected].id != 114514 && refresh) {
             refresh = false
             withContext(Dispatchers.Default) {
                 coroutineScope.launch {
@@ -144,7 +130,7 @@ fun FeedsPage(
                 fetch.forEach { newList.add(it) }
                 posts.clear()
                 posts.addAll(newList)
-
+                savedStateHandle?.set("json", Json.encodeToString(posts.toList()))
 
                 logger.info("切换topic  ${topic}")
             }
@@ -166,7 +152,6 @@ fun FeedsPage(
         //navController.navigate("user/36331242")
     }
     LaunchedEffect(Unit) {
-
         while (true) {
             cell = if (PlatformU.isFullScreen()) 2 else 1
             delay(40)
@@ -194,9 +179,15 @@ fun FeedsPage(
                         val theTopic = topics[index]
                         FilterChip(
                             onClick = {
-                                topic = theTopic
-                                selected = index
-                                refresh = true
+
+
+                                if (index == topics.size - 1) {
+                                    showSheet = true
+                                } else {
+                                    topic = theTopic
+                                    selected = index
+                                    refresh = true
+                                }
                             },
                             label = {
                                 //Text(fixEncoding(theTopic.name))
@@ -338,7 +329,7 @@ fun FeedsPage(
 
 
     if (showSheet) {
-        ModalBottomSheet(onDismissRequest = { showSheet = false;selected = 1 }) {
+        ModalBottomSheet(onDismissRequest = { showSheet = false;/*selected = 1 */}) {
             val state = rememberScrollState()
             FlowRow(modifier = Modifier.padding(12.dp).scrollable(state, Orientation.Horizontal)) {
                 GlobalState.topicList.forEach {

@@ -44,10 +44,11 @@ fun UserPage(navController: NavHostController, userId: String) {
             Card(modifier = Modifier.fillMaxHeight(0.08f).fillMaxWidth()) {
                 Row(modifier = Modifier.padding(16.dp)) {
                     AsyncImage(user.avatar, "", modifier = Modifier.clip(CircleShape))
-                    Row(modifier = Modifier.fillMaxWidth().padding(16.dp)) {
-                        SelectableText(user.userName)
+                    Row(modifier = Modifier.padding(24.dp)) {
+
                         //SelectableText(user.signature, modifier = Modifier.padding(16.dp))
                     }
+                    SelectableText(user.userName)
                 }
 
             }
