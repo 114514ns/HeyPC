@@ -1,12 +1,23 @@
 package cn.pprocket
 
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.background
+import androidx.compose.foundation.gestures.detectDragGestures
+import androidx.compose.foundation.layout.*
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Adb
+import androidx.compose.material.icons.filled.Close
+import androidx.compose.material.icons.filled.Maximize
+import androidx.compose.material.icons.filled.Minimize
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
 import androidx.compose.runtime.*
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Window
 import androidx.compose.ui.window.WindowPlacement
@@ -49,7 +60,6 @@ fun main() = application {
     logger.info("Screen size :  ${screenSize.width} * ${screenSize.height}")
     logger.info("Real size ${multipy * 450}dp  * ${1050 * multipy}dp")
     val windowState = rememberWindowState(width = (multipy * 450).dp, height = (multipy * 1050).dp)
-    //val colorScheme = rememberDynamicColorScheme(Color(99, 160, 2), false)
     var color by remember { mutableStateOf(Color(99, 160, 2)) }
 
     PlatformU.initFirebase()
@@ -58,22 +68,82 @@ fun main() = application {
     }
     Window(
         title = title,
-        onCloseRequest = ::exitApplication,
         state = windowState,
+        onCloseRequest = ::exitApplication,
+        undecorated = true,
     ) {
-        DynamicMaterialTheme(color, useDarkTheme = false) {
-            Box(modifier = Modifier.fillMaxSize()) {
-                RootPage(onChangeState = { state ->
-                    if (state.type == "title") {
-                        title = state.value as String
-                    }
-                    if (state.type == "color") {
-                        color = state.value as Color
-                    }
-                })
-            }
+        var offsetX by remember { mutableStateOf(0) }
+        var offsetY by remember { mutableStateOf(0) }
+        Column {
+            Row(
 
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(40.dp)
+                    .background(Color.DarkGray)
+                    .pointerInput(Unit) {
+                        detectDragGestures { change, dragAmount ->
+                            change.consume()
+                            offsetX += (dragAmount.x).toInt()
+                            offsetY += (dragAmount.y).toInt()
+                            window.setLocation(
+                                window.x + offsetX,
+                                window.y + offsetY
+                            )
+                        }
+                    }
+                    .padding(horizontal = 8.dp),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Text(
+                    text = title,
+                    color = Color.White,
+                    modifier = Modifier.weight(1f)
+                )
+
+                IconButton(onClick = { windowState.isMinimized = true }) {
+                    Icon(Icons.Default.Minimize, contentDescription = "Minimize", tint = Color.White)
+                }
+
+
+
+                IconButton(onClick = {
+                    if (windowState.placement == WindowPlacement.Floating) {
+                        windowState.placement = WindowPlacement.Maximized
+                    } else {
+                        windowState.placement = WindowPlacement.Floating
+                    }
+                }) {
+                    Icon(Icons.Default.Adb, contentDescription = "Maximize", tint = Color.White)
+                }
+
+
+
+
+
+                // 关闭按钮
+                IconButton(onClick = ::exitApplication) {
+                    Icon(Icons.Default.Close, contentDescription = "Close", tint = Color.White)
+                }
+
+
+
+            }
+            DynamicMaterialTheme(color, useDarkTheme = false) {
+                Box(modifier = Modifier.fillMaxSize()) {
+                    RootPage(onChangeState = { state ->
+                        if (state.type == "title") {
+                            title = state.value as String
+                        }
+                        if (state.type == "color") {
+                            color = state.value as Color
+                        }
+                    })
+                }
+
+            }
         }
+
 
     }
 }
