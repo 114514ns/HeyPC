@@ -3,6 +3,7 @@ package cn.pprocket.pages
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.*
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyRow
@@ -157,7 +158,7 @@ fun FeedsPage(
             delay(40)
         }
     }
-    Box {
+    Box(modifier = Modifier.background(MaterialTheme.colorScheme.background)) {
 
         Column {
             if (topicArg == null && keyWord == null) {

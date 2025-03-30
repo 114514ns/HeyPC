@@ -14,6 +14,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import cn.pprocket.GlobalState
 import cn.pprocket.HeyClient
+import cn.pprocket.Logger
 import coil3.compose.AsyncImage
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
@@ -23,9 +24,11 @@ import kotlinx.coroutines.withContext
 @Composable
 fun AccountDialog(onDismissRequest: () -> Unit) {
     var url by remember { mutableStateOf("") }
+    var logger = Logger("cn.pprocket.components.AccountDialog")
     LaunchedEffect(Unit) {
         withContext(Dispatchers.Default) {
             url = HeyClient.genQRCode()
+            logger.info("url=${url}")
             while (true) {
                 if (HeyClient.checkLogin(url)) {
                     GlobalState.config.cookies = HeyClient.cookie
@@ -34,7 +37,7 @@ fun AccountDialog(onDismissRequest: () -> Unit) {
                     GlobalState.users[HeyClient.user.userId] = HeyClient.user
                     break
                 }
-                delay(200)
+                delay(1000)
             }
             withContext(Dispatchers.Default) {
                 onDismissRequest()
@@ -55,7 +58,6 @@ fun AccountDialog(onDismissRequest: () -> Unit) {
             ) {
 
                 Text("请使用小黑盒app扫描二维码", modifier = Modifier.padding(top = 15.dp))
-                //Image(painter = rememberImagePainter(qrCodeImage!!.toBitmap()), "")
                 AsyncImage("https://api.cl2wm.cn/api/qrcode/code?text=${url}&mhid=sELPDFnok80gPHovKdI",null)
 
                 CircularProgressIndicator(

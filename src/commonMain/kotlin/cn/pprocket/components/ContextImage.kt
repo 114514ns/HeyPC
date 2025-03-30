@@ -1,33 +1,21 @@
 package cn.pprocket.components
 
 import androidx.compose.animation.animateContentSize
-import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.gestures.detectTransformGestures
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.Text
 import androidx.compose.runtime.*
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.geometry.Offset
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
-import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
-import androidx.navigation.NavHostController
-import androidx.navigation.Navigator
 import cn.pprocket.GlobalState
 import cn.pprocket.Logger
-import cn.pprocket.Platform
-import cn.pprocket.ui.PlatformU
-import coil3.ImageLoader
 import coil3.compose.AsyncImage
 import coil3.compose.LocalPlatformContext
 import coil3.network.NetworkHeaders
@@ -35,7 +23,6 @@ import coil3.network.httpHeaders
 import coil3.request.ImageRequest
 import io.ktor.utils.io.core.*
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.launch
 import kotlin.io.encoding.Base64
 import kotlin.io.encoding.ExperimentalEncodingApi
 
@@ -56,9 +43,10 @@ fun ContextImage(scope: CoroutineScope, img: String, modifier: Modifier = Modifi
         val headers = NetworkHeaders.Builder().set(
             "Referer", "https://tieba.baidu.com/"
         ).build()
-        AsyncImage(
 
-            ImageRequest.Builder(LocalPlatformContext.current).data(url).httpHeaders(headers).build(),
+        AsyncImage(
+            model = url,
+            //ImageRequest.Builder(LocalPlatformContext.current).data(url).httpHeaders(headers).build(),
             null,
             modifier = Modifier.padding(8.dp).clip(RoundedCornerShape(12.dp)).graphicsLayer {
                 //alpha = 0.8f // 降低亮度
@@ -75,6 +63,8 @@ fun ContextImage(scope: CoroutineScope, img: String, modifier: Modifier = Modifi
                 nav?.navigate("image/${Base64.Default.encode(img.toByteArray())}")
             }.fillMaxSize().animateContentSize(),
             contentScale = ContentScale.Crop)
+
+
 
     }
 }

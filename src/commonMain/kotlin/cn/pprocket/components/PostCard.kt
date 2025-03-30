@@ -1,15 +1,14 @@
 package cn.pprocket.components
 
 import androidx.compose.animation.animateContentSize
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.List
 import androidx.compose.material.icons.filled.Favorite
-import androidx.compose.material3.Icon
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Text
+import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -27,7 +26,7 @@ fun PostCard(
     author: String,
     content: String,
     publishTime: String,
-    likesCount: Int,
+    likesCount: String,
     commentsCount: Int,
     onCardClick: () -> Unit,
     userAvatar: String,
@@ -36,8 +35,11 @@ fun PostCard(
     scope: CoroutineScope
 ) {
 
-    Box(
-        modifier = modifier.fillMaxWidth().padding(16.dp).clickable { onCardClick() }
+    Card(
+        modifier = modifier.fillMaxWidth().padding(12.dp, vertical = 8.dp).clickable { onCardClick() }.background(MaterialTheme.colorScheme.surface),
+        colors = CardDefaults.cardColors(
+            containerColor = MaterialTheme.colorScheme.surfaceContainerHigh
+        )
     ) {
         Column(
             modifier = Modifier.padding(16.dp)
@@ -49,14 +51,17 @@ fun PostCard(
                 maxLines = 2,
                 overflow = TextOverflow.Ellipsis
             )
-            Spacer(modifier = Modifier.height(8.dp))
+            Spacer(modifier = Modifier.height(6.dp))
             Row(
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 ContextImage(
                     scope,
                     userAvatar,
-                    modifier = Modifier.size(48.dp).padding(6.dp).clip(CircleShape),
+                    modifier = modifier
+                        .clip(CircleShape)
+                        .size(64.dp)
+                    //modifier = Modifier.size(72.dp).padding(6.dp).clip(CircleShape),
                 )
                 Text(
                     text = author,
@@ -65,7 +70,8 @@ fun PostCard(
                 )
                 Spacer(modifier = Modifier.width(8.dp))
                 Text(
-                    text = "•", color = MaterialTheme.colorScheme.onSurfaceVariant
+                    text = "•", color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    style = PlatformU.getTypography().bodyMedium
                 )
                 Spacer(modifier = Modifier.width(8.dp))
                 Text(
@@ -74,7 +80,7 @@ fun PostCard(
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
             }
-            Spacer(modifier = Modifier.height(16.dp))
+            Spacer(modifier = Modifier.height(8.dp))
             SelectableText(content)
             Spacer(modifier = Modifier.height(16.dp))
             FlowRow {
@@ -100,7 +106,7 @@ fun PostCard(
                 )
                 Spacer(modifier = Modifier.width(4.dp))
                 Text(
-                    text = likesCount.toString(), style = PlatformU.getTypography().bodySmall
+                    text = likesCount, style = PlatformU.getTypography().bodySmall
                 )
                 Spacer(modifier = Modifier.width(8.dp))
                 Icon(

@@ -28,8 +28,11 @@ import cn.pprocket.pages.RootPage
 import cn.pprocket.ui.PlatformU
 import com.materialkolor.DynamicMaterialTheme
 import com.materialkolor.rememberDynamicColorScheme
+import dev.datlag.kcef.KCEF
 import fetchMeTask
 import fetchTopicTask
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import loadConfig
@@ -65,6 +68,32 @@ fun main() = application {
     PlatformU.initFirebase()
     LaunchedEffect(windowState.placement) {
         PlatformU.isFull = (windowState.placement != WindowPlacement.Floating)
+    }
+    LaunchedEffect(Unit) {
+        withContext(Dispatchers.IO) {
+            KCEF.init(builder = {
+                installDir(java.io.File("kcef-bundle"))
+                progress {
+                    onDownloading {
+                        logger.info("onDownloading")
+                    }
+                    onInitialized {
+                        logger.info("onInitialized")
+                    }
+                }
+                download {
+                    custom("https://tjdownload.pan.wo.cn/openapi/download?fid=aPJUh_kCRwRH8BHQ1PIHBo4rbzGTdfIaUPLjiPYSLvMI7D7hhbJk7YIYt1%2BUZwX3hEenZqSYIMFbMLG4kKhfltrBNpnQ==")
+                }
+
+                settings {
+                    cachePath = java.io.File("cache").absolutePath
+                }
+            }, onError = {
+                it?.printStackTrace()
+            }, onRestartRequired = {
+                logger.info("onRestartRequired")
+            })
+        }
     }
     Window(
         title = title,

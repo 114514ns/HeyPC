@@ -1,7 +1,6 @@
 package cn.pprocket.components
 
 import androidx.compose.animation.animateContentSize
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
@@ -18,18 +17,15 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import client
 import cn.pprocket.GlobalState
-import cn.pprocket.HeyClient
-import cn.pprocket.HeyClient.fillContent
-import cn.pprocket.HeyClient.renderHTML
 import cn.pprocket.Logger
 import cn.pprocket.State
+import cn.pprocket.items.Element
 import cn.pprocket.items.Post
-import cn.pprocket.items.Tag
 import coil3.compose.AsyncImage
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
+import io.github.kdroidfilter.composemediaplayer.VideoPlayerState
+import io.github.kdroidfilter.composemediaplayer.VideoPlayerSurface
+import io.github.kdroidfilter.composemediaplayer.rememberVideoPlayerState
+import kotlinx.coroutines.*
 
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
@@ -42,7 +38,7 @@ fun PostContent(
 ) {
     val state = rememberScrollState()
     var content by rememberSaveable { mutableStateOf(post.description) }
-    var html = remember { mutableStateListOf<Tag>() }
+    var html = remember { mutableStateListOf<Element>() }
     val logger = Logger("cn.pprocket.components.PostContent")
     LaunchedEffect(Unit) {
         withContext(Dispatchers.Default) {
@@ -57,9 +53,8 @@ fun PostContent(
                 }
                 content = str
             } else {
-                html.addAll(post.renderHTML())
+                html.addAll(client.renderHTML(post.postId))
             }
-
         }
     }
     Column(modifier = Modifier.fillMaxSize().verticalScroll(state).padding(top = 16.dp).then(modifier)) {
@@ -108,6 +103,39 @@ fun PostContent(
                         "gameCard" -> {
 
                             //GameCard({},HeyClient.getGame(it.tagValue))
+                        }
+                        "video" -> {
+
+
+                            val videoState = rememberVideoPlayerState()
+
+                            var audioState = rememberVideoPlayerState()
+                            var audioLink = ""
+                            var videoLink = it.tagValue.split("|")[0]
+
+                            /*
+                            VideoPlayerSurface(
+                                playerState = audioState,
+                                modifier = Modifier.width(0.dp).height(0.dp)
+                            )
+
+                             */
+                            VideoPlayerSurface(
+                                playerState = videoState,
+                                modifier = Modifier
+                            )
+
+                            if (it.tagValue.split("|").size == 2) {
+                                audioLink = it.tagValue.split("|")[1]
+                                audioState.openUri(audioLink)
+                            }
+                            logger.info("video ${videoLink}")
+
+                            videoState.openUri(videoLink)
+
+
+
+
                         }
                     }
                 }
